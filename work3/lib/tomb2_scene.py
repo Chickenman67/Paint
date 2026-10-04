@@ -1019,7 +1019,10 @@ def build():
         PA.paper_overlay(tile, 822, bbox=[560, 300, 860, 560])
         SC.fullbody(d, 210, 740, 380, pose='shrug', expression='disgust',
                     seed=823)
-        D.draw_label(tile, 'NEVER READABLE AGAIN', center=(760, 150),
+        # Lifted 150 -> 118. At y=150 the label's baseline ran into the top of
+        # the greyed soldier's head (head crown at ~y=180), so the word sat on
+        # his outline. At 118 it clears the head with the title band above.
+        D.draw_label(tile, 'NEVER READABLE AGAIN', center=(760, 118),
                      color=INK, size=36)
     els.append(SC.layer(clock, 37, g_gone, j=38, kind='bg', eid='g_gone'))
 

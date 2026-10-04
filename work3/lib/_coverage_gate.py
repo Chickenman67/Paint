@@ -100,7 +100,10 @@ SCENE_MODULE = {'pinegap': 'pinegap2_scene',
                 'cheyenne': 'cheyenne2_scene',
                 'svalbard': 'svalbard2_scene',
                 'vatican': 'vatican2_scene',
-                'fortknox': 'fortknox2_scene'}
+                'fortknox': 'fortknox2_scene',
+                'tomb': 'tomb2_scene',
+                'mezhgorye': 'mezhgorye2_scene',
+                'area51': 'area51_2_scene'}
 
 
 def scene_mod(chapter):
