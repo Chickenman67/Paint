@@ -51,6 +51,7 @@
 import os
 import sys
 import math
+import bisect
 
 from PIL import Image, ImageDraw
 
@@ -80,6 +81,12 @@ except Exception:                # pragma: no cover - fallback if libs absent
 # Identity transform, used when an element has no motion track.
 IDENTITY = (0.0, 0.0, 1.0, 0.0)   # (dx, dy, scale, rot_deg)
 
+# Cache of key-time lists per id(keys) is NOT safe (lists are mutable), so we
+# just build the small time list per call -- tracks are short (2-4 keys), so the
+# allocation is trivial next to the interpolate it feeds.
+def _key_times(keys):
+    return [k[0] for k in keys]
+
 
 # ---------------------------------------------------------------------------
 # keyframe interpolation
@@ -90,10 +97,13 @@ def _ease_in_out(u):
     return u * u * (3.0 - 2.0 * u)
 
 
-def _interp_keyframes(keys, t):
+def _interp_keyframes(keys, t, times=None):
     """Interpolate a motion track at time t.
 
     keys: list of (t, x, y, scale, rot) tuples, sorted ascending by t.
+    times: optional precomputed [k[0] for k in keys], so a caller that
+    interpolates every frame does not rebuild it every frame. Element caches
+    this; standalone callers can leave it None.
     Returns (dx, dy, scale, rot).
 
     Before the first key and after the last key we CLAMP to that key's value
@@ -110,19 +120,24 @@ def _interp_keyframes(keys, t):
         _, x, y, s, r = keys[-1]
         return (x, y, s, r)
 
-    # find bracketing keys
-    for i in range(len(keys) - 1):
-        t0, x0, y0, s0, r0 = keys[i]
-        t1, x1, y1, s1, r1 = keys[i + 1]
-        if t0 <= t <= t1:
-            span = t1 - t0
-            u = 0.0 if span <= 0 else (t - t0) / span
-            e = _ease_in_out(u)
-            dx = x0 + (x1 - x0) * e
-            dy = y0 + (y1 - y0) * e
-            sc = s0 + (s1 - s0) * e
-            rot = r0 + (r1 - r0) * e
-            return (dx, dy, sc, rot)
+    # Find the bracketing keys. This runs once per element per frame, and the
+    # scenes now attach tracks to many elements at once (persistent stages plus
+    # per-element motion), so we bisect the sorted key times instead of scanning.
+    if times is None:
+        times = _key_times(keys)
+    lo = bisect.bisect_right(times, t)
+    i = max(0, min(lo - 1, len(keys) - 2))
+    t0, x0, y0, s0, r0 = keys[i]
+    t1, x1, y1, s1, r1 = keys[i + 1]
+    if t0 <= t <= t1:
+        span = t1 - t0
+        u = 0.0 if span <= 0 else (t - t0) / span
+        e = _ease_in_out(u)
+        dx = x0 + (x1 - x0) * e
+        dy = y0 + (y1 - y0) * e
+        sc = s0 + (s1 - s0) * e
+        rot = r0 + (r1 - r0) * e
+        return (dx, dy, sc, rot)
     # Unreachable for well-formed keys, but be safe.
     _, x, y, s, r = keys[-1]
     return (x, y, s, r)
@@ -149,7 +164,7 @@ class Element:
     """
 
     __slots__ = ("id", "kind", "draw", "at", "motion", "until",
-                 "_tile", "_built", "_origin")
+                 "_tile", "_built", "_origin", "_times")
 
     def __init__(self, id, kind, draw, at=0.0, motion=None, until=None):
         self.id = id
@@ -158,6 +173,9 @@ class Element:
         self.at = float(at)
         # normalise + copy so the track cannot be mutated behind our back
         self.motion = sorted(tuple(k) for k in motion) if motion else None
+        # Precompute the sorted key times ONCE so transform_at does not rebuild
+        # them every frame. _times mirrors self.motion's order.
+        self._times = [k[0] for k in self.motion] if self.motion else None
         self.until = None if until is None else float(until)
         self._tile = None     # cropped RGBA ink tile
         self._built = False
@@ -208,7 +226,7 @@ class Element:
         """Interpolated (dx, dy, scale, rot) at absolute time t."""
         if not self.motion:
             return IDENTITY
-        return _interp_keyframes(self.motion, t)
+        return _interp_keyframes(self.motion, t, times=self._times)
 
     # -- draw into a page ---------------------------------------------------
 

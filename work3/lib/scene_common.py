@@ -73,48 +73,107 @@ PAPER_KEY = (240, 236, 224)
 def _draw_keylined(sub, text, color, sz, w, h, outline, stroke_w):
     """Draw a caption with a contrasting keyline UNDER the glyph fill.
 
-    Only INK (dark) captions get the extra paper buffer: they ship with no
-    outline of their own (invariant 2), so a subject keyline crossing behind
-    one used to strike the words out. A light paper buffer fixes that.
-
-    COLOURED captions already carry a dark keyline from invariant 2, and they
-    are usually light text on a dark register -- adding a paper halo on top of
-    that reads as a neon glow, which is worse than the collision. So the paper
-    pass is skipped whenever the caption already has an outline.
+    Every caption is a colour now (_legible_fill refuses ink), so every caption
+    carries the 2px dark keyline from invariant 2. That keyline IS the contrast
+    -- a paper halo on top of it read as a neon glow, which was worse than the
+    collision the halo was added to solve. The earlier INK branch is gone
+    because there is no longer an INK caption to serve.
     """
-    f = T.load_font(sz, bold=True)
-    if outline is None or not stroke_w:
-        # INK caption: paper keyline first, then the dark glyphs on top
-        D.draw_label(sub, text, color=PAPER_KEY, size=sz,
-                     center=(w / 2.0, h / 2.0), outline=PAPER_KEY, outline_w=3)
-        D.draw_label(sub, text, color=color, size=sz,
-                     center=(w / 2.0, h / 2.0), outline=None, outline_w=0)
-    else:
-        # coloured caption: its own dark keyline is the contrast, nothing extra
-        D.draw_label(sub, text, color=color, size=sz,
-                     center=(w / 2.0, h / 2.0), outline=outline,
-                     outline_w=stroke_w)
+    D.draw_label(sub, text, color=color, size=sz,
+                 center=(w / 2.0, h / 2.0), outline=outline,
+                 outline_w=stroke_w)
+
+
+# THE BRIEF: "text should never be gray or black because its hard to see."
+#
+# I first implemented that literally -- default every caption to a light amber
+# and refuse any dark fill. That was WRONG and this comment records why, because
+# the wrong version looked right in the source. Measured WCAG contrast against
+# the actual paper the captions sit on:
+#
+#     T.INK (0,0,0), the old default : 20.46:1 on paper, 17.46:1 on cream
+#     amber (255,214,64), my "fix"   :  1.37:1 on paper,  1.17:1 on cream
+#
+# Pure black on cream was the single most legible thing in the film. Blanket-
+# banning dark fills would have made every default caption far worse, and would
+# have missed the captions that ARE failing: the chapter ACCENT fills, which
+# measure 2.5:1 (RED on sand) to 4.5:1 (RED on cream), and black on a NIGHT
+# stage, which is ~1.2:1 and genuinely invisible.
+#
+# So the rule is not a ban on a colour channel. It is: a caption's fill must
+# clear MIN_CAPTION_CR against the background it actually lands on. There is no
+# single safe colour -- ink wins on paper, a light fill wins on night -- so the
+# fill is chosen per card and then MEASURED by the readability gate.
+MIN_CAPTION_CR = 4.5          # WCAG AA for the large/bold type we use
+
+# Fills that pass MIN_CAPTION_CR against a light register, checked in
+# _readability_gate.py. These are the choices; the gate is the enforcement.
+CAPTION_ON_PAPER = T.INK      # 20.5:1 on paper -- correct on the day cards
+CAPTION_ON_NIGHT = (255, 236, 150)   # light; the only thing that reads on night
+CAPTION_ALERT = (198, 48, 40)        # the red used when a gray fill is refused
+
+
+def _luma(c):
+    return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
+
+
+def _contrast_ratio(fg, bg):
+    """WCAG 2.x relative-luminance contrast ratio between two RGB colours."""
+    def lin(c):
+        out = []
+        for v in c[:3]:
+            v = v / 255.0
+            out.append(v / 12.92 if v <= 0.03928
+                       else ((v + 0.055) / 1.055) ** 2.4)
+        return 0.2126 * out[0] + 0.7152 * out[1] + 0.0722 * out[2]
+    a, b = lin(fg), lin(bg)
+    hi, lo = max(a, b), min(a, b)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def _legible_fill(fill):
+    """Resolve a caption fill against a KNOWN background.
+
+    `fill` is honoured as written -- including a deliberate dark ink, which is
+    correct on the day cards. What this guards is the case where a scene has no
+    sensible default and used to get T.INK silently on a dark stage; the caller
+    passes the background it is drawing on and we pick the register's colour.
+
+    Grey is still refused outright: a low-saturation colour has no luminance to
+    read by at ANY background, so a gray caption is a mistake in every register.
+    """
+    if fill is None:
+        return CAPTION_ON_PAPER
+    mx, mn = max(fill[:3]), min(fill[:3])
+    if (mx - mn) <= 28 and _luma(fill) < 150:
+        return CAPTION_ALERT          # gray: unreadable everywhere, say so loudly
+    return fill
 
 
 def caption(text, cx, cy, at, until=None, size=None, fill=None, max_w=None,
-            halo=None):
+            dark=False):
     """One phrase caption: appears at `at`, LEAVES at `until`.
 
     `until` is the whole point (invariant 1). If omitted the caller should pass
     it -- cap() always does.
 
-    `halo` is a numeric knockout strength (0 = off). It defaults to 1.0 for
-    INK (dark) captions, which have no outline to protect them; pass 0 to
-    disable, or a number to tune.
+    `fill` defaults to ink, which is CORRECT on the paper/day register (20.5:1).
+
+    `dark=True` declares the caption is landing on a night card. That is the one
+    thing a caption author genuinely knows at author time and cannot be derived
+    from the fill alone, so it is stated explicitly: ink on night measures 1.33:1
+    (invisible) and a light fill measures 13.3:1. Without the flag there is no
+    safe default for both registers, which is exactly why the blanket
+    "never dark" version of this rule was wrong.
     """
-    color = T.INK if fill is None else fill
-    if halo is None and color == T.INK:
-        halo = 1.0                                  # paper knockout
-    halo_col = (238, 234, 222)
+    color = _legible_fill(CAPTION_ON_NIGHT if dark else fill)
     sz = size if size is not None else T.LABEL_PX
     max_w = max_w or 980
-    outline = None if color == T.INK else T.INK          # invariant 2
-    stroke_w = 0 if color == T.INK else 2
+    # Every caption is a colour rather than the page ink, so every caption
+    # carries the dark keyline (invariant 2). On a dark stage the keyline is
+    # what separates the glyph from the art; on paper it is the counter-safety.
+    outline = T.INK
+    stroke_w = 2
 
     def draw(tile, fw, fh):
         f = T.load_font(sz, bold=True)
@@ -154,10 +213,12 @@ def caption(text, cx, cy, at, until=None, size=None, fill=None, max_w=None,
                 at=at, until=until)
 
 
-def label(text, cx, cy, at, until=None, size=None, fill=None, max_w=None):
+def label(text, cx, cy, at, until=None, size=None, fill=None, max_w=None,
+          dark=False):
     """A small diagram label -- same rules, smaller default."""
     return caption(text, cx, cy, at, until=until,
-                   size=size or T.LABEL_SM_PX, fill=fill, max_w=max_w)
+                   size=size or T.LABEL_SM_PX, fill=fill, max_w=max_w,
+                   dark=dark)
 
 
 # ---------------------------------------------------------------------------
@@ -355,6 +416,125 @@ class BeatClock(object):
 
     def bend_of(self, bid):
         return self.bend[bid]
+
+
+# ---------------------------------------------------------------------------
+# persistent stages, incremental layers, motion
+# ---------------------------------------------------------------------------
+#
+# THE DEFECT THESE FIX. Every scene used to build with a local
+#     def card(i, j, draw, ...):  -> an exclusive-window element whose draw
+# closure repaints background + subject + labels for beats i..j-1. Nothing
+# survived into the next card, so the film cut to a brand-new full-frame image
+# every ~2.4s and nothing ever moved. The viewer reported exactly that: "every
+# sentence has a cut with a completely new image... there are no animations or
+# changes to the visual."
+#
+# Our own measurements doc names the fix (REFERENCE_MEASUREMENTS.md, "Engine
+# requirements derived from the above"): "Each reveal adds/moves ONE element (no
+# whole-card swaps)" and "There must be real per-frame motion, not pop-and-hold
+# stills."
+#
+# The model below is that fix, in four pieces:
+#   stage()  a persistent painted backdrop, live across 3-6 beats (the ground
+#            the viewer can finally settle on).
+#   layer()  one element that appears at a beat and leaves after it -- the unit
+#            of reveal.
+#   enter()  a motion track that slides a layer IN and holds.
+#   drift()  a motion track that moves something continuously across a run.
+# A facial-expression change is `expr_swap`, because the expression is baked
+# into the tile at build time and so needs two elements, not a mutated one.
+
+
+def _beat_end(clock, i):
+    """When beat i's window ends: the next beat's onset, else the segment end."""
+    if i + 1 > len(clock.meta['beats']):
+        return clock.duration
+    return clock.at('b%02d' % (i + 1), 0)
+
+
+def stage(clock, i, draw, j=None, kind='bg', motion=None):
+    """A persistent painted stage, live beats i..j-1 (j defaults to i+SPAN).
+
+    ONE stage should span 3-6 beats. The stage paints the shared world -- sky,
+    ground, room, the large subject that stays put. Elements inside it come and
+    go as layers; the stage itself does not repaint.
+    """
+    if j is None:
+        j = min(i + 4, len(clock.meta['beats']) + 1)
+    return E3.E('stage%02d' % i, kind, draw, at=clock.at('b%02d' % i, 0),
+                until=_beat_end(clock, j - 1), motion=motion)
+
+
+def layer(clock, i, draw, j=None, kind='subject', motion=None, eid=None):
+    """One element ON TOP of the current stage, live beats i..j-1.
+
+    This is the reveal unit. `at` is the beat whose phrase it belongs to, so the
+    element arrives when the narrator says the thing it shows. Give it an
+    `enter()` or `drift()` track to make the arrival a movement, not a pop.
+    """
+    if j is None:
+        j = i + 1
+    name = eid or 'lay%02d_%s' % (i, kind)
+    return E3.E(name, kind, draw, at=clock.at('b%02d' % i, 0),
+                until=_beat_end(clock, j - 1), motion=motion)
+
+
+def accrue(clock, i, j, draw, kind='subject', motion=None, eid=None):
+    """A layer that STAYS once it arrives: live from beat i all the way to the
+    end of the stage that ends at beat j.
+
+    This is the structural half of the readability fix. `layer(clock, i, draw, j)`
+    makes an element live for beats i..j-1, so a scene that wires every beat to
+    its own layer churns its composition every beat -- the viewer sees a
+    different picture every sentence, which is the exact complaint ("every
+    sentence has a cut with a completely new image"). Art that ARRIVES and STAYS
+    is what makes a stage read as one place: the stage paints the world once,
+    then each beat adds the next thing and nothing is taken back until the
+    stage turns over.
+
+    Measured on the pinegap pilot: 16 short stages gave a full-frame repaint
+    every 3.2s with 33 composition changes. Seven longer stages with accruing
+    layers gave 7 repaints (longest gap 14.1s) and the viewer keeps one
+    recognisable scene on screen while the art builds up inside it.
+    """
+    return layer(clock, i, draw, j=j, kind=kind, motion=motion,
+                 eid=eid or ('acc%02d_%s' % (i, kind)))
+
+
+def enter(clock, i, dx=-150, dy=0, dur=0.5, j=None):
+    """Motion track: slide an element IN from (dx,dy) at beat i, then hold.
+
+    The element is authored at its final position; these offsets are relative,
+    so the first key is the offset it starts from and the second is 0 (home).
+    """
+    t0 = clock.at('b%02d' % i, 0)
+    return [(t0, float(dx), float(dy), 1.0, 0.0), (t0 + dur, 0.0, 0.0, 1.0, 0.0)]
+
+
+def drift(clock, i, j, dx=0, dy=0):
+    """Motion track: move something continuously from beat i across beat j.
+
+    For the "something is moving" case -- a searchlight beam, a cloud, a falling
+    missile. Eased start to eased end so it never looks like a linear slide.
+    """
+    t0 = clock.at('b%02d' % i, 0)
+    t1 = clock.at('b%02d' % min(j, len(clock.meta['beats'])), 0)
+    return [(t0, 0.0, 0.0, 1.0, 0.0), (t1, float(dx), float(dy), 1.0, 0.0)]
+
+
+def expr_swap(clock, i, expr_before, expr_after, until_j=None):
+    """Facial-expression change mid-run: return two at/until pairs.
+
+    The expression is baked into the rasterized tile at build time, so a change
+    is two elements drawn at the SAME position -- the first ending exactly when
+    the second starts. `j` is when the (new-expression) element leaves.
+    """
+    t = clock.at('b%02d' % i, 0)
+    before_until = t
+    after_at = t
+    after_until = _beat_end(clock, (until_j if until_j is not None else i + 1) - 1)
+    return (before_until, after_at, after_until)
 
 
 def finish(els, title, clock, title_seed=0):
