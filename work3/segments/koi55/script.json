@@ -1,0 +1,105 @@
+{
+ "title": "KOI-55 - the planet that survived being eaten",
+ "wrote_to": "C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/koi55/script.json",
+ "narration": "This planet sits closer to its star than any planet we have found.\nOne year up there lasts about five hours and forty minutes.\nSunrise, noon, sunset, gone. Over and over.\nThe star swings around again before this sentence ends.\nIts whole life happens inside one breath of yours.\nIt is a bare rock. No air. No ocean. No weather.\nNothing there has been alive in a very long while.\nJust a charred shell with a dead core inside.\nIts star is enormous, and close, and very hot.\nIt has been boiling this rock since they formed.\nWhatever atmosphere it ever had was taken off years ago.\nThe surface has been melted, drained, hardened again.\nIt is a cinder. The catalog has nothing closer.\nKepler only ever saw a shadow. Every five hours, forty minutes.\nIt dipped, and the star dimmed, and dipped again.\nKOI-55 is a number. Nobody gave it a better name.\nIt is falling inward, one orbit at a time.\nEvery pass takes it closer to the surface.\nThere is nothing left underneath to fall toward.\nHere is the part that should keep you awake.\nThis world may already have been swallowed once.\nIt may already have survived being eaten.\nThat is what makes it disturbing. Not that it dies.\nThat it is allowed to die twice.\nThe next pass will not be a pass.\nIt will be the last one.\nKOI-55. Five hours and forty minutes a year.\nOne fall left. Nothing is coming back.",
+ "word_count": 249,
+ "est_wpm": 160,
+ "beats": [
+  {
+   "n": 1,
+   "id": "hook_closest_orbit",
+   "beat": "HOOK",
+   "line": "This planet sits closer to its star than any planet we have found.",
+   "visual": "Void register, deep navy starfield; a huge banded yellow star fills the right third with a black dot silhouette pressed against its limb, the cream stickman stands small at lower left with a flat-line mouth, standing deadpan, looking up.",
+   "register": "void"
+  },
+  {
+   "n": 2,
+   "id": "hook_five_hours",
+   "beat": "THE_CLOCK",
+   "line": "One year up there lasts about five hours and forty minutes.\nSunrise, noon, sunset, gone. Over and over.",
+   "visual": "Cream register, pale paper; a wide horizontal clock dial with a single wobbly hand sweeping right while the paper background tints to orange then dusk blue three times in stepped bands; no character - pure data beat.",
+   "register": "cream"
+  },
+  {
+   "n": 3,
+   "id": "hook_breath",
+   "beat": "TIME_SCALE",
+   "line": "The star swings around again before this sentence ends.\nIts whole life happens inside one breath of yours.",
+   "visual": "Void register; the same star repeated four times in a horizontal row shrinking toward the horizon with a small orbit trail looping each one, the cream stickman at lower right with a wide oval mouth, head tipped back, watching them repeat.",
+   "register": "void"
+  },
+  {
+   "n": 4,
+   "id": "bare_rock_world",
+   "beat": "THE_WORLD",
+   "line": "It is a bare rock. No air. No ocean. No weather.\nNothing there has been alive in a very long while.\nJust a charred shell with a dead core inside.",
+   "visual": "Cream register; a cracked hand-drawn grey rock cut in cross-section showing a hollow black core, three thin arrows bouncing off the top labeled with air, ocean, weather, the dark stickman standing to the left with a zigzag mouth, shrugging at the empty shell.",
+   "register": "cream"
+  },
+  {
+   "n": 5,
+   "id": "the_boiling",
+   "beat": "THE_BURN",
+   "line": "Its star is enormous, and close, and very hot.\nIt has been boiling this rock since they formed.\nWhatever atmosphere it ever had was taken off years ago.",
+   "visual": "Void register; thick wavy orange heat lines pour from the star down onto the small rock and continue past it as thin escaping wisps, the cream stickman at frame left with a downturned scared arc mouth, both arms raised shielding his eyes.",
+   "register": "void"
+  },
+  {
+   "n": 6,
+   "id": "melted_and_hardened",
+   "beat": "CHARRED",
+   "line": "The surface has been melted, drained, hardened again.\nIt is a cinder. The catalog has nothing closer.",
+   "visual": "Cream register; a three-panel strip showing the same rock as glowing liquid, then draining, then as a dull black cinder, drawn in flat fills with heavy wobbly outlines; no character - pure data beat.",
+   "register": "cream"
+  },
+  {
+   "n": 7,
+   "id": "how_we_found_it",
+   "beat": "THE_SEARCH",
+   "line": "Kepler only ever saw a shadow. Every five hours, forty minutes.\nIt dipped, and the star dimmed, and dipped again.\nKOI-55 is a number. Nobody gave it a better name.",
+   "visual": "Void register; a light curve flatline with regular narrow dips stamped as little V notches, the file number KOI-55 stencilled in the corner over a grid of other KOIs with the 55th slot blanked; no character - pure data beat.",
+   "register": "void"
+  },
+  {
+   "n": 8,
+   "id": "the_spiral_in",
+   "beat": "THE_FALL",
+   "line": "It is falling inward, one orbit at a time.\nEvery pass takes it closer to the surface.\nThere is nothing left underneath to fall toward.",
+   "visual": "Cream register, side-on cutaway; a dotted spiral path tightens toward a dark star drawn as a flat red half-disc at frame edge with concentric depth rings, the dark stickman at lower right with a downturned scared arc, pointing straight down at the tightening path.",
+   "register": "cream"
+  },
+  {
+   "n": 9,
+   "id": "it_survived_being_eaten",
+   "beat": "SURVIVOR",
+   "line": "Here is the part that should keep you awake.\nThis world may already have been swallowed once.\nIt may already have survived being eaten.",
+   "visual": "Void register; the star's edge drawn swollen out to swallow the whole rock, then a second ghosted frame beside it showing the same rock sitting just outside the star intact, uncertain both drawn with thin wobbly outlines, the cream stickman centered with a zigzag uncomfortable mouth, hands up, palms out.",
+   "register": "void"
+  },
+  {
+   "n": 10,
+   "id": "disturbing_part",
+   "beat": "THE_TWIST",
+   "line": "That is what makes it disturbing. Not that it dies.\nThat it is allowed to die twice.",
+   "visual": "Cream register, near-empty card with a single small rock alone in the middle of the frame; the dark stickman stands beside it with a wide oval awed mouth, one finger raised toward it.",
+   "register": "cream"
+  },
+  {
+   "n": 11,
+   "id": "the_last_pass",
+   "beat": "FATE",
+   "line": "The next pass will not be a pass.\nIt will be the last one.",
+   "visual": "Void register; the orbit path drawn as a spiral that ends in a flat black wall right at the star's surface, a single bold X stamped over the final loop, the cream stickman small at bottom center with a downturned scared arc, standing very still with head tipped back.",
+   "register": "void"
+  },
+  {
+   "n": 12,
+   "id": "outro_cinder",
+   "beat": "OUTRO",
+   "line": "KOI-55. Five hours and forty minutes a year.\nOne fall left. Nothing is coming back.",
+   "visual": "Cream register; a hand-lettered KOI-55 stamped across the top over a small dead-grey cinder with one thin fading orbit line, the dark stickman at the right edge with a flat-line deadpan mouth, arms down, facing the cinder.",
+   "register": "cream"
+  }
+ ]
+}

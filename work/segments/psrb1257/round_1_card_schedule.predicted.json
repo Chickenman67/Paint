@@ -1,0 +1,1257 @@
+{
+ "segment": "PSR B1257+12",
+ "segment_index": 3,
+ "round": 1,
+ "wav_path": "round_1_audio.wav",
+ "alignment_path": "round_1_alignment.json",
+ "duration_s": 99.2,
+ "word_count": 317,
+ "narrator_wpm": 200.0,
+ "effective_wpm": 191.7,
+ "first_word_t": 0.2,
+ "fps": 30,
+ "geometry": {
+  "W": 1280,
+  "H": 720,
+  "fps": 30,
+  "title_band": {
+   "y0": 22,
+   "y1": 60,
+   "fill": "paper",
+   "text": "ink",
+   "px": 44,
+   "align": "center",
+   "x_center": 640,
+   "content": "PSR B1257+12"
+  },
+  "art_top": 61,
+  "art_bottom": 719,
+  "caption": {
+   "x": 70,
+   "y": 652,
+   "px": 27,
+   "max_px_w": 1100,
+   "max_chars": 60,
+   "max_words": 12,
+   "one_line": true,
+   "on_cream_color": "ink",
+   "on_void_color": "amber"
+  },
+  "stickman": {
+   "x_default": 400,
+   "feet_y": 680,
+   "h_hero": 480,
+   "h_dialog": 400,
+   "h_closeup": 560
+  },
+  "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+  "first_word_rule": "card 1 is up at t=0.0 and the first spoken word must land at t<=0.30, so the header is never late (CLAUDE.md §5.5).",
+  "bridges": "0.5s palette bridge after how_first and after name_punchline (round_1_script.md line 110). The segment-exit bridge is the 3.75s white bridge in lib/transition.py — §5.7's '0.5s black frame' is superseded by the measured reference bridge (PALETTE_SPEC.md §2).",
+  "gradient_rule": "radial_gradient() is legal on the pulsar core ONLY (psr_size, psr_collapse, psr_beams, how_first, psr_name). Never on the planets, orbit ellipses, the radiation wash, the starfield, the title strip, the skulls, or the stickman (PALETTE_SPEC.md §3 denylist).",
+  "motion_rule": "0.25s quantized stamps, never smooth tweens, on every motion in this segment including the stickman."
+ },
+ "palette": {
+  "ink": [
+   20,
+   22,
+   28
+  ],
+  "paper": [
+   242,
+   234,
+   214
+  ],
+  "deep": [
+   5,
+   6,
+   11
+  ],
+  "amber": [
+   232,
+   163,
+   61
+  ],
+  "bone": [
+   220,
+   230,
+   236
+  ],
+  "violet": [
+   110,
+   90,
+   156
+  ],
+  "shirt": [
+   200,
+   50,
+   50
+  ]
+ },
+ "accent_roles": {
+  "cream": [
+   242,
+   234,
+   214
+  ],
+  "bone": [
+   220,
+   230,
+   236
+  ],
+  "amber": [
+   232,
+   163,
+   61
+  ],
+  "violet": [
+   110,
+   90,
+   156
+  ]
+ },
+ "type_scale": {
+  "title_band_px": 44,
+  "header_stroke": 0,
+  "caption_px": 27,
+  "caption_stroke": 4,
+  "heavy_px": 64,
+  "heavy_stroke": 4,
+  "stamp_px": 18,
+  "tiny_px": 18,
+  "family_bold": "consolab.ttf",
+  "family_reg": "consola.ttf"
+ },
+ "fact_flags": [
+  "ALL SIX FLAGS APPLIED. Narration in work/scripts.py, work/scripts.md and round_1_script.md is now fact-correct and the WAV must be regenerated.",
+  "E1 APPLIED - psr_name and name_star: constellation stamp is VIRGO, not VELA. PSR B1257+12 is in Virgo; Vela hosts PSR B0833-45, which has no planets. Clause 12 dropped the constellation entirely.",
+  "E2 APPLIED - psr_rate: spin period is 6.2185 ms (160.8 rev/s), not 1/6 s. Clause 9 now reads 'One turn takes six thousandths of a second' and the sketch's backwards '161ms/rev' now reads as 6.2 ms per rev; 161 is the frequency in Hz, not a period.",
+  "E3 APPLIED - planet_masses: true masses are Draugr 0.020, Phobetor 3.9, Poltergeist 4.3 Earth masses. One is Moon-ish and two are ~4 Earths, not two Moon-ish and one heavy. Caption and disc radii (16/40/42) both fixed.",
+  "E4 APPLIED - planet_periods: true periods are 25.262, 66.5419 and 98.2114 days, not 66/204/365. Banner, ring labels and clause 16 all fixed.",
+  "E5 APPLIED - the how_1992 card is renamed how_1990. Pulsar discovered 9 Feb 1990; first two planets announced January 1992, third later in 1992. The unsourced 'nobody believed him' beat is dropped, not reworded; clause 20 keeps the two-year wait, which is the 1990->1992 gap.",
+  "E6 APPLIED - name_base_eight / name_punchline cards replaced by name_coordinates / name_just_digits. The base-eight joke was a fabrication attributed to Wolszczan and Frail and is gone. The replacement states the verifiable fact: PSR 1257+12 is a sexagesimal sky coordinate, 12h57m right ascension and plus 12 degrees declination."
+ ],
+ "cards": [
+  {
+   "n": 1,
+   "id": "hook_dead",
+   "beat": "B1 HOOK",
+   "clauses": [
+    1
+   ],
+   "narration": "Here is a star that has already died.",
+   "words": 8,
+   "start": 0.0,
+   "end": 2.6,
+   "duration": 2.4,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "star_pulse_0.5Hz",
+   "motion_xfade_s": 0.2,
+   "caption": "HERE IS A STAR THAT HAS ALREADY DIED.",
+   "banner": null,
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "flat",
+    "pose": "standing",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; far dead star cx=980 cy=300 r=46, bone core, 2 FLAT violet halo rings r=64/78 at 12%/22% alpha (no gradient); a violet nebula wisp (wobbly 9-gon, seed 31) at 8% alpha across the lower-left third; 64pt heavy 'ALREADY DEAD' in bone with a 3px slate-black outline ON the star; stickman x=400 y_top=200 h=480 flat/standing, feet y=680; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 0
+  },
+  {
+   "n": 2,
+   "id": "hook_talking",
+   "beat": "B1 HOOK",
+   "clauses": [
+    2
+   ],
+   "narration": "It is still spinning, and it is still talking.",
+   "words": 9,
+   "start": 2.68,
+   "end": 5.38,
+   "duration": 2.7,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "arc_pulse + spin_step_0.25s",
+   "motion_xfade_s": 0.2,
+   "caption": "IT IS STILL SPINNING, AND IT IS STILL TALKING.",
+   "banner": null,
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "skeptical",
+    "pose": "pointing",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 210,
+    "feet_y": 690
+   },
+   "sketch": "bg_void_stars; star cx=980 cy=300 r=46 bone; THREE violet radio arcs r=110/170/230 centred on the star, opacity stepping 20/55/15% on a 0.25s cycle (quantized, never tweened); spin_step: one bone meridian tick on the star limb advancing 90deg per 0.25s stamp, 4 stamps per revolution; stickman x=400 y_top=210 h=480 skeptical/pointing, right arm toward the star; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 8
+  },
+  {
+   "n": 3,
+   "id": "hook_not_alone",
+   "beat": "B1 HOOK",
+   "clauses": [
+    3,
+    4
+   ],
+   "narration": "And it is not spinning alone. A neutron star.",
+   "words": 9,
+   "start": 5.46,
+   "end": 8.16,
+   "duration": 2.7,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "star_pulse + head_tilt_0.25s",
+   "motion_xfade_s": 0.2,
+   "caption": "AND IT IS NOT SPINNING ALONE.",
+   "banner": "A NEUTRON STAR",
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "awed_brows",
+    "pose": "hands_up",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; star cx=980 cy=300 r=46 with a 2px AMBER limb ring — the first hot color in the segment, so the eye registers the shift; 64pt heavy 'A NEUTRON STAR' amber with a 3px slate-black outline, centred on the star at (980,300); stickman x=400 y_top=200 h=480 awed_brows/hands_up, head tilting 4deg per 0.25s stamp; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 17
+  },
+  {
+   "n": 4,
+   "id": "psr_size",
+   "beat": "B2 THE PULSAR",
+   "clauses": [
+    5,
+    6
+   ],
+   "narration": "City-sized. Denser than anything should be allowed.",
+   "words": 7,
+   "start": 8.24,
+   "end": 10.34,
+   "duration": 2.1,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "core_breathe",
+   "motion_xfade_s": 0.2,
+   "caption": "CITY-SIZED. DENSER THAN ANYTHING SHOULD BE ALLOWED.",
+   "banner": "20 KM ACROSS",
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "frown",
+    "pose": "standing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; pulsar core cx=900 cy=330 r=54, 3-STOP radial gradient #FFFFFF (r=0) -> #DCE6EC (r=0.55) -> #6E5A9C (r=1.0) — the ONLY gradient in the segment, legal here because the star core is the emissive subject (PALETTE_SPEC.md §3) — plus texture.stipple_overlay(density=0.02, seed=41); 18pt bone annotation '20 KM ACROSS' centred at (900,404); a 3px bone scale bracket with end ticks from x=760 to x=1040 at y=430; stickman x=400 y_top=300 h=400 frown/standing; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 26
+  },
+  {
+   "n": 5,
+   "id": "psr_collapse",
+   "beat": "B2 THE PULSAR",
+   "clauses": [
+    7
+   ],
+   "narration": "Its fuel ran out, it exploded, and the rest collapsed in here.",
+   "words": 12,
+   "start": 10.42,
+   "end": 14.02,
+   "duration": 3.6,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "collapse_in_1.2s + flash",
+   "motion_xfade_s": 0.2,
+   "caption": "ITS FUEL RAN OUT, IT EXPLODED, AND COLLAPSED IN HERE.",
+   "banner": null,
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "worried",
+    "pose": "shielding_eyes",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; amber starfield streaks radiating from (900,330) in three quantized length steps, each on its own 0.25s stamp; a debris ring of 9 AMBER rock blobs r=6..14 on an ellipse rx=300 ry=90 at (900,330), each inward on its own 0.25s stamp; the core r=54 brightens to full white at t=0.9s then SNAPS to r=30 on one 0.25s stamp; stickman x=400 y_top=200 h=480 worried/shielding_eyes; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 33
+  },
+  {
+   "n": 6,
+   "id": "psr_spin",
+   "beat": "B2 THE PULSAR",
+   "clauses": [
+    8
+   ],
+   "narration": "That collapse is what makes it spin. Fast.",
+   "words": 8,
+   "start": 14.1,
+   "end": 16.5,
+   "duration": 2.4,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "spin_step_0.25s (4 stamps/rev)",
+   "motion_xfade_s": 0.2,
+   "caption": "THAT COLLAPSE IS WHAT MAKES IT SPIN. FAST.",
+   "banner": null,
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "flat",
+    "pose": "standing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; core cx=900 cy=330 r=30 flat white; two 2px VIOLET magnetic field arcs lofting above and below the poles (wobble seed 52); one AMBER spin tick on the limb advancing 90deg per 0.25s stamp. VISUAL PACE ONLY — not to scale; the narration says milliseconds and the discrepancy is the joke, so do NOT annotate it. Since E2 the narration agrees with the truth here — 'six thousandths of a second’ — so the builder may now annotate the true 6.2ms period on this card. stickman x=400 y_top=300 h=400 flat/standing; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 45
+  },
+  {
+   "n": 7,
+   "id": "psr_rate",
+   "beat": "B2 THE PULSAR",
+   "clauses": [
+    9
+   ],
+   "narration": "One turn takes six thousandths of a second.",
+   "words": 8,
+   "start": 16.58,
+   "end": 18.98,
+   "duration": 2.4,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "spin_step + counter_roll",
+   "motion_xfade_s": 0.2,
+   "caption": "ONE TURN TAKES SIX THOUSANDTHS OF A SECOND.",
+   "banner": "ONE TURN / 6 MS",
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": null,
+   "sketch": "DIAGRAM-ONLY. bg_void_stars; core cx=560 cy=300 r=30; a 2px BONE stopwatch ring (ellipse r=190) centred (560,300) carrying 60 tick marks; one AMBER tick chases the ring at 6.2 MILLISECONDS PER REV — that is 160.8 turns per second, so 25 stamps per rev at 0.25s and it reads as a blur, which is the point; 64pt heavy '6 MILLISECONDS' bone with a 3px slate-black outline centred at (560,300); 18pt bone annotation 'PER TURN' at (560,510); NO stickman. FACT FLAG E2 (APPLIED) — the earlier narration said 'about a sixth of a second' (167ms), 27x the true 6.2ms period, and this card as designed would have contradicted the voice. work/scripts.py now reads 'One turn takes six thousandths of a second.' Do not restore the old wording, and do not label the 161 figure as a period: 161 is the frequency in Hz.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 53
+  },
+  {
+   "n": 8,
+   "id": "psr_beams",
+   "beat": "B2 THE PULSAR",
+   "clauses": [
+    10
+   ],
+   "narration": "Beams of radio light rake out of its magnetic poles.",
+   "words": 10,
+   "start": 19.06,
+   "end": 22.06,
+   "duration": 3.0,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "beam_sweep_3.0s",
+   "motion_xfade_s": 0.2,
+   "caption": "BEAMS OF RADIO LIGHT RAKE OUT OF ITS MAGNETIC POLES.",
+   "banner": "RADIO BEAMS",
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "shielding_eyes",
+    "pose": "shielding_eyes",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; core cx=900 cy=330 r=30; TWO opposed beam cones from the poles, apex alpha 1.0 ramping to tip alpha 0.0 along the axis, apex #DCE6EC shifting to #E8A33D at ~70% of the length so the cone reads as a two-tone funnel, MAX 6px blur on the FILL layer only; the 2px AMBER cone EDGES are drawn UNBLURRED on top — the gradient is the fill, the hand-drawn line is the line, and that is what keeps it from reading as a stock lens flare; both cones rotate as a rigid pair, 1 rev / 3.0s; flat violet halo rings r=64/78 at 12%/22% alpha; stickman x=400 y_top=200 h=480 shielding_eyes; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 61
+  },
+  {
+   "n": 9,
+   "id": "psr_lighthouse",
+   "beat": "B2 THE PULSAR",
+   "clauses": [
+    11
+   ],
+   "narration": "On and off and on. A lighthouse made of a dead star.",
+   "words": 12,
+   "start": 22.14,
+   "end": 25.74,
+   "duration": 3.6,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "on_off_strobe_1.1s",
+   "motion_xfade_s": 0.2,
+   "caption": "ON AND OFF AND ON. A LIGHTHOUSE MADE OF A DEAD STAR.",
+   "banner": null,
+   "accent": "cream",
+   "accent_rgb": [
+    242,
+    234,
+    214
+   ],
+   "card_value": "cream",
+   "stickman": {
+    "expression": "awed_brows",
+    "pose": "pointing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "CREAM CARD — full-bleed #F2EAD6 from y=61 to y=719. A lighthouse silhouette in 3px slate-black flat strokes: tower base at x=1000,y=620, lamp housing at (1000,300); two AMBER beam wedges from the lamp at a 40deg half-angle, hard on/off on a 1.1s cycle (a pulse train, NOT a fade); 'ON' and 'OFF' stamped in 18pt slate-black Consolas Bold directly beneath the lamp, swapping on each cycle. ALL text on this card is slate-black — amber on cream is 1.80:1 and bone on cream is 1.06:1, both forbidden (PALETTE_SPEC.md §1). stickman x=400 y_top=300 h=400 awed_brows/pointing; caption x=70 y=652 in slate-black",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 71
+  },
+  {
+   "n": 10,
+   "id": "psr_name",
+   "beat": "B2 THE PULSAR",
+   "clauses": [
+    12,
+    13
+   ],
+   "narration": "PSR B1257 plus twelve. It has three planets.",
+   "words": 8,
+   "start": 25.82,
+   "end": 28.22,
+   "duration": 2.4,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "star_pulse + name_stamp_settle",
+   "motion_xfade_s": 0.2,
+   "caption": "PSR B1257+12. IT HAS THREE PLANETS.",
+   "banner": "PSR B1257+12",
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "oval",
+    "pose": "pointing",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; core cx=880 cy=300 r=30 bone; the name arrives as a STAMP: 64pt 'PSR B1257+12', bone fill, 3px slate-black outline, rotated -3deg, settling from scale 1.18 to 1.00 on ONE 0.25s stamp (no tween) at (880,300); 18pt amber stamp 'VIRGO' top-right at (1080,120) — E1, corrected from 'VELA': the pulsar is in Virgo; Vela hosts PSR B0833-45, a different pulsar with no planets. The constellation now shows on the card but is no longer spoken; three bone dots r=7 at (1090,180)/(1130,180)/(1170,180) appearing on three consecutive 0.25s stamps, one per word of 'three planets'; stickman x=400 y_top=200 h=480 oval/pointing; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 83
+  },
+  {
+   "n": 11,
+   "id": "planet_masses",
+   "beat": "B3 THE PLANETS",
+   "clauses": [
+    14
+   ],
+   "narration": "One is barely heavier than the Moon. Two weigh four times the Earth.",
+   "words": 13,
+   "start": 28.3,
+   "end": 32.2,
+   "duration": 3.9,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "mass_bar_grow",
+   "motion_xfade_s": 0.2,
+   "caption": "ONE BARELY BEATS THE MOON. TWO WEIGH FOUR TIMES EARTH.",
+   "banner": null,
+   "accent": "cream",
+   "accent_rgb": [
+    242,
+    234,
+    214
+   ],
+   "card_value": "cream",
+   "stickman": {
+    "expression": "skeptical",
+    "pose": "pointing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "CREAM CARD. A ledger: three 3px slate-black rules at y=180/300/420 spanning x=560..1180; one flat slate-black disc per row — Draugr r=16 at x=620, Phobetor r=40 at x=860, Poltergeist r=42 at x=1120 — so the shape itself carries the fact: one speck, then two near-twin heavies. NO gradient and NO band texture (the three planets are on PALETTE_SPEC.md §3's gradient denylist); a 64pt heavy slate-black mass figure grows on each disc in 0.25s stamps — 'MOON-SIZE' on row 1, '4 EARTH' on rows 2 and 3. FACT FLAG E3 (APPLIED) — the earlier narration said two of the three weighed about as much as the Moon, which inverted the real picture. True masses are Draugr 0.020, Phobetor 3.9, Poltergeist 4.3 Earth masses: ONE is Moon-ish and TWO are about four Earths. work/scripts.py now reads 'One is barely heavier than the Moon. Two weigh four times the Earth.' Keep the disc radii in the order 16 / 40 / 42 — Draugr innermost and smallest, the other two large and nearly equal. stickman x=400 y_top=300 h=400 skeptical/pointing; caption x=70 y=652 in slate-black",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 91
+  },
+  {
+   "n": 12,
+   "id": "planet_minefield",
+   "beat": "B3 THE PLANETS",
+   "clauses": [
+    15
+   ],
+   "narration": "That is not a solar system. That is rubble in a minefield.",
+   "words": 12,
+   "start": 32.28,
+   "end": 35.88,
+   "duration": 3.6,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "debris_jitter",
+   "motion_xfade_s": 0.2,
+   "caption": "THAT IS NOT A SOLAR SYSTEM. THAT IS RUBBLE IN A MINEFIELD.",
+   "banner": "RUBBLE",
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "frown",
+    "pose": "hands_down",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; pulsar core cx=900 cy=180 r=26, cropped by the title strip; an AMBER radiation wash — a wobbly 8-lobed polygon, wobble seed 71 — spanning x=340..1240, y=120..660, flat 10% fill with a 2px amber outline; 11 slate-black rock blobs (irregular 7-gons, r=8..26) on a deterministic grid inside the wash, each jittering 2px on its own 0.25s stamp; 64pt heavy 'RUBBLE' amber at (760,400) on the wash; stickman x=400 y_top=200 h=480 frown/hands_down, drawn INSIDE the 10% wash so his black limbs keep full separation; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 104
+  },
+  {
+   "n": 13,
+   "id": "planet_periods",
+   "beat": "B3 THE PLANETS",
+   "clauses": [
+    16
+   ],
+   "narration": "Their laps take twenty-five days, sixty-seven, and ninety-eight.",
+   "words": 8,
+   "start": 35.96,
+   "end": 38.36,
+   "duration": 2.4,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "orbit_ring_step",
+   "motion_xfade_s": 0.2,
+   "caption": "THEIR LAPS TAKE 25, 67, AND 98 DAYS.",
+   "banner": "25 / 67 / 98 DAYS",
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": null,
+   "sketch": "DIAGRAM-ONLY. bg_void_stars; core cx=640 cy=330 r=24; THREE concentric orbit ellipses, all 2px BONE — violet is a shape color and never carries type, and 18pt violet annotation would be 3.48:1 — with rx=170/300/430 and ry=58/100/142, all centred (640,330), inner to outer Draugr / Phobetor / Poltergeist; one bone dot r=9 on each ring, advancing one 0.25s step per lap; 18pt bone labels at the ring apexes with 3px leader lines — '25 D' at (640,262), '67 D' at (640,222), '98 D' at (640,180); the banner '25 / 67 / 98 DAYS' set at 64pt bone at (640,510); NO stickman. This is the diagram the next three cards talk over, so it is drawn to be re-used rather than admired. FACT FLAG E4 (APPLIED) — the earlier banner read 66 / 204 / 365 days, which are not this system's periods. True orbital periods are 25.262, 66.5419 and 98.2114 days, spoken as 'twenty-five days, sixty-seven, and ninety-eight'. Keep the inner-to-outer order matching those numbers.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 116
+  },
+  {
+   "n": 14,
+   "id": "how_find",
+   "beat": "B4 THE SEARCH",
+   "clauses": [
+    17
+   ],
+   "narration": "So how do you find a planet around a corpse? You listen to the ticks.",
+   "words": 15,
+   "start": 38.44,
+   "end": 42.94,
+   "duration": 4.5,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "none (static — the beat asks a question)",
+   "motion_xfade_s": 0.2,
+   "caption": "SO HOW DO YOU FIND A PLANET AROUND A CORPSE?",
+   "banner": null,
+   "accent": "cream",
+   "accent_rgb": [
+    242,
+    234,
+    214
+   ],
+   "card_value": "cream",
+   "stickman": {
+    "expression": "worried_thinker",
+    "pose": "thinker",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "CREAM CARD, deliberately near-empty. One 3px slate-black question mark drawn as linework at (860,300), 200px tall, 2px wobbly stroke, wobble seed 83; a slate-black coffin-outline rectangle 3px at x=300..420, y=340..520 with a lid rule at y=372 — the 'corpse' half, drawn plainly, no gore, no skull; a slate-black ear shape as a 2px arc at (1100,300) with three concentric 2px arcs r=40/70/100 — the 'listen' half. Nothing else on this card; the emptiness IS the pacing. stickman x=400 y_top=300 h=400 worried_thinker/thinker; caption x=70 y=652 in slate-black",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 124
+  },
+  {
+   "n": 15,
+   "id": "how_signature",
+   "beat": "B4 THE SEARCH",
+   "clauses": [
+    18
+   ],
+   "narration": "Every rotation has a signature. Any wobble means something tugs.",
+   "words": 10,
+   "start": 43.02,
+   "end": 46.02,
+   "duration": 3.0,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "waveform_squash",
+   "motion_xfade_s": 0.2,
+   "caption": "EVERY ROTATION HAS A SIGNATURE. WOBBLE MEANS A TUG.",
+   "banner": null,
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": null,
+   "sketch": "DIAGRAM-ONLY. bg_void_stars; a BONE timing trace across x=120..1180 at y=300: nine evenly spaced 2px spikes, redrawn on a 0.25s cycle; the 4th and 7th spikes have their peak displaced 6px right — that is the wobble, drawn rather than labelled; a 3px amber bracket under each displaced peak with a 3px leader up to it; 18pt bone 'TUG' at (470,360) and (830,360); a bone baseline rule at y=380 spanning the full width; 64pt heavy 'WOBBLE = TUG' bone at (640,500); NO stickman",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 139
+  },
+  {
+   "n": 16,
+   "id": "how_1990",
+   "beat": "B4 THE SEARCH",
+   "clauses": [
+    19
+   ],
+   "narration": "Aleksander Wolszczan found that pulsar in 1990. It had a wobble in it.",
+   "words": 13,
+   "start": 46.1,
+   "end": 50.0,
+   "duration": 3.9,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "stamp_settle",
+   "motion_xfade_s": 0.2,
+   "caption": "WOLSZCZAN FOUND THAT PULSAR IN 1990. IT HAD A WOBBLE IN IT.",
+   "banner": "1990",
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "skeptical",
+    "pose": "shrugged",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; a 2px bone waveform panel x=560..1180, y=180..520; the wobbled pulse train from how_signature inside it at 0.7 scale, re-stamped every 0.25s; a heavy 64pt '1990' plate — bone fill, 3px slate-black outline — at (870,350), settling from scale 1.15 to 1.00 on one 0.25s stamp; an 18pt bone stamp 'VLA' at (1080,470); stickman x=400 y_top=300 h=400 skeptical/shrugged; caption x=70 y=652. FACT FLAG E5 (APPLIED) — the card was id=how_1992 with a '1992' plate and a 'NOBODY BELIEVED HIM' caption, both wrong. The pulsar was discovered 9 February 1990; the first two planets were announced in January 1992 and the third later that year, confirmed on a later re-observation — which is what the two-year gap on how_two_years actually refers to. 'Nobody believed him' was unsourced and is dropped rather than reworded; the suspicion now lives in the shrug.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 149
+  },
+  {
+   "n": 17,
+   "id": "how_two_years",
+   "beat": "B4 THE SEARCH",
+   "clauses": [
+    20
+   ],
+   "narration": "He waited two years for it to come back. It came back.",
+   "words": 12,
+   "start": 50.08,
+   "end": 53.68,
+   "duration": 3.6,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "tally_2yr + pulse_repeat",
+   "motion_xfade_s": 0.2,
+   "caption": "HE WAITED TWO YEARS FOR IT TO COME BACK. IT CAME BACK.",
+   "banner": null,
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "worried",
+    "pose": "pointing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; a VIOLET TALLY — 24 thin 3px slate-black vertical rules at x=600..1180, y=420, grouped 12|12 with a 40px gap: two years of ticks and no words; the how_signature trace replays once across the top half (x=120..1180, y=200..300), the replay landing on a 0.25s stamp; an 18pt bone '2 YEARS' at (890,470) under the tally; 64pt heavy 'IT CAME BACK' bone at (640,120); stickman x=400 y_top=300 h=400 worried/pointing toward the tally; caption x=70 y=652. FACT FLAG E5 (APPLIED) — this card is now consistent with how_1990: the pulsar was found in 1990, the wobble was announced with the first two planets in January 1992, and the third arrived on the re-observation, so the two-year tally runs 1990 -> 1992.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 162
+  },
+  {
+   "n": 18,
+   "id": "how_grave",
+   "beat": "B4 THE SEARCH",
+   "clauses": [
+    21
+   ],
+   "narration": "A neutron star should not have a planet. It exploded. It is a grave.",
+   "words": 14,
+   "start": 53.76,
+   "end": 57.96,
+   "duration": 4.2,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "none (static hold — the dread beat)",
+   "motion_xfade_s": 0.2,
+   "caption": "A NEUTRON STAR SHOULD NOT HAVE A PLANET. IT IS A GRAVE.",
+   "banner": "A GRAVE",
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "sad_smile",
+    "pose": "hands_down",
+    "height": 560,
+    "x_center": 400,
+    "y_top": 120,
+    "feet_y": 680
+   },
+   "sketch": "DREAD CARD, amber. bg_void_stars; the core drawn as an ABSENCE: an empty 2px amber ring r=44 at (900,330) with nothing inside it; three flat slate-black mound shapes (7-gons, wobble seeds 91/92/93) at (700,600), (900,610), (1100,600) with radii 70/86/64 — no crosses, no headstones, no skulls; 64pt heavy 'A GRAVE' amber centred at (900,300), inside the empty ring; stickman x=400 y_top=120 h=560 sad_smile/hands_down — the BIGGEST figure so far, arms straight down, head 6px lower than the previous cards so the slump reads without a single new line; caption x=70 y=652. Per §10.8 this is one of the two beats that must carry the stickman at the moment the fate lands.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 174
+  },
+  {
+   "n": 19,
+   "id": "how_steady",
+   "beat": "B4 THE SEARCH",
+   "clauses": [
+    22
+   ],
+   "narration": "But the wobble was steady, and rhythmic, and never stopped.",
+   "words": 10,
+   "start": 58.04,
+   "end": 61.04,
+   "duration": 3.0,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "metronome_step",
+   "motion_xfade_s": 0.2,
+   "caption": "THE WOBBLE WAS STEADY, AND RHYTHMIC, AND NEVER STOPPED.",
+   "banner": null,
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": null,
+   "sketch": "DIAGRAM-ONLY. bg_void_stars; a metronome in 2px bone linework — trapezoid body x=560..760, y=300..560, pendulum pivot at (660,320); the pendulum swings +/-26deg in quantized 0.25s steps, one full swing per clause beat, and NEVER pauses — that is the whole meaning of the card; a flat violet rectangle x=120..480, y=280..560 at 8% alpha behind the swing arc (shape color, carries no word); 18pt bone 'STEADY' at (300,240) and 'NEVER STOPS' at (300,600); 64pt heavy 'STEADY AND RHYTHMIC' bone at (880,420); NO stickman",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 188
+  },
+  {
+   "n": 20,
+   "id": "how_tug",
+   "beat": "B4 THE SEARCH",
+   "clauses": [
+    23
+   ],
+   "narration": "Something small was pulling on the beam, forever, on a schedule.",
+   "words": 11,
+   "start": 61.12,
+   "end": 64.42,
+   "duration": 3.3,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "tug_step",
+   "motion_xfade_s": 0.2,
+   "caption": "SOMETHING SMALL WAS PULLING ON THE BEAM. ON A SCHEDULE.",
+   "banner": null,
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "flat",
+    "pose": "pointing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; a single AMBER beam wedge from (900,300) toward the lower-right, 2px edges over a 6px-blurred fill, sweeping in 0.25s steps; a bone dot r=11 at (1120,520) that lurches 8px toward the beam and back on alternating 0.25s stamps — the tug made visible; a 2px bone schedule ladder at x=200..560, y=520 with five rungs at 60px spacing, one rung highlighted amber; stickman x=400 y_top=300 h=400 flat/pointing along the beam; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 198
+  },
+  {
+   "n": 21,
+   "id": "how_first",
+   "beat": "B4 THE SEARCH",
+   "clauses": [
+    24
+   ],
+   "narration": "The first confirmed planets ever found around a dead star.",
+   "words": 10,
+   "start": 64.5,
+   "end": 67.5,
+   "duration": 3.0,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "star_pulse + arms_up_stamp",
+   "motion_xfade_s": 0.2,
+   "caption": "THE FIRST CONFIRMED EXOPLANETS EVER, AROUND A DEAD STAR.",
+   "banner": "FIRST EXOPLANETS EVER",
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "relief",
+    "pose": "hands_up",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "PAYOFF CARD, amber. bg_void_stars; core cx=880 cy=320 r=40 at full 3-stop gradient; the three planet discs at r=18/22/34 on the two inner orbit rings from planet_periods, re-stamped into existence one per 0.25s stamp, each with a flat 2px amber ring highlight; a 64pt heavy 'FIRST EVER' amber plate with a 3px slate-black outline at (880,320); stickman x=400 y_top=200 h=480 relief/hands_up — AWE, not fear, per the B4 payoff note in round_1_script.md; his arms stamp up on the word 'confirmed'. A 0.5s palette bridge follows.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 209
+  },
+  {
+   "n": 22,
+   "id": "name_why",
+   "beat": "B5 THE NAMING",
+   "clauses": [
+    25
+   ],
+   "narration": "They named the planets after the things that haunt you.",
+   "words": 10,
+   "start": 67.58,
+   "end": 70.58,
+   "duration": 3.0,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "mist_drift",
+   "motion_xfade_s": 0.2,
+   "caption": "THEY NAMED THE PLANETS AFTER THE THINGS THAT HAUNT YOU.",
+   "banner": null,
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "worried",
+    "pose": "shrugged",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; a flat violet haze band (wobbly 9-gon, wobble seed 111) spanning x=120..1180, y=420..640 at 9% fill with a 2px violet outline; five flat slate-black 2px silhouettes drifting 3px left-right on 0.25s stamps inside the haze — deliberately ambiguous, NOT yet skulls; they resolve on the next card. stickman x=400 y_top=300 h=400 worried/shrugged; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 219
+  },
+  {
+   "n": 23,
+   "id": "name_three",
+   "beat": "B5 THE NAMING",
+   "clauses": [
+    26
+   ],
+   "narration": "Draugr. Phobetor. Poltergeist.",
+   "words": 3,
+   "start": 70.66,
+   "end": 72.66,
+   "duration": 2.0,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "name_stamp_x3 (one per word — see timing note)",
+   "motion_xfade_s": 0.2,
+   "caption": "DRAUGR. PHOBETOR. POLTERGEIST.",
+   "banner": null,
+   "accent": "cream",
+   "accent_rgb": [
+    242,
+    234,
+    214
+   ],
+   "card_value": "cream",
+   "stickman": {
+    "expression": "awed_brows",
+    "pose": "pointing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "CREAM CARD. Three SKULL plates, each a 3px slate-black circle 96px across at (330,300)/(700,300)/(1070,300) with two 3px slate-black eye slots and a 3px jaw rule — cartoon-flat, no gradients, no teeth detail; the reference's detailed teeth-and-tongue mouth is copyrighted character design and is NOT copied. Under each, a heavy 64pt slate-black name stamped in sequence — 'DRAUGR' / 'PHOBETOR' / 'POLTERGEIST' — each settling from scale 1.18 to 1.00 on ONE 0.25s stamp. TIMING: word count says 0.9s and that is wrong; these are three multi-syllable names, so expect ~2.0s from the aligned audio and land the three stamps on the three word ONSETS, not on evenly spaced times. stickman x=400 y_top=300 h=400 awed_brows/pointing; caption x=70 y=652 in slate-black",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 229
+  },
+  {
+   "n": 24,
+   "id": "name_star",
+   "beat": "B5 THE NAMING",
+   "clauses": [
+    27
+   ],
+   "narration": "And they named the star PSR B1257 plus twelve.",
+   "words": 9,
+   "start": 72.74,
+   "end": 75.44,
+   "duration": 2.7,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "name_stamp_settle",
+   "motion_xfade_s": 0.2,
+   "caption": "AND THEY NAMED THE STAR PSR B1257+12.",
+   "banner": "PSR B1257+12",
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "flat",
+    "pose": "pointing",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; core cx=880 cy=320 r=36 with a 2px amber limb; the heavy 64pt name plate 'PSR B1257+12' re-stamps at (880,320) in amber with a 3px slate-black outline, settling scale 1.18 -> 1.00 on one 0.25s stamp; the skull plates are GONE — this beat ends on the star, not on the skulls, so the naming lands on the corpse; 18pt bone stamp 'VIRGO' at (1080,120) — E1, corrected from 'VELA'; stickman x=400 y_top=200 h=480 flat/pointing; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 232
+  },
+  {
+   "n": 25,
+   "id": "name_coordinates",
+   "beat": "B5 THE NAMING",
+   "clauses": [
+    28
+   ],
+   "narration": "The name is not a name. It is a spot in the sky, written in digits.",
+   "words": 16,
+   "start": 75.52,
+   "end": 80.32,
+   "duration": 4.8,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "sky_grid + crosshair_drop",
+   "motion_xfade_s": 0.2,
+   "caption": "A NAME THAT IS JUST COORDINATES.",
+   "banner": "A SPOT ON THE SKY",
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "smirk",
+    "pose": "shrugged",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; a 2px bone sky GRID of seven vertical rules and five horizontal rules spanning x=560..1180, y=180..560, with 3px ticks every 60px — a star chart, drawn plainly, no labels yet; a 3px bone crosshair at (860,330) with a 2px circle r=18 dropping to it on one 0.25s stamp and LOCKING; the crosshair pulses on every subsequent stamp, because this is where the thing is; 64pt heavy bone 'A SPOT ON THE SKY' at (860,640); 18pt bone annotation 'SKY COORDINATES' at (860,600); stickman x=400 y_top=300 h=400 smirk/shrugged — the wry beat survives, but it is wry at the bureaucracy, not at a punchline; caption x=70 y=652. FACT FLAG E6 (APPLIED) — this card was id=name_base_eight and asserted a base-eight joke told by Wolszczan and Frail. There is no such joke; the octal reading of 1257 is a numerical accident with no connection to the name, and attributing it to the discoverers was a fabrication. Replaced with the verifiable fact: PSR 1257+12 is a sexagesimal sky coordinate, 12h57m right ascension and plus 12 degrees declination.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 241
+  },
+  {
+   "n": 26,
+   "id": "name_just_digits",
+   "beat": "B5 THE NAMING",
+   "clauses": [
+    29
+   ],
+   "narration": "Twelve fifty-seven. Plus twelve. That is the entire name.",
+   "words": 9,
+   "start": 80.4,
+   "end": 83.1,
+   "duration": 2.7,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "digit_flip",
+   "motion_xfade_s": 0.2,
+   "caption": "TWELVE FIFTY-SEVEN. PLUS TWELVE. THAT IS THE ENTIRE NAME.",
+   "banner": null,
+   "accent": "cream",
+   "accent_rgb": [
+    242,
+    234,
+    214
+   ],
+   "card_value": "cream",
+   "stickman": {
+    "expression": "flat",
+    "pose": "hands_down",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "CREAM CARD, deliberately plain. Four 3px slate-black digit frames 120px square at (500,300)/(660,300)/(820,300)/(980,300) holding the digits '1' '2' '5' '7' in heavy 64pt slate-black; beneath the first two frames an 18pt slate-black label 'RIGHT ASCENSION' at (580,400) and beneath the last two an 18pt label '+12 DEGREES, UP AND NORTH' at (900,400), with a 3px leader from the label to the frame pair; a heavy 64pt slate-black 'THAT IS THE NAME' at (640,510). No illustration, no texture, no gradient, nothing else — the flatness is the point: a dead star reduced to a row of numbers. stickman x=400 y_top=300 h=400 flat/hands_down; caption x=70 y=652 in slate-black. A 0.5s palette bridge follows.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 257
+  },
+  {
+   "n": 27,
+   "id": "close_bother",
+   "beat": "B6 FATE",
+   "clauses": [
+    30
+   ],
+   "narration": "Here is the part that should bother you.",
+   "words": 8,
+   "start": 83.18,
+   "end": 85.58,
+   "duration": 2.4,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "haze_swell",
+   "motion_xfade_s": 0.2,
+   "caption": "HERE IS THE PART THAT SHOULD BOTHER YOU.",
+   "banner": null,
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "worried_thinker",
+    "pose": "thinker",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; the violet radiation wash from planet_minefield returns, now filling x=200..1240, y=110..670 at 9% flat fill, swelling to 12% over four 0.25s stamps; nothing else is added — the emptiness is the warning. stickman x=400 y_top=200 h=480 worried_thinker/thinker, hand under chin; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 266
+  },
+  {
+   "n": 28,
+   "id": "close_no_burn",
+   "beat": "B6 FATE",
+   "clauses": [
+    31
+   ],
+   "narration": "These did not form around a star that was burning.",
+   "words": 10,
+   "start": 85.66,
+   "end": 88.66,
+   "duration": 3.0,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "flame_extinguish",
+   "motion_xfade_s": 0.2,
+   "caption": "THESE DID NOT FORM AROUND A STAR THAT WAS BURNING.",
+   "banner": null,
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "skeptical",
+    "pose": "pointing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; a 2px bone FLAME outline in three stacked lobes at (1000,300) r=90, drawn as LINEWORK ONLY — no fill, no gradient; it EXTINGUISHES, each lobe collapsing to nothing on its own 0.25s stamp, bottom lobe first over three stamps, leaving 6px of ash; a flat slate-black disc r=20 appears inside the dead flame at (1000,300) — the remnant star; 18pt bone 'WHAT WAS LEFT' at (1000,440); stickman x=400 y_top=300 h=400 skeptical/pointing at the dead flame; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 274
+  },
+  {
+   "n": 29,
+   "id": "close_formed",
+   "beat": "B6 FATE",
+   "clauses": [
+    32
+   ],
+   "narration": "They formed here, or they survived being made here.",
+   "words": 9,
+   "start": 88.74,
+   "end": 91.44,
+   "duration": 2.7,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "debris_accumulate",
+   "motion_xfade_s": 0.2,
+   "caption": "THEY FORMED HERE, OR THEY SURVIVED BEING MADE HERE.",
+   "banner": null,
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "worried",
+    "pose": "hands_down",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; the remnant disc r=20 at (1000,300) with its 2px amber limb; the rock blobs from planet_minefield fly INWARD and stick to the limb, one per 0.25s stamp, until six amber-outlined slate-black blobs sit on the circumference — made here, not inherited; a flat 2px amber accretion ring at r=30; stickman x=400 y_top=300 h=400 worried/hands_down; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 284
+  },
+  {
+   "n": 30,
+   "id": "close_radiation",
+   "beat": "B6 FATE",
+   "clauses": [
+    33
+   ],
+   "narration": "The radiation on them now would take an atmosphere apart in an afternoon.",
+   "words": 13,
+   "start": 91.52,
+   "end": 95.42,
+   "duration": 3.9,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "veil_stripes",
+   "motion_xfade_s": 0.2,
+   "caption": "THE RADIATION WOULD TEAR AN ATMOSPHERE APART BY AFTERNOON.",
+   "banner": "RADIATION BATH",
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "worried",
+    "pose": "cowering",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "RADIATION BATH, violet. bg_void_stars; core cx=1000 cy=300 r=30; NINE flat AMBER beam rays 3px wide at 2px spacing raking from the core across the left of frame at -18deg, each blinking on a staggered 0.25s phase so the field shimmers; a flat violet rectangle x=140..820, y=140..640 at 10% alpha is the irradiated zone (shape color, carries no word); inside it a 3px BONE ellipse outline r=110 at (480,390) and a 2px AMBER ellipse r=110 concentric with it, BOTH on the same frame — the atmosphere, and what is left of it; 64pt heavy 'IN AN AFTERNOON' bone at (480,560); stickman x=400 y_top=200 h=480 worried/cowering INSIDE the irradiated zone; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 293
+  },
+  {
+   "n": 31,
+   "id": "close_finale",
+   "beat": "B6 FATE",
+   "clauses": [
+    34
+   ],
+   "narration": "Three rocks and one collapsed core. Turning, forever, in the dark.",
+   "words": 11,
+   "start": 95.5,
+   "end": 98.8,
+   "duration": 3.3,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "spin_step_0.25s (never decelerates)",
+   "motion_xfade_s": 0.2,
+   "caption": "THREE ROCKS AND ONE COLLAPSED CORE. TURNING, FOREVER.",
+   "banner": null,
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "deadpan_grim",
+    "pose": "hands_down",
+    "height": 560,
+    "x_center": 400,
+    "y_top": 120,
+    "feet_y": 680
+   },
+   "sketch": "FINAL CARD, bone — the only card in the segment that shows the whole system at once. bg_void_stars; core cx=900 cy=340 r=26 at centre-right; the three orbit ellipses from planet_periods re-drawn at 0.75 scale in 2px bone; the three planet discs r=14/17/25 on them; ONE bone spin tick on the core limb advancing 90deg per 0.25s stamp and NEVER slowing — that is the 'forever'; every other motion on the card is frozen so the spin is the only thing moving; 18pt bone labels 'DRAUGR' (640,250) / 'PHOBETOR' (640,180) / 'POLTERGEIST' (640,110) with 3px leaders to their discs — 18pt bone, never violet at 3.48:1; stickman x=400 y_top=120 h=560 deadpan_grim/hands_down, the same height as how_grave and close_radiation so the last three cards read as one continuous reaction instead of three separate poses; caption x=70 y=652. Hold 0.40s past the last word, then the 3.75s white bridge from lib/transition.py.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 306
+  }
+ ]
+}

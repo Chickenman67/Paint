@@ -1,0 +1,128 @@
+{
+ "title": "PSR B1257+12 - the planets around a dead star",
+ "narration": "This star died a long time ago. It is still out there, spinning.\nIt spins so fast that it is turning itself into a smear of light.\nA beam of radiation sweeps out of it. It does this twice, every second.\nAnd there are planets. Real planets. Orbiting it right now.\nThey are named after the undead. The first one is called Draugr.\nA draugr is a corpse that walks. That is the name they gave it.\nThe next two are named Poltergeist and Lich. It does not get kinder.\nThese are the first planets ever found orbiting a dead star.\nThey should not exist. A dead star has nothing left to hold on to.\nThe planets are carbon. They are the densest rock in the whole galaxy.\nA fist of coal you could hold in one hand, if you could ever stand on it.\nThey whip around a dead star in a couple of hours each.\nAnd the entire system is about the size of our own solar system.\nA graveyard the size of ours, turning over and over in the dark.\nThe dead star beams at you. The planets do not care. They keep going.",
+ "word_count": 197,
+ "est_wpm": 160,
+ "beats": [
+  {
+   "n": 1,
+   "id": "hook_dead_star",
+   "beat": "HOOK",
+   "line": "This star died a long time ago. It is still out there, spinning.",
+   "visual": "Void; a small bright pulsar point dead-center, cream stickman small at lower left, deadpan grim.",
+   "register": "void"
+  },
+  {
+   "n": 2,
+   "id": "spinning_fast",
+   "beat": "HOOK",
+   "line": "It spins so fast that it is turning itself into a smear of light.",
+   "visual": "The pulsar with concentric blur rings, red label \"a smear of light\".",
+   "register": "void"
+  },
+  {
+   "n": 3,
+   "id": "beam_sweeps",
+   "beat": "SETUP",
+   "line": "A beam of radiation sweeps out of it. It does this twice, every second.",
+   "visual": "Two red beams sweeping from the pulsar point like a lighthouse, stickman shielding his eyes.",
+   "register": "void"
+  },
+  {
+   "n": 4,
+   "id": "planets_around",
+   "beat": "SETUP",
+   "line": "And there are planets. Real planets. Orbiting it right now.",
+   "visual": "Three small planets on tight orbits, red label \"planets, still there\".",
+   "register": "void"
+  },
+  {
+   "n": 5,
+   "id": "named_undead",
+   "beat": "SETUP",
+   "line": "They are named after the undead. The first one is called Draugr.",
+   "visual": "Name card: \"DRAUGR\" in red, stickman below looking uneasy.",
+   "register": "void"
+  },
+  {
+   "n": 6,
+   "id": "draugr_corpse",
+   "beat": "ESCALATE",
+   "line": "A draugr is a corpse that walks. That is the name they gave it.",
+   "visual": "A red-outlined coffin-like box around a rock, red label \"a corpse that walks\".",
+   "register": "void"
+  },
+  {
+   "n": 7,
+   "id": "named_all_of_them",
+   "beat": "ESCALATE",
+   "line": "The next two are named Poltergeist and Lich. It does not get kinder.",
+   "visual": "Three red name plates in a row: DRAUGR / POLTERGEIST / LICH.",
+   "register": "void"
+  },
+  {
+   "n": 8,
+   "id": "first_around_dead",
+   "beat": "ESCALATE",
+   "line": "These are the first planets ever found orbiting a dead star.",
+   "visual": "The pulsar ringed by planets, red box around the system, label \"first ever found\".",
+   "register": "void"
+  },
+  {
+   "n": 9,
+   "id": "should_not_exist",
+   "beat": "ESCALATE",
+   "line": "They should not exist. A dead star has nothing left to hold on to.",
+   "visual": "A planet with a slack broken orbit fading out, red X, \"should not exist\".",
+   "register": "void"
+  },
+  {
+   "n": 10,
+   "id": "carbon_dense",
+   "beat": "DISTURB",
+   "line": "The planets are carbon. They are the densest rock in the whole galaxy.",
+   "visual": "A dark carbon-black planet with a down-arrow onto it, \"densest rock\".",
+   "register": "void"
+  },
+  {
+   "n": 11,
+   "id": "fist_of_coal",
+   "beat": "DISTURB",
+   "line": "A fist of coal you could hold in one hand, if you could ever stand on it.",
+   "visual": "A single black carbon planet, hand-sized red box, \"you could hold it\".",
+   "register": "void"
+  },
+  {
+   "n": 12,
+   "id": "orbits_tight",
+   "beat": "DISTURB",
+   "line": "They whip around a dead star in a couple of hours each.",
+   "visual": "A tight orbit path with the planet nearly touching the pulsar, \"hours, not years\".",
+   "register": "void"
+  },
+  {
+   "n": 13,
+   "id": "solar_system_size",
+   "beat": "DISTURB",
+   "line": "And the entire system is about the size of our own solar system.",
+   "visual": "The whole system drawn small inside a red box, \"about our size\".",
+   "register": "void"
+  },
+  {
+   "n": 14,
+   "id": "graveyard",
+   "beat": "OUTRO",
+   "line": "A graveyard the size of ours, turning over and over in the dark.",
+   "visual": "The graveyard system alone in a big dark frame, stickman small, sad.",
+   "register": "void"
+  },
+  {
+   "n": 15,
+   "id": "outro_beam",
+   "beat": "OUTRO",
+   "line": "The dead star beams at you. The planets do not care. They keep going.",
+   "visual": "The pulsar beaming red at the stickman, who shrugs it off, deadpan.",
+   "register": "void"
+  }
+ ]
+}

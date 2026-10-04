@@ -1,0 +1,191 @@
+[
+  {
+    "id": "p1_3suns",
+    "start": 0.0,
+    "end": 2.64,
+    "expression": "awed_brows",
+    "pose": "standing"
+  },
+  {
+    "id": "p2_not_line",
+    "start": 2.76,
+    "end": 4.5,
+    "expression": "smirk",
+    "pose": "shrugged"
+  },
+  {
+    "id": "p3_waltz",
+    "start": 4.0200000000000005,
+    "end": 5.68,
+    "expression": "worried_thinker",
+    "pose": "thinker"
+  },
+  {
+    "id": "p4_yellow_orange",
+    "start": 6.02,
+    "end": 7.9,
+    "expression": "flat",
+    "pose": "standing"
+  },
+  {
+    "id": "p5_red_drifting",
+    "start": 8.06,
+    "end": 9.64,
+    "expression": "awed_brows",
+    "pose": "hands_up"
+  },
+  {
+    "id": "p6_shadows_dont",
+    "start": 9.44,
+    "end": 11.36,
+    "expression": "worried",
+    "pose": "shrugged"
+  },
+  {
+    "id": "p7_that_is",
+    "start": 12.2,
+    "end": 15.28,
+    "expression": null,
+    "pose": null
+  },
+  {
+    "id": "p8_hd_188753",
+    "start": 15.82,
+    "end": 17.84,
+    "expression": "skeptical",
+    "pose": "pointing"
+  },
+  {
+    "id": "p9_jupiter_mass",
+    "start": 18.32,
+    "end": 20.84,
+    "expression": "awed_brows",
+    "pose": "standing"
+  },
+  {
+    "id": "p10_tight_orbit",
+    "start": 21.5,
+    "end": 26.04,
+    "expression": "worried",
+    "pose": "pointing"
+  },
+  {
+    "id": "p11_intro_konacki",
+    "start": 26.06,
+    "end": 27.58,
+    "expression": "deadpan_grim",
+    "pose": "standing"
+  },
+  {
+    "id": "p12_quoting",
+    "start": 27.4,
+    "end": 29.04,
+    "expression": "deadpan_grim",
+    "pose": "standing"
+  },
+  {
+    "id": "p13_should_not_calm",
+    "start": 29.48,
+    "end": 32.12,
+    "expression": "deadpan_grim",
+    "pose": "standing"
+  },
+  {
+    "id": "p14_three_stars",
+    "start": 31.619999999999997,
+    "end": 33.08,
+    "expression": "worried_thinker",
+    "pose": "thinker"
+  },
+  {
+    "id": "p15_three_dirs",
+    "start": 33.44,
+    "end": 34.7,
+    "expression": "worried",
+    "pose": "shrugged"
+  },
+  {
+    "id": "p16_not_circle",
+    "start": 35.04,
+    "end": 37.76,
+    "expression": "skeptical",
+    "pose": "standing"
+  },
+  {
+    "id": "p17_figure_8",
+    "start": 38.02,
+    "end": 40.1,
+    "expression": "smirk",
+    "pose": "shrugged"
+  },
+  {
+    "id": "p18_swings_close",
+    "start": 40.28,
+    "end": 41.84,
+    "expression": "worried",
+    "pose": "pointing"
+  },
+  {
+    "id": "p19_atmosphere",
+    "start": 42.62,
+    "end": 44.88,
+    "expression": "worried_thinker",
+    "pose": "thinker"
+  },
+  {
+    "id": "p20_weather",
+    "start": 45.16,
+    "end": 46.86,
+    "expression": "terrified",
+    "pose": "cowering"
+  },
+  {
+    "id": "p21_dont_know",
+    "start": 47.54,
+    "end": 49.06,
+    "expression": "worried",
+    "pose": "shrugged"
+  },
+  {
+    "id": "p22_has_weather",
+    "start": 49.24,
+    "end": 50.64,
+    "expression": "worried",
+    "pose": "shrugged"
+  },
+  {
+    "id": "p23_calendar_lie",
+    "start": 50.64,
+    "end": 51.94,
+    "expression": "sad_smile",
+    "pose": "shrugged"
+  },
+  {
+    "id": "p24_sunrise",
+    "start": 52.32,
+    "end": 53.84,
+    "expression": "worried",
+    "pose": "standing"
+  },
+  {
+    "id": "p25_shadows_lying",
+    "start": 53.98,
+    "end": 55.58,
+    "expression": "smirk",
+    "pose": "shrugged"
+  },
+  {
+    "id": "p26_sits_there",
+    "start": 55.36,
+    "end": 57.24,
+    "expression": "relief",
+    "pose": "hands_down"
+  },
+  {
+    "id": "p27_not_calm",
+    "start": 57.900000000000006,
+    "end": 64.64,
+    "expression": "deadpan_grim",
+    "pose": "standing"
+  }
+]

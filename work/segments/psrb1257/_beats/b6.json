@@ -1,0 +1,337 @@
+{
+ "beat": "B6 FATE",
+ "segment": "PSR B1257+12",
+ "palette": {
+  "ink": [
+   20,
+   22,
+   28
+  ],
+  "paper": [
+   242,
+   234,
+   214
+  ],
+  "deep": [
+   5,
+   6,
+   11
+  ],
+  "amber": [
+   232,
+   163,
+   61
+  ],
+  "bone": [
+   220,
+   230,
+   236
+  ],
+  "violet": [
+   110,
+   90,
+   156
+  ],
+  "shirt": [
+   200,
+   50,
+   50
+  ]
+ },
+ "accent_roles": {
+  "cream": [
+   242,
+   234,
+   214
+  ],
+  "bone": [
+   220,
+   230,
+   236
+  ],
+  "amber": [
+   232,
+   163,
+   61
+  ],
+  "violet": [
+   110,
+   90,
+   156
+  ]
+ },
+ "geometry": {
+  "W": 1280,
+  "H": 720,
+  "fps": 30,
+  "title_band": {
+   "y0": 22,
+   "y1": 60,
+   "fill": "paper",
+   "text": "ink",
+   "px": 44,
+   "align": "center",
+   "x_center": 640,
+   "content": "PSR B1257+12"
+  },
+  "art_top": 61,
+  "art_bottom": 719,
+  "caption": {
+   "x": 70,
+   "y": 652,
+   "px": 27,
+   "max_px_w": 1100,
+   "max_chars": 60,
+   "max_words": 12,
+   "one_line": true,
+   "on_cream_color": "ink",
+   "on_void_color": "amber"
+  },
+  "stickman": {
+   "x_default": 400,
+   "feet_y": 680,
+   "h_hero": 480,
+   "h_dialog": 400,
+   "h_closeup": 560
+  },
+  "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+  "first_word_rule": "card 1 is up at t=0.0 and the first spoken word must land at t<=0.30, so the header is never late (CLAUDE.md \u00c2\u00a75.5).",
+  "bridges": "0.5s palette bridge after how_first and after name_punchline (round_1_script.md line 110). The segment-exit bridge is the 3.75s white bridge in lib/transition.py \u00e2\u20ac\u201d \u00c2\u00a75.7's '0.5s black frame' is superseded by the measured reference bridge (PALETTE_SPEC.md \u00c2\u00a72).",
+  "gradient_rule": "radial_gradient() is legal on the pulsar core ONLY (psr_size, psr_collapse, psr_beams, how_first, psr_name). Never on the planets, orbit ellipses, the radiation wash, the starfield, the title strip, the skulls, or the stickman (PALETTE_SPEC.md \u00c2\u00a73 denylist).",
+  "motion_rule": "0.25s quantized stamps, never smooth tweens, on every motion in this segment including the stickman."
+ },
+ "type_scale": {
+  "title_band_px": 44,
+  "header_stroke": 0,
+  "caption_px": 27,
+  "caption_stroke": 4,
+  "heavy_px": 64,
+  "heavy_stroke": 4,
+  "stamp_px": 18,
+  "tiny_px": 18,
+  "family_bold": "consolab.ttf",
+  "family_reg": "consola.ttf"
+ },
+ "cards": [
+  {
+   "n": 27,
+   "id": "close_bother",
+   "beat": "B6 FATE",
+   "clauses": [
+    30
+   ],
+   "narration": "Here is the part that should bother you.",
+   "words": 8,
+   "start": 75.6,
+   "end": 77.34,
+   "duration": 1.74,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "haze_swell",
+   "motion_xfade_s": 0.2,
+   "caption": "HERE IS THE PART THAT SHOULD BOTHER YOU.",
+   "banner": null,
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "worried_thinker",
+    "pose": "thinker",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; the violet radiation wash from planet_minefield returns, now filling x=200..1240, y=110..670 at 9% flat fill, swelling to 12% over four 0.25s stamps; nothing else is added \u00e2\u20ac\u201d the emptiness is the warning. stickman x=400 y_top=200 h=480 worried_thinker/thinker, hand under chin; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 266,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 83.18,
+   "timing_predicted_end": 85.58,
+   "timing_delta_s": -7.58,
+   "_align_word_index": 266,
+   "_align_word": "Here's",
+   "_align_word_novel": "Here"
+  },
+  {
+   "n": 28,
+   "id": "close_no_burn",
+   "beat": "B6 FATE",
+   "clauses": [
+    31
+   ],
+   "narration": "These did not form around a star that was burning.",
+   "words": 10,
+   "start": 77.34,
+   "end": 79.48,
+   "duration": 2.14,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "flame_extinguish",
+   "motion_xfade_s": 0.2,
+   "caption": "THESE DID NOT FORM AROUND A STAR THAT WAS BURNING.",
+   "banner": null,
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "skeptical",
+    "pose": "pointing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; a 2px bone FLAME outline in three stacked lobes at (1000,300) r=90, drawn as LINEWORK ONLY \u00e2\u20ac\u201d no fill, no gradient; it EXTINGUISHES, each lobe collapsing to nothing on its own 0.25s stamp, bottom lobe first over three stamps, leaving 6px of ash; a flat slate-black disc r=20 appears inside the dead flame at (1000,300) \u00e2\u20ac\u201d the remnant star; 18pt bone 'WHAT WAS LEFT' at (1000,440); stickman x=400 y_top=300 h=400 skeptical/pointing at the dead flame; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 274,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 85.66,
+   "timing_predicted_end": 88.66,
+   "timing_delta_s": -8.32,
+   "_align_word_index": 273,
+   "_align_word": "These",
+   "_align_word_novel": "These"
+  },
+  {
+   "n": 29,
+   "id": "close_formed",
+   "beat": "B6 FATE",
+   "clauses": [
+    32
+   ],
+   "narration": "They formed here, or they survived being made here.",
+   "words": 9,
+   "start": 79.48,
+   "end": 81.94,
+   "duration": 2.46,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "debris_accumulate",
+   "motion_xfade_s": 0.2,
+   "caption": "THEY FORMED HERE, OR THEY SURVIVED BEING MADE HERE.",
+   "banner": null,
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "worried",
+    "pose": "hands_down",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; the remnant disc r=20 at (1000,300) with its 2px amber limb; the rock blobs from planet_minefield fly INWARD and stick to the limb, one per 0.25s stamp, until six amber-outlined slate-black blobs sit on the circumference \u00e2\u20ac\u201d made here, not inherited; a flat 2px amber accretion ring at r=30; stickman x=400 y_top=300 h=400 worried/hands_down; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 284,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 88.74,
+   "timing_predicted_end": 91.44,
+   "timing_delta_s": -9.26,
+   "_align_word_index": 283,
+   "_align_word": "They",
+   "_align_word_novel": "They"
+  },
+  {
+   "n": 30,
+   "id": "close_radiation",
+   "beat": "B6 FATE",
+   "clauses": [
+    33
+   ],
+   "narration": "The radiation on them now would take an atmosphere apart in an afternoon.",
+   "words": 13,
+   "start": 81.94,
+   "end": 84.76,
+   "duration": 2.82,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "veil_stripes",
+   "motion_xfade_s": 0.2,
+   "caption": "THE RADIATION WOULD TEAR AN ATMOSPHERE APART BY AFTERNOON.",
+   "banner": "RADIATION BATH",
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "worried",
+    "pose": "cowering",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "RADIATION BATH, violet. bg_void_stars; core cx=1000 cy=300 r=30; NINE flat AMBER beam rays 3px wide at 2px spacing raking from the core across the left of frame at -18deg, each blinking on a staggered 0.25s phase so the field shimmers; a flat violet rectangle x=140..820, y=140..640 at 10% alpha is the irradiated zone (shape color, carries no word); inside it a 3px BONE ellipse outline r=110 at (480,390) and a 2px AMBER ellipse r=110 concentric with it, BOTH on the same frame \u00e2\u20ac\u201d the atmosphere, and what is left of it; 64pt heavy 'IN AN AFTERNOON' bone at (480,560); stickman x=400 y_top=200 h=480 worried/cowering INSIDE the irradiated zone; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 293,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 91.52,
+   "timing_predicted_end": 95.42,
+   "timing_delta_s": -9.58,
+   "_align_word_index": 292,
+   "_align_word": "The",
+   "_align_word_novel": "The"
+  },
+  {
+   "n": 31,
+   "id": "close_finale",
+   "beat": "B6 FATE",
+   "clauses": [
+    34
+   ],
+   "narration": "Three rocks and one collapsed core. Turning, forever, in the dark.",
+   "words": 11,
+   "start": 84.76,
+   "end": 88.18,
+   "duration": 3.42,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "spin_step_0.25s (never decelerates)",
+   "motion_xfade_s": 0.2,
+   "caption": "THREE ROCKS AND ONE COLLAPSED CORE. TURNING, FOREVER.",
+   "banner": null,
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "deadpan_grim",
+    "pose": "hands_down",
+    "height": 560,
+    "x_center": 400,
+    "y_top": 120,
+    "feet_y": 680
+   },
+   "sketch": "FINAL CARD, bone \u00e2\u20ac\u201d the only card in the segment that shows the whole system at once. bg_void_stars; core cx=900 cy=340 r=26 at centre-right; the three orbit ellipses from planet_periods re-drawn at 0.75 scale in 2px bone; the three planet discs r=14/17/25 on them; ONE bone spin tick on the core limb advancing 90deg per 0.25s stamp and NEVER slowing \u00e2\u20ac\u201d that is the 'forever'; every other motion on the card is frozen so the spin is the only thing moving; 18pt bone labels 'DRAUGR' (640,250) / 'PHOBETOR' (640,180) / 'POLTERGEIST' (640,110) with 3px leaders to their discs \u00e2\u20ac\u201d 18pt bone, never violet at 3.48:1; stickman x=400 y_top=120 h=560 deadpan_grim/hands_down, the same height as how_grave and close_radiation so the last three cards read as one continuous reaction instead of three separate poses; caption x=70 y=652. Hold 0.40s past the last word, then the 3.75s white bridge from lib/transition.py.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 306,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 95.5,
+   "timing_predicted_end": 98.8,
+   "timing_delta_s": -10.74,
+   "_align_word_index": 305,
+   "_align_word": "3",
+   "_align_word_novel": "Three"
+  }
+ ]
+}

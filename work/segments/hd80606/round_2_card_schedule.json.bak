@@ -1,0 +1,52 @@
+[
+  {
+    "id": "intro",
+    "start": 0.0,
+    "end": 2.84
+  },
+  {
+    "id": "planet_intro",
+    "start": 2.84,
+    "end": 10.48
+  },
+  {
+    "id": "cold_orbit",
+    "start": 10.7,
+    "end": 13.98
+  },
+  {
+    "id": "so_close",
+    "start": 14.24,
+    "end": 20.58
+  },
+  {
+    "id": "fever",
+    "start": 20.82,
+    "end": 24.22
+  },
+  {
+    "id": "pure_stickman",
+    "start": 24.22,
+    "end": 24.9
+  },
+  {
+    "id": "cold_again",
+    "start": 25.16,
+    "end": 27.66
+  },
+  {
+    "id": "shock_waves",
+    "start": 27.8,
+    "end": 35.44
+  },
+  {
+    "id": "loop",
+    "start": 35.8,
+    "end": 39.12
+  },
+  {
+    "id": "finale",
+    "start": 39.36,
+    "end": 40.0
+  }
+]

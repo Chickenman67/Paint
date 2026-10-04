@@ -1,0 +1,56 @@
+[
+ {
+  "segment": "tres2b",
+  "word_count": 228,
+  "duration_s": 64.72,
+  "clamped_words": 9
+ },
+ {
+  "segment": "wasp17b",
+  "word_count": 230,
+  "duration_s": 66.39,
+  "clamped_words": 9
+ },
+ {
+  "segment": "wasp127b",
+  "word_count": 237,
+  "duration_s": 71.1,
+  "clamped_words": 6
+ },
+ {
+  "segment": "gliese436b",
+  "word_count": 237,
+  "duration_s": 68.78,
+  "clamped_words": 41
+ },
+ {
+  "segment": "koi55",
+  "word_count": 249,
+  "duration_s": 74.7,
+  "clamped_words": 10
+ },
+ {
+  "segment": "ltt9779b",
+  "word_count": 234,
+  "duration_s": 70.2,
+  "clamped_words": 72
+ },
+ {
+  "segment": "fomalhautb",
+  "word_count": 229,
+  "duration_s": 68.02,
+  "clamped_words": 10
+ },
+ {
+  "segment": "kelt9b",
+  "word_count": 248,
+  "duration_s": 74.4,
+  "clamped_words": 8
+ },
+ {
+  "segment": "psoj3185",
+  "word_count": 239,
+  "duration_s": 71.7,
+  "clamped_words": 7
+ }
+]

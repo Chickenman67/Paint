@@ -1,0 +1,90 @@
+{
+  "sealed": true,
+  "do_not_open": "The critic agent must never read this file. It reveals the A/B mapping and would defeat the label-blind comparison.",
+  "segment": "HD 80606 b",
+  "round": 6,
+  "created": "2026-09-26",
+  "source_dir": "C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/hd80606/r6_critic/",
+  "blind_dir": "C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/hd80606/critic_blind_r6/",
+  "blinding_method": "byte-identical shutil.copyfile under neutral pair_N_{A,B}.png names; no re-render, no pixel modification, no metadata rewrite, no manifest",
+  "sides": {
+    "A": "ORIGINAL HD 80606 b render (this project's own round_6 output)",
+    "B": "REFERENCE video frame (Paint Explainer 'The Most Disturbing Planets Ever Found')"
+  },
+  "pairs": {
+    "pair_1": {
+      "A": {
+        "side": "original",
+        "source_file": "ours_t3.png",
+        "ours_t_s": 3,
+        "sha256": "4b721b0d3cd6e067b05782d3e90864161868ec2bf6b7b67ca8d389fbe3789246"
+      },
+      "B": {
+        "side": "reference",
+        "source_file": "ref_t12.png",
+        "ref_t_s": 12,
+        "sha256": "ae67b01f8913e7386a0a977a21f52767327efae86c0b4527a91a48d8bee1dca0"
+      }
+    },
+    "pair_2": {
+      "A": {
+        "side": "original",
+        "source_file": "ours_t10.png",
+        "ours_t_s": 10,
+        "sha256": "9a45be4fba0fd8fad9c2477bdcf938b24e6b77305ef1d9eb3a0bddacd4f04a3b"
+      },
+      "B": {
+        "side": "reference",
+        "source_file": "ref_t20.png",
+        "ref_t_s": 20,
+        "sha256": "5dfdf5dfd7d0a925a9af91933e2bd96cd57394319fdeffaa009727339ede1b41"
+      }
+    },
+    "pair_3": {
+      "A": {
+        "side": "original",
+        "source_file": "ours_t20.png",
+        "ours_t_s": 20,
+        "sha256": "ff5d294c177e4352ec3474a8f65d9a246345fc171743072709f4347817246156"
+      },
+      "B": {
+        "side": "reference",
+        "source_file": "ref_t30.png",
+        "ref_t_s": 30,
+        "sha256": "93e2573dafba5a7262b4c3b3ebdc65215002afae1159771bdde02565457bbe28"
+      }
+    },
+    "pair_4": {
+      "A": {
+        "side": "original",
+        "source_file": "ours_t30.png",
+        "ours_t_s": 30,
+        "sha256": "063097ffa28a0de31bb41133f864115e19e3b121bd3f024783d818f425dc090c"
+      },
+      "B": {
+        "side": "reference",
+        "source_file": "ref_t40.png",
+        "ref_t_s": 40,
+        "sha256": "979c44d5f0d57a2e09e590a1e20cd4bd6cd497ffcd061a73960967582ac40d31"
+      }
+    },
+    "pair_5": {
+      "A": {
+        "side": "original",
+        "source_file": "ours_t37.png",
+        "ours_t_s": 37,
+        "sha256": "093d2028fa01e812b9e55216b46de25c7b0ccaf6c8ca830d31eae526019defcc"
+      },
+      "B": {
+        "side": "reference",
+        "source_file": "ref_t47.png",
+        "ref_t_s": 47,
+        "sha256": "8b2d76154dbaf9eb99a36566155ac3268d8c599bb8ea79380e177c578c5a068d"
+      }
+    }
+  },
+  "notes": [
+    "Timestamps: reference frames use the corrected chapter offset (+10s from ref chapter start, not +99s). ours/ref timestamps therefore differ by 10s within each pair.",
+    "Source dir also contains ref_t50.png; it was intentionally NOT copied and is not part of the round_6 comparison."
+  ]
+}

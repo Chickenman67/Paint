@@ -1,0 +1,72 @@
+{
+ "note": "SEALED. Adjudicator must not read before recording verdicts.",
+ "seed": 20260930,
+ "mapping": [
+  {
+   "dir": "hd188753",
+   "pair": 1,
+   "A": "ref",
+   "B": "ours"
+  },
+  {
+   "dir": "hd188753",
+   "pair": 2,
+   "A": "ours",
+   "B": "ref"
+  },
+  {
+   "dir": "hd188753",
+   "pair": 3,
+   "A": "ref",
+   "B": "ours"
+  },
+  {
+   "dir": "hd188753",
+   "pair": 4,
+   "A": "ref",
+   "B": "ours"
+  },
+  {
+   "dir": "hd188753",
+   "pair": 5,
+   "A": "ours",
+   "B": "ref"
+  },
+  {
+   "dir": "hd188753",
+   "pair": 6,
+   "A": "ours",
+   "B": "ref"
+  },
+  {
+   "dir": "hd80606",
+   "pair": 1,
+   "A": "ours",
+   "B": "ref"
+  },
+  {
+   "dir": "hd80606",
+   "pair": 2,
+   "A": "ours",
+   "B": "ref"
+  },
+  {
+   "dir": "hd80606",
+   "pair": 3,
+   "A": "ref",
+   "B": "ours"
+  },
+  {
+   "dir": "hd80606",
+   "pair": 4,
+   "A": "ours",
+   "B": "ref"
+  },
+  {
+   "dir": "hd80606",
+   "pair": 5,
+   "A": "ours",
+   "B": "ref"
+  }
+ ]
+}

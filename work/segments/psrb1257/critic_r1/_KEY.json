@@ -1,0 +1,34 @@
+{
+ "seg": "psrb1257",
+ "our_duration_s": 91.0,
+ "ref_window": [
+  205,
+  266
+ ],
+ "key": {
+  "p00": {
+   "A": "ours",
+   "B": "ref"
+  },
+  "p01": {
+   "A": "ref",
+   "B": "ours"
+  },
+  "p02": {
+   "A": "ours",
+   "B": "ref"
+  },
+  "p03": {
+   "A": "ref",
+   "B": "ours"
+  },
+  "p04": {
+   "A": "ours",
+   "B": "ref"
+  },
+  "p05": {
+   "A": "ref",
+   "B": "ours"
+  }
+ }
+}

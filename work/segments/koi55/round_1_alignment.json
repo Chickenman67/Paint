@@ -1,0 +1,1550 @@
+{
+ "segment": "koi55",
+ "wav_path": "round_1_audio.wav",
+ "duration_s": 74.7,
+ "beats_json": "round_1_beats.json",
+ "word_count": 249,
+ "clamped_words": 10,
+ "beat_boundaries_exact": true,
+ "words": [
+  {
+   "w": "This",
+   "t": 0.0,
+   "end": 0.38,
+   "beat": 1
+  },
+  {
+   "w": "planet",
+   "t": 0.38,
+   "end": 0.66,
+   "beat": 1
+  },
+  {
+   "w": "sits",
+   "t": 0.66,
+   "end": 0.94,
+   "beat": 1
+  },
+  {
+   "w": "closer",
+   "t": 0.94,
+   "end": 1.18,
+   "beat": 1
+  },
+  {
+   "w": "to",
+   "t": 1.18,
+   "end": 1.4,
+   "beat": 1
+  },
+  {
+   "w": "its",
+   "t": 1.4,
+   "end": 1.64,
+   "beat": 1
+  },
+  {
+   "w": "star",
+   "t": 1.64,
+   "end": 1.86,
+   "beat": 1
+  },
+  {
+   "w": "than",
+   "t": 1.86,
+   "end": 2.08,
+   "beat": 1
+  },
+  {
+   "w": "any",
+   "t": 2.08,
+   "end": 2.36,
+   "beat": 1
+  },
+  {
+   "w": "planet",
+   "t": 2.36,
+   "end": 2.56,
+   "beat": 1
+  },
+  {
+   "w": "we",
+   "t": 2.56,
+   "end": 2.72,
+   "beat": 1
+  },
+  {
+   "w": "have",
+   "t": 2.72,
+   "end": 2.94,
+   "beat": 1
+  },
+  {
+   "w": "found",
+   "t": 2.94,
+   "end": 3.28,
+   "beat": 1
+  },
+  {
+   "w": "One",
+   "t": 3.578,
+   "end": 3.9,
+   "beat": 2
+  },
+  {
+   "w": "year",
+   "t": 3.9,
+   "end": 4.04,
+   "beat": 2
+  },
+  {
+   "w": "up",
+   "t": 4.04,
+   "end": 4.18,
+   "beat": 2
+  },
+  {
+   "w": "there",
+   "t": 4.18,
+   "end": 4.36,
+   "beat": 2
+  },
+  {
+   "w": "lasts",
+   "t": 4.36,
+   "end": 4.56,
+   "beat": 2
+  },
+  {
+   "w": "about",
+   "t": 4.56,
+   "end": 4.8,
+   "beat": 2
+  },
+  {
+   "w": "five",
+   "t": 4.8,
+   "end": 5.08,
+   "beat": 2
+  },
+  {
+   "w": "hours",
+   "t": 5.08,
+   "end": 5.3,
+   "beat": 2
+  },
+  {
+   "w": "and",
+   "t": 5.3,
+   "end": 5.56,
+   "beat": 2
+  },
+  {
+   "w": "forty",
+   "t": 5.56,
+   "end": 5.72,
+   "beat": 2
+  },
+  {
+   "w": "minutes",
+   "t": 5.72,
+   "end": 6.06,
+   "beat": 2
+  },
+  {
+   "w": "Sunrise",
+   "t": 6.06,
+   "end": 6.8,
+   "beat": 2
+  },
+  {
+   "w": "noon",
+   "t": 7.28,
+   "end": 7.28,
+   "beat": 2
+  },
+  {
+   "w": "sunset",
+   "t": 7.56,
+   "end": 7.76,
+   "beat": 2
+  },
+  {
+   "w": "gone",
+   "t": 8.06,
+   "end": 8.32,
+   "beat": 2
+  },
+  {
+   "w": "Over",
+   "t": 8.6,
+   "end": 8.86,
+   "beat": 2
+  },
+  {
+   "w": "and",
+   "t": 8.86,
+   "end": 9.02,
+   "beat": 2
+  },
+  {
+   "w": "over",
+   "t": 9.02,
+   "end": 9.388,
+   "beat": 2
+  },
+  {
+   "w": "The",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "star",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "swings",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "around",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "again",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "before",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "this",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "sentence",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "ends",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "Its",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "whole",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "life",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "happens",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "inside",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "one",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "breath",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "of",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "yours",
+   "t": 12.82,
+   "end": 13.3,
+   "beat": 3
+  },
+  {
+   "w": "It",
+   "t": 15.514,
+   "end": 15.514,
+   "beat": 4
+  },
+  {
+   "w": "is",
+   "t": 15.514,
+   "end": 15.514,
+   "beat": 4
+  },
+  {
+   "w": "a",
+   "t": 15.514,
+   "end": 15.92,
+   "beat": 4
+  },
+  {
+   "w": "bare",
+   "t": 16.16,
+   "end": 16.46,
+   "beat": 4
+  },
+  {
+   "w": "rock",
+   "t": 16.16,
+   "end": 16.46,
+   "beat": 4
+  },
+  {
+   "w": "No",
+   "t": 16.72,
+   "end": 16.96,
+   "beat": 4
+  },
+  {
+   "w": "air",
+   "t": 16.96,
+   "end": 17.32,
+   "beat": 4
+  },
+  {
+   "w": "No",
+   "t": 17.42,
+   "end": 17.62,
+   "beat": 4
+  },
+  {
+   "w": "ocean",
+   "t": 17.62,
+   "end": 18.02,
+   "beat": 4
+  },
+  {
+   "w": "No",
+   "t": 18.2,
+   "end": 18.26,
+   "beat": 4
+  },
+  {
+   "w": "weather",
+   "t": 18.26,
+   "end": 18.5,
+   "beat": 4
+  },
+  {
+   "w": "Nothing",
+   "t": 18.5,
+   "end": 19.18,
+   "beat": 4
+  },
+  {
+   "w": "there",
+   "t": 19.18,
+   "end": 19.46,
+   "beat": 4
+  },
+  {
+   "w": "has",
+   "t": 19.46,
+   "end": 19.58,
+   "beat": 4
+  },
+  {
+   "w": "been",
+   "t": 19.58,
+   "end": 19.72,
+   "beat": 4
+  },
+  {
+   "w": "alive",
+   "t": 19.72,
+   "end": 19.96,
+   "beat": 4
+  },
+  {
+   "w": "in",
+   "t": 19.96,
+   "end": 20.1,
+   "beat": 4
+  },
+  {
+   "w": "a",
+   "t": 20.1,
+   "end": 20.2,
+   "beat": 4
+  },
+  {
+   "w": "very",
+   "t": 20.2,
+   "end": 20.38,
+   "beat": 4
+  },
+  {
+   "w": "long",
+   "t": 20.38,
+   "end": 20.62,
+   "beat": 4
+  },
+  {
+   "w": "while",
+   "t": 20.62,
+   "end": 21.02,
+   "beat": 4
+  },
+  {
+   "w": "Just",
+   "t": 21.02,
+   "end": 21.48,
+   "beat": 4
+  },
+  {
+   "w": "a",
+   "t": 21.48,
+   "end": 21.7,
+   "beat": 4
+  },
+  {
+   "w": "charred",
+   "t": 21.96,
+   "end": 22.16,
+   "beat": 4
+  },
+  {
+   "w": "shell",
+   "t": 21.96,
+   "end": 22.16,
+   "beat": 4
+  },
+  {
+   "w": "with",
+   "t": 22.16,
+   "end": 22.36,
+   "beat": 4
+  },
+  {
+   "w": "a",
+   "t": 22.36,
+   "end": 22.46,
+   "beat": 4
+  },
+  {
+   "w": "dead",
+   "t": 22.46,
+   "end": 22.68,
+   "beat": 4
+  },
+  {
+   "w": "core",
+   "t": 22.68,
+   "end": 22.94,
+   "beat": 4
+  },
+  {
+   "w": "inside",
+   "t": 22.94,
+   "end": 23.42,
+   "beat": 4
+  },
+  {
+   "w": "Its",
+   "t": 23.733,
+   "end": 24.08,
+   "beat": 5
+  },
+  {
+   "w": "star",
+   "t": 24.08,
+   "end": 24.24,
+   "beat": 5
+  },
+  {
+   "w": "is",
+   "t": 24.24,
+   "end": 24.46,
+   "beat": 5
+  },
+  {
+   "w": "enormous",
+   "t": 24.46,
+   "end": 24.72,
+   "beat": 5
+  },
+  {
+   "w": "and",
+   "t": 24.72,
+   "end": 25.26,
+   "beat": 5
+  },
+  {
+   "w": "close",
+   "t": 25.26,
+   "end": 25.6,
+   "beat": 5
+  },
+  {
+   "w": "and",
+   "t": 25.6,
+   "end": 25.84,
+   "beat": 5
+  },
+  {
+   "w": "very",
+   "t": 25.84,
+   "end": 26.12,
+   "beat": 5
+  },
+  {
+   "w": "hot",
+   "t": 26.12,
+   "end": 26.48,
+   "beat": 5
+  },
+  {
+   "w": "It",
+   "t": 26.8,
+   "end": 26.82,
+   "beat": 5
+  },
+  {
+   "w": "has",
+   "t": 26.82,
+   "end": 27.0,
+   "beat": 5
+  },
+  {
+   "w": "been",
+   "t": 27.0,
+   "end": 27.14,
+   "beat": 5
+  },
+  {
+   "w": "boiling",
+   "t": 27.14,
+   "end": 27.36,
+   "beat": 5
+  },
+  {
+   "w": "this",
+   "t": 27.36,
+   "end": 27.68,
+   "beat": 5
+  },
+  {
+   "w": "rock",
+   "t": 27.68,
+   "end": 27.88,
+   "beat": 5
+  },
+  {
+   "w": "since",
+   "t": 27.88,
+   "end": 28.08,
+   "beat": 5
+  },
+  {
+   "w": "they",
+   "t": 28.08,
+   "end": 28.32,
+   "beat": 5
+  },
+  {
+   "w": "formed",
+   "t": 28.32,
+   "end": 28.64,
+   "beat": 5
+  },
+  {
+   "w": "Whatever",
+   "t": 28.94,
+   "end": 29.22,
+   "beat": 5
+  },
+  {
+   "w": "atmosphere",
+   "t": 29.22,
+   "end": 29.7,
+   "beat": 5
+  },
+  {
+   "w": "it",
+   "t": 29.7,
+   "end": 29.98,
+   "beat": 5
+  },
+  {
+   "w": "ever",
+   "t": 29.98,
+   "end": 30.2,
+   "beat": 5
+  },
+  {
+   "w": "had",
+   "t": 30.2,
+   "end": 30.38,
+   "beat": 5
+  },
+  {
+   "w": "was",
+   "t": 30.38,
+   "end": 30.56,
+   "beat": 5
+  },
+  {
+   "w": "taken",
+   "t": 30.56,
+   "end": 30.76,
+   "beat": 5
+  },
+  {
+   "w": "off",
+   "t": 30.76,
+   "end": 30.96,
+   "beat": 5
+  },
+  {
+   "w": "years",
+   "t": 30.96,
+   "end": 31.16,
+   "beat": 5
+  },
+  {
+   "w": "ago",
+   "t": 31.16,
+   "end": 31.493,
+   "beat": 5
+  },
+  {
+   "w": "The",
+   "t": 31.96,
+   "end": 31.98,
+   "beat": 6
+  },
+  {
+   "w": "surface",
+   "t": 31.98,
+   "end": 32.2,
+   "beat": 6
+  },
+  {
+   "w": "has",
+   "t": 32.2,
+   "end": 32.5,
+   "beat": 6
+  },
+  {
+   "w": "been",
+   "t": 32.5,
+   "end": 32.68,
+   "beat": 6
+  },
+  {
+   "w": "melted",
+   "t": 32.68,
+   "end": 33.04,
+   "beat": 6
+  },
+  {
+   "w": "drained",
+   "t": 33.68,
+   "end": 33.72,
+   "beat": 6
+  },
+  {
+   "w": "hardened",
+   "t": 33.98,
+   "end": 33.98,
+   "beat": 6
+  },
+  {
+   "w": "again",
+   "t": 33.98,
+   "end": 34.54,
+   "beat": 6
+  },
+  {
+   "w": "It",
+   "t": 34.82,
+   "end": 34.88,
+   "beat": 6
+  },
+  {
+   "w": "is",
+   "t": 34.88,
+   "end": 35.08,
+   "beat": 6
+  },
+  {
+   "w": "a",
+   "t": 35.08,
+   "end": 35.16,
+   "beat": 6
+  },
+  {
+   "w": "cinder",
+   "t": 35.16,
+   "end": 35.4,
+   "beat": 6
+  },
+  {
+   "w": "The",
+   "t": 35.94,
+   "end": 36.08,
+   "beat": 6
+  },
+  {
+   "w": "catalog",
+   "t": 36.08,
+   "end": 36.32,
+   "beat": 6
+  },
+  {
+   "w": "has",
+   "t": 36.32,
+   "end": 36.64,
+   "beat": 6
+  },
+  {
+   "w": "nothing",
+   "t": 36.64,
+   "end": 36.9,
+   "beat": 6
+  },
+  {
+   "w": "closer",
+   "t": 36.9,
+   "end": 37.3,
+   "beat": 6
+  },
+  {
+   "w": "Kepler",
+   "t": 37.82,
+   "end": 38.04,
+   "beat": 7
+  },
+  {
+   "w": "only",
+   "t": 38.04,
+   "end": 38.34,
+   "beat": 7
+  },
+  {
+   "w": "ever",
+   "t": 38.34,
+   "end": 38.58,
+   "beat": 7
+  },
+  {
+   "w": "saw",
+   "t": 38.58,
+   "end": 38.78,
+   "beat": 7
+  },
+  {
+   "w": "a",
+   "t": 38.78,
+   "end": 39.02,
+   "beat": 7
+  },
+  {
+   "w": "shadow",
+   "t": 39.02,
+   "end": 39.08,
+   "beat": 7
+  },
+  {
+   "w": "Every",
+   "t": 39.46,
+   "end": 39.64,
+   "beat": 7
+  },
+  {
+   "w": "five",
+   "t": 39.64,
+   "end": 39.88,
+   "beat": 7
+  },
+  {
+   "w": "hours",
+   "t": 39.88,
+   "end": 40.22,
+   "beat": 7
+  },
+  {
+   "w": "forty",
+   "t": 40.44,
+   "end": 40.58,
+   "beat": 7
+  },
+  {
+   "w": "minutes",
+   "t": 40.58,
+   "end": 40.94,
+   "beat": 7
+  },
+  {
+   "w": "It",
+   "t": 41.3,
+   "end": 41.48,
+   "beat": 7
+  },
+  {
+   "w": "dipped",
+   "t": 41.48,
+   "end": 41.76,
+   "beat": 7
+  },
+  {
+   "w": "and",
+   "t": 41.76,
+   "end": 42.04,
+   "beat": 7
+  },
+  {
+   "w": "the",
+   "t": 42.04,
+   "end": 42.18,
+   "beat": 7
+  },
+  {
+   "w": "star",
+   "t": 42.18,
+   "end": 42.34,
+   "beat": 7
+  },
+  {
+   "w": "dimmed",
+   "t": 42.34,
+   "end": 42.7,
+   "beat": 7
+  },
+  {
+   "w": "and",
+   "t": 42.7,
+   "end": 42.88,
+   "beat": 7
+  },
+  {
+   "w": "dipped",
+   "t": 42.88,
+   "end": 42.94,
+   "beat": 7
+  },
+  {
+   "w": "again",
+   "t": 42.94,
+   "end": 43.48,
+   "beat": 7
+  },
+  {
+   "w": "KOI-55",
+   "t": 43.98,
+   "end": 44.46,
+   "beat": 7
+  },
+  {
+   "w": "is",
+   "t": 44.46,
+   "end": 44.82,
+   "beat": 7
+  },
+  {
+   "w": "a",
+   "t": 44.82,
+   "end": 44.94,
+   "beat": 7
+  },
+  {
+   "w": "number",
+   "t": 44.94,
+   "end": 45.14,
+   "beat": 7
+  },
+  {
+   "w": "Nobody",
+   "t": 45.44,
+   "end": 45.52,
+   "beat": 7
+  },
+  {
+   "w": "gave",
+   "t": 45.52,
+   "end": 45.76,
+   "beat": 7
+  },
+  {
+   "w": "it",
+   "t": 45.76,
+   "end": 45.86,
+   "beat": 7
+  },
+  {
+   "w": "a",
+   "t": 45.86,
+   "end": 45.94,
+   "beat": 7
+  },
+  {
+   "w": "better",
+   "t": 45.94,
+   "end": 46.08,
+   "beat": 7
+  },
+  {
+   "w": "name",
+   "t": 46.08,
+   "end": 46.449,
+   "beat": 7
+  },
+  {
+   "w": "It",
+   "t": 46.84,
+   "end": 46.92,
+   "beat": 8
+  },
+  {
+   "w": "is",
+   "t": 46.92,
+   "end": 47.12,
+   "beat": 8
+  },
+  {
+   "w": "falling",
+   "t": 47.12,
+   "end": 47.42,
+   "beat": 8
+  },
+  {
+   "w": "inward",
+   "t": 47.42,
+   "end": 47.8,
+   "beat": 8
+  },
+  {
+   "w": "one",
+   "t": 48.22,
+   "end": 48.34,
+   "beat": 8
+  },
+  {
+   "w": "orbit",
+   "t": 48.34,
+   "end": 48.56,
+   "beat": 8
+  },
+  {
+   "w": "at",
+   "t": 48.56,
+   "end": 48.78,
+   "beat": 8
+  },
+  {
+   "w": "a",
+   "t": 48.78,
+   "end": 48.96,
+   "beat": 8
+  },
+  {
+   "w": "time",
+   "t": 48.96,
+   "end": 49.2,
+   "beat": 8
+  },
+  {
+   "w": "Every",
+   "t": 49.74,
+   "end": 50.02,
+   "beat": 8
+  },
+  {
+   "w": "pass",
+   "t": 50.02,
+   "end": 50.3,
+   "beat": 8
+  },
+  {
+   "w": "takes",
+   "t": 50.3,
+   "end": 50.54,
+   "beat": 8
+  },
+  {
+   "w": "it",
+   "t": 50.54,
+   "end": 50.74,
+   "beat": 8
+  },
+  {
+   "w": "closer",
+   "t": 50.74,
+   "end": 50.9,
+   "beat": 8
+  },
+  {
+   "w": "to",
+   "t": 50.9,
+   "end": 51.12,
+   "beat": 8
+  },
+  {
+   "w": "the",
+   "t": 51.12,
+   "end": 51.26,
+   "beat": 8
+  },
+  {
+   "w": "surface",
+   "t": 51.26,
+   "end": 51.58,
+   "beat": 8
+  },
+  {
+   "w": "There",
+   "t": 51.58,
+   "end": 51.88,
+   "beat": 8
+  },
+  {
+   "w": "is",
+   "t": 51.88,
+   "end": 52.04,
+   "beat": 8
+  },
+  {
+   "w": "nothing",
+   "t": 52.04,
+   "end": 52.26,
+   "beat": 8
+  },
+  {
+   "w": "left",
+   "t": 52.26,
+   "end": 52.56,
+   "beat": 8
+  },
+  {
+   "w": "underneath",
+   "t": 52.56,
+   "end": 52.98,
+   "beat": 8
+  },
+  {
+   "w": "to",
+   "t": 52.98,
+   "end": 53.26,
+   "beat": 8
+  },
+  {
+   "w": "fall",
+   "t": 53.26,
+   "end": 53.42,
+   "beat": 8
+  },
+  {
+   "w": "toward",
+   "t": 53.42,
+   "end": 53.76,
+   "beat": 8
+  },
+  {
+   "w": "Here",
+   "t": 54.26,
+   "end": 54.5,
+   "beat": 9
+  },
+  {
+   "w": "is",
+   "t": 54.5,
+   "end": 54.66,
+   "beat": 9
+  },
+  {
+   "w": "the",
+   "t": 54.66,
+   "end": 54.84,
+   "beat": 9
+  },
+  {
+   "w": "part",
+   "t": 54.84,
+   "end": 55.04,
+   "beat": 9
+  },
+  {
+   "w": "that",
+   "t": 55.04,
+   "end": 55.22,
+   "beat": 9
+  },
+  {
+   "w": "should",
+   "t": 55.22,
+   "end": 55.38,
+   "beat": 9
+  },
+  {
+   "w": "keep",
+   "t": 55.38,
+   "end": 55.58,
+   "beat": 9
+  },
+  {
+   "w": "you",
+   "t": 55.58,
+   "end": 55.76,
+   "beat": 9
+  },
+  {
+   "w": "awake",
+   "t": 55.76,
+   "end": 56.08,
+   "beat": 9
+  },
+  {
+   "w": "This",
+   "t": 56.54,
+   "end": 56.76,
+   "beat": 9
+  },
+  {
+   "w": "world",
+   "t": 56.76,
+   "end": 57.04,
+   "beat": 9
+  },
+  {
+   "w": "may",
+   "t": 57.04,
+   "end": 57.26,
+   "beat": 9
+  },
+  {
+   "w": "already",
+   "t": 57.26,
+   "end": 57.56,
+   "beat": 9
+  },
+  {
+   "w": "have",
+   "t": 57.56,
+   "end": 57.74,
+   "beat": 9
+  },
+  {
+   "w": "been",
+   "t": 57.74,
+   "end": 57.92,
+   "beat": 9
+  },
+  {
+   "w": "swallowed",
+   "t": 57.92,
+   "end": 58.12,
+   "beat": 9
+  },
+  {
+   "w": "once",
+   "t": 58.12,
+   "end": 58.7,
+   "beat": 9
+  },
+  {
+   "w": "It",
+   "t": 59.04,
+   "end": 59.12,
+   "beat": 9
+  },
+  {
+   "w": "may",
+   "t": 59.12,
+   "end": 59.3,
+   "beat": 9
+  },
+  {
+   "w": "already",
+   "t": 59.3,
+   "end": 59.62,
+   "beat": 9
+  },
+  {
+   "w": "have",
+   "t": 59.62,
+   "end": 59.8,
+   "beat": 9
+  },
+  {
+   "w": "survived",
+   "t": 59.8,
+   "end": 60.16,
+   "beat": 9
+  },
+  {
+   "w": "being",
+   "t": 60.16,
+   "end": 60.56,
+   "beat": 9
+  },
+  {
+   "w": "eaten",
+   "t": 60.56,
+   "end": 60.94,
+   "beat": 9
+  },
+  {
+   "w": "That",
+   "t": 61.42,
+   "end": 61.64,
+   "beat": 10
+  },
+  {
+   "w": "is",
+   "t": 61.64,
+   "end": 61.72,
+   "beat": 10
+  },
+  {
+   "w": "what",
+   "t": 61.72,
+   "end": 61.86,
+   "beat": 10
+  },
+  {
+   "w": "makes",
+   "t": 61.86,
+   "end": 62.04,
+   "beat": 10
+  },
+  {
+   "w": "it",
+   "t": 62.04,
+   "end": 62.22,
+   "beat": 10
+  },
+  {
+   "w": "disturbing",
+   "t": 62.22,
+   "end": 62.52,
+   "beat": 10
+  },
+  {
+   "w": "Not",
+   "t": 62.92,
+   "end": 63.08,
+   "beat": 10
+  },
+  {
+   "w": "that",
+   "t": 63.08,
+   "end": 63.18,
+   "beat": 10
+  },
+  {
+   "w": "it",
+   "t": 63.18,
+   "end": 63.36,
+   "beat": 10
+  },
+  {
+   "w": "dies",
+   "t": 63.36,
+   "end": 63.72,
+   "beat": 10
+  },
+  {
+   "w": "That",
+   "t": 64.0,
+   "end": 64.18,
+   "beat": 10
+  },
+  {
+   "w": "it",
+   "t": 64.18,
+   "end": 64.3,
+   "beat": 10
+  },
+  {
+   "w": "is",
+   "t": 64.3,
+   "end": 64.42,
+   "beat": 10
+  },
+  {
+   "w": "allowed",
+   "t": 64.42,
+   "end": 64.68,
+   "beat": 10
+  },
+  {
+   "w": "to",
+   "t": 64.68,
+   "end": 64.82,
+   "beat": 10
+  },
+  {
+   "w": "die",
+   "t": 64.82,
+   "end": 64.98,
+   "beat": 10
+  },
+  {
+   "w": "twice",
+   "t": 64.98,
+   "end": 65.48,
+   "beat": 10
+  },
+  {
+   "w": "The",
+   "t": 65.94,
+   "end": 66.06,
+   "beat": 11
+  },
+  {
+   "w": "next",
+   "t": 66.06,
+   "end": 66.28,
+   "beat": 11
+  },
+  {
+   "w": "pass",
+   "t": 66.28,
+   "end": 66.52,
+   "beat": 11
+  },
+  {
+   "w": "will",
+   "t": 66.52,
+   "end": 66.66,
+   "beat": 11
+  },
+  {
+   "w": "not",
+   "t": 66.66,
+   "end": 66.84,
+   "beat": 11
+  },
+  {
+   "w": "be",
+   "t": 66.84,
+   "end": 66.98,
+   "beat": 11
+  },
+  {
+   "w": "a",
+   "t": 66.98,
+   "end": 67.12,
+   "beat": 11
+  },
+  {
+   "w": "pass",
+   "t": 67.12,
+   "end": 67.4,
+   "beat": 11
+  },
+  {
+   "w": "It",
+   "t": 67.66,
+   "end": 67.76,
+   "beat": 11
+  },
+  {
+   "w": "will",
+   "t": 67.76,
+   "end": 67.88,
+   "beat": 11
+  },
+  {
+   "w": "be",
+   "t": 67.88,
+   "end": 68.02,
+   "beat": 11
+  },
+  {
+   "w": "the",
+   "t": 68.02,
+   "end": 68.14,
+   "beat": 11
+  },
+  {
+   "w": "last",
+   "t": 68.14,
+   "end": 68.36,
+   "beat": 11
+  },
+  {
+   "w": "one",
+   "t": 68.36,
+   "end": 68.682,
+   "beat": 11
+  },
+  {
+   "w": "KOI-55",
+   "t": 69.28,
+   "end": 69.38,
+   "beat": 12
+  },
+  {
+   "w": "Five",
+   "t": 70.72,
+   "end": 71.02,
+   "beat": 12
+  },
+  {
+   "w": "hours",
+   "t": 71.02,
+   "end": 71.32,
+   "beat": 12
+  },
+  {
+   "w": "and",
+   "t": 71.32,
+   "end": 71.64,
+   "beat": 12
+  },
+  {
+   "w": "forty",
+   "t": 71.64,
+   "end": 71.8,
+   "beat": 12
+  },
+  {
+   "w": "minutes",
+   "t": 71.8,
+   "end": 71.98,
+   "beat": 12
+  },
+  {
+   "w": "a",
+   "t": 71.98,
+   "end": 72.18,
+   "beat": 12
+  },
+  {
+   "w": "year",
+   "t": 72.18,
+   "end": 72.6,
+   "beat": 12
+  },
+  {
+   "w": "One",
+   "t": 72.82,
+   "end": 72.86,
+   "beat": 12
+  },
+  {
+   "w": "fall",
+   "t": 72.86,
+   "end": 73.08,
+   "beat": 12
+  },
+  {
+   "w": "left",
+   "t": 73.08,
+   "end": 73.48,
+   "beat": 12
+  },
+  {
+   "w": "Nothing",
+   "t": 73.76,
+   "end": 73.9,
+   "beat": 12
+  },
+  {
+   "w": "is",
+   "t": 73.9,
+   "end": 74.12,
+   "beat": 12
+  },
+  {
+   "w": "coming",
+   "t": 74.12,
+   "end": 74.3,
+   "beat": 12
+  },
+  {
+   "w": "back",
+   "t": 74.3,
+   "end": 74.62,
+   "beat": 12
+  }
+ ],
+ "notes": [
+  "  UNPLACED script[31]='The' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[32]='star' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[33]='swings' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[34]='around' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[35]='again' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[36]='before' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[37]='this' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[38]='sentence' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[39]='ends' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[40]='Its' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[41]='whole' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[42]='life' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[43]='happens' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[44]='inside' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[45]='one' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[46]='breath' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[47]='of' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[48]='yours' (prev whisper idx 30, next 31)",
+  "  UNPLACED script[52]='bare' (prev whisper idx 33, next 35)",
+  "  UNPLACED script[72]='charred' (prev whisper idx 53, next 55)",
+  "  UNPLACED script[234]='KOI-55' (prev whisper idx 215, next 220)",
+  "  near-miss script[144]='KOI-55' -> whisper[126]='KUI55'",
+  "  MERGED script[31]='The' -> merged into following token whisper[31]='It'",
+  "  MERGED script[32]='star' -> merged into following token whisper[31]='It'",
+  "  MERGED script[33]='swings' -> merged into following token whisper[31]='It'",
+  "  MERGED script[34]='around' -> merged into following token whisper[31]='It'",
+  "  MERGED script[35]='again' -> merged into following token whisper[31]='It'",
+  "  MERGED script[36]='before' -> merged into following token whisper[31]='It'",
+  "  MERGED script[37]='this' -> merged into following token whisper[31]='It'",
+  "  MERGED script[38]='sentence' -> merged into following token whisper[31]='It'",
+  "  MERGED script[39]='ends' -> merged into following token whisper[31]='It'",
+  "  MERGED script[40]='Its' -> merged into following token whisper[31]='It'",
+  "  MERGED script[41]='whole' -> merged into following token whisper[31]='It'",
+  "  MERGED script[42]='life' -> merged into following token whisper[31]='It'",
+  "  MERGED script[43]='happens' -> merged into following token whisper[31]='It'",
+  "  MERGED script[44]='inside' -> merged into following token whisper[31]='It'",
+  "  MERGED script[45]='one' -> merged into following token whisper[31]='It'",
+  "  MERGED script[46]='breath' -> merged into following token whisper[31]='It'",
+  "  MERGED script[47]='of' -> merged into following token whisper[31]='It'",
+  "  MERGED script[48]='yours' -> merged into following token whisper[31]='It'",
+  "  MERGED script[52]='bare' -> merged into following token whisper[35]='rock,'",
+  "  MERGED script[72]='charred' -> merged into following token whisper[55]='shell'",
+  "  SPAN script[234]='KOI-55' -> whisper[216]='K' (sim 0.45)"
+ ]
+}

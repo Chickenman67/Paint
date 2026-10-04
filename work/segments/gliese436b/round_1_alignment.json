@@ -1,0 +1,1533 @@
+{
+ "segment": "gliese436b",
+ "wav_path": "round_1_audio.wav",
+ "duration_s": 68.78,
+ "beats_json": "round_1_beats.json",
+ "word_count": 237,
+ "clamped_words": 41,
+ "beat_boundaries_exact": true,
+ "words": [
+  {
+   "w": "Here",
+   "t": 0.0,
+   "end": 0.36,
+   "beat": 1
+  },
+  {
+   "w": "is",
+   "t": 0.36,
+   "end": 0.58,
+   "beat": 1
+  },
+  {
+   "w": "a",
+   "t": 0.58,
+   "end": 0.68,
+   "beat": 1
+  },
+  {
+   "w": "planet",
+   "t": 0.68,
+   "end": 0.84,
+   "beat": 1
+  },
+  {
+   "w": "made",
+   "t": 0.84,
+   "end": 1.06,
+   "beat": 1
+  },
+  {
+   "w": "of",
+   "t": 1.06,
+   "end": 1.24,
+   "beat": 1
+  },
+  {
+   "w": "ice",
+   "t": 1.24,
+   "end": 1.64,
+   "beat": 1
+  },
+  {
+   "w": "And",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "it",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "is",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "on",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "fire",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "and",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "it",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "does",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "not",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "melt",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "This",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "is",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "Gliese",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "436",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "b",
+   "t": 1.98,
+   "end": 2.32,
+   "beat": 1
+  },
+  {
+   "w": "It",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "is",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "about",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "the",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "size",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "of",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "Neptune",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "A",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "giant",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "world",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "made",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "almost",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "entirely",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "of",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "water",
+   "t": 6.28,
+   "end": 6.28,
+   "beat": 2
+  },
+  {
+   "w": "Now",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "here",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "is",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "the",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "part",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "that",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "makes",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "no",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "sense",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "Ice",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "should",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "melt",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "That",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "is",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "what",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "ice",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "does",
+   "t": 10.65,
+   "end": 10.65,
+   "beat": 3
+  },
+  {
+   "w": "But",
+   "t": 15.34,
+   "end": 15.34,
+   "beat": 4
+  },
+  {
+   "w": "this",
+   "t": 15.34,
+   "end": 15.34,
+   "beat": 4
+  },
+  {
+   "w": "ice",
+   "t": 15.34,
+   "end": 15.34,
+   "beat": 4
+  },
+  {
+   "w": "is",
+   "t": 15.34,
+   "end": 16.2,
+   "beat": 4
+  },
+  {
+   "w": "under",
+   "t": 16.2,
+   "end": 16.34,
+   "beat": 4
+  },
+  {
+   "w": "crushing",
+   "t": 16.34,
+   "end": 16.66,
+   "beat": 4
+  },
+  {
+   "w": "pressure",
+   "t": 16.66,
+   "end": 16.98,
+   "beat": 4
+  },
+  {
+   "w": "from",
+   "t": 16.98,
+   "end": 17.18,
+   "beat": 4
+  },
+  {
+   "w": "its",
+   "t": 17.18,
+   "end": 17.38,
+   "beat": 4
+  },
+  {
+   "w": "own",
+   "t": 17.38,
+   "end": 17.5,
+   "beat": 4
+  },
+  {
+   "w": "gravity",
+   "t": 17.5,
+   "end": 17.92,
+   "beat": 4
+  },
+  {
+   "w": "And",
+   "t": 18.44,
+   "end": 18.44,
+   "beat": 4
+  },
+  {
+   "w": "its",
+   "t": 18.44,
+   "end": 18.66,
+   "beat": 4
+  },
+  {
+   "w": "star",
+   "t": 18.66,
+   "end": 18.9,
+   "beat": 4
+  },
+  {
+   "w": "keeps",
+   "t": 18.9,
+   "end": 19.14,
+   "beat": 4
+  },
+  {
+   "w": "cooking",
+   "t": 19.14,
+   "end": 19.4,
+   "beat": 4
+  },
+  {
+   "w": "it",
+   "t": 19.4,
+   "end": 19.58,
+   "beat": 4
+  },
+  {
+   "w": "from",
+   "t": 19.58,
+   "end": 19.72,
+   "beat": 4
+  },
+  {
+   "w": "close",
+   "t": 19.72,
+   "end": 20.0,
+   "beat": 4
+  },
+  {
+   "w": "range",
+   "t": 20.0,
+   "end": 20.38,
+   "beat": 4
+  },
+  {
+   "w": "All",
+   "t": 20.96,
+   "end": 20.96,
+   "beat": 4
+  },
+  {
+   "w": "of",
+   "t": 20.96,
+   "end": 21.04,
+   "beat": 4
+  },
+  {
+   "w": "that",
+   "t": 21.04,
+   "end": 21.22,
+   "beat": 4
+  },
+  {
+   "w": "pressure",
+   "t": 21.22,
+   "end": 21.54,
+   "beat": 4
+  },
+  {
+   "w": "and",
+   "t": 21.54,
+   "end": 21.78,
+   "beat": 4
+  },
+  {
+   "w": "heat",
+   "t": 21.78,
+   "end": 22.0,
+   "beat": 4
+  },
+  {
+   "w": "at",
+   "t": 22.0,
+   "end": 22.26,
+   "beat": 4
+  },
+  {
+   "w": "once",
+   "t": 22.26,
+   "end": 22.62,
+   "beat": 4
+  },
+  {
+   "w": "The",
+   "t": 23.4,
+   "end": 23.44,
+   "beat": 5
+  },
+  {
+   "w": "water",
+   "t": 23.44,
+   "end": 23.72,
+   "beat": 5
+  },
+  {
+   "w": "never",
+   "t": 23.72,
+   "end": 23.92,
+   "beat": 5
+  },
+  {
+   "w": "gets",
+   "t": 23.92,
+   "end": 24.12,
+   "beat": 5
+  },
+  {
+   "w": "to",
+   "t": 24.12,
+   "end": 24.34,
+   "beat": 5
+  },
+  {
+   "w": "choose",
+   "t": 24.34,
+   "end": 24.64,
+   "beat": 5
+  },
+  {
+   "w": "It",
+   "t": 24.96,
+   "end": 25.04,
+   "beat": 5
+  },
+  {
+   "w": "cannot",
+   "t": 25.04,
+   "end": 25.22,
+   "beat": 5
+  },
+  {
+   "w": "be",
+   "t": 25.22,
+   "end": 25.42,
+   "beat": 5
+  },
+  {
+   "w": "solid",
+   "t": 25.42,
+   "end": 25.68,
+   "beat": 5
+  },
+  {
+   "w": "It",
+   "t": 26.0,
+   "end": 26.0,
+   "beat": 5
+  },
+  {
+   "w": "cannot",
+   "t": 26.0,
+   "end": 26.18,
+   "beat": 5
+  },
+  {
+   "w": "be",
+   "t": 26.18,
+   "end": 26.36,
+   "beat": 5
+  },
+  {
+   "w": "liquid",
+   "t": 26.36,
+   "end": 26.64,
+   "beat": 5
+  },
+  {
+   "w": "It",
+   "t": 27.04,
+   "end": 27.12,
+   "beat": 5
+  },
+  {
+   "w": "is",
+   "t": 27.12,
+   "end": 27.34,
+   "beat": 5
+  },
+  {
+   "w": "something",
+   "t": 27.34,
+   "end": 27.54,
+   "beat": 5
+  },
+  {
+   "w": "in",
+   "t": 27.54,
+   "end": 27.78,
+   "beat": 5
+  },
+  {
+   "w": "between",
+   "t": 27.78,
+   "end": 28.1,
+   "beat": 5
+  },
+  {
+   "w": "Scientists",
+   "t": 28.9,
+   "end": 29.34,
+   "beat": 6
+  },
+  {
+   "w": "call",
+   "t": 29.34,
+   "end": 29.78,
+   "beat": 6
+  },
+  {
+   "w": "it",
+   "t": 29.78,
+   "end": 29.96,
+   "beat": 6
+  },
+  {
+   "w": "supercritical",
+   "t": 29.96,
+   "end": 30.52,
+   "beat": 6
+  },
+  {
+   "w": "A",
+   "t": 30.9,
+   "end": 31.04,
+   "beat": 6
+  },
+  {
+   "w": "supercritical",
+   "t": 31.04,
+   "end": 31.6,
+   "beat": 6
+  },
+  {
+   "w": "fluid",
+   "t": 31.6,
+   "end": 31.92,
+   "beat": 6
+  },
+  {
+   "w": "No",
+   "t": 32.22,
+   "end": 32.4,
+   "beat": 6
+  },
+  {
+   "w": "boundary",
+   "t": 32.4,
+   "end": 32.72,
+   "beat": 6
+  },
+  {
+   "w": "between",
+   "t": 32.72,
+   "end": 33.12,
+   "beat": 6
+  },
+  {
+   "w": "ice",
+   "t": 33.12,
+   "end": 33.4,
+   "beat": 6
+  },
+  {
+   "w": "and",
+   "t": 33.4,
+   "end": 33.64,
+   "beat": 6
+  },
+  {
+   "w": "steam",
+   "t": 33.64,
+   "end": 33.97,
+   "beat": 6
+  },
+  {
+   "w": "Imagine",
+   "t": 34.76,
+   "end": 34.94,
+   "beat": 7
+  },
+  {
+   "w": "ice",
+   "t": 34.94,
+   "end": 35.38,
+   "beat": 7
+  },
+  {
+   "w": "that",
+   "t": 35.38,
+   "end": 35.62,
+   "beat": 7
+  },
+  {
+   "w": "flows",
+   "t": 35.62,
+   "end": 35.8,
+   "beat": 7
+  },
+  {
+   "w": "like",
+   "t": 35.8,
+   "end": 36.08,
+   "beat": 7
+  },
+  {
+   "w": "water",
+   "t": 36.08,
+   "end": 36.32,
+   "beat": 7
+  },
+  {
+   "w": "and",
+   "t": 36.32,
+   "end": 36.7,
+   "beat": 7
+  },
+  {
+   "w": "burns",
+   "t": 36.7,
+   "end": 36.94,
+   "beat": 7
+  },
+  {
+   "w": "like",
+   "t": 36.94,
+   "end": 37.18,
+   "beat": 7
+  },
+  {
+   "w": "a",
+   "t": 37.18,
+   "end": 37.34,
+   "beat": 7
+  },
+  {
+   "w": "torch",
+   "t": 37.34,
+   "end": 37.64,
+   "beat": 7
+  },
+  {
+   "w": "That",
+   "t": 38.06,
+   "end": 38.3,
+   "beat": 7
+  },
+  {
+   "w": "is",
+   "t": 38.3,
+   "end": 38.48,
+   "beat": 7
+  },
+  {
+   "w": "the",
+   "t": 38.48,
+   "end": 38.7,
+   "beat": 7
+  },
+  {
+   "w": "surface",
+   "t": 38.7,
+   "end": 38.8,
+   "beat": 7
+  },
+  {
+   "w": "of",
+   "t": 38.8,
+   "end": 39.02,
+   "beat": 7
+  },
+  {
+   "w": "this",
+   "t": 39.02,
+   "end": 39.22,
+   "beat": 7
+  },
+  {
+   "w": "world",
+   "t": 39.22,
+   "end": 39.54,
+   "beat": 7
+  },
+  {
+   "w": "You",
+   "t": 39.74,
+   "end": 39.86,
+   "beat": 7
+  },
+  {
+   "w": "could",
+   "t": 39.86,
+   "end": 40.02,
+   "beat": 7
+  },
+  {
+   "w": "not",
+   "t": 40.02,
+   "end": 40.26,
+   "beat": 7
+  },
+  {
+   "w": "stand",
+   "t": 40.26,
+   "end": 40.5,
+   "beat": 7
+  },
+  {
+   "w": "on",
+   "t": 40.5,
+   "end": 40.7,
+   "beat": 7
+  },
+  {
+   "w": "it",
+   "t": 40.7,
+   "end": 40.9,
+   "beat": 7
+  },
+  {
+   "w": "You",
+   "t": 41.04,
+   "end": 41.04,
+   "beat": 7
+  },
+  {
+   "w": "could",
+   "t": 41.04,
+   "end": 41.18,
+   "beat": 7
+  },
+  {
+   "w": "not",
+   "t": 41.18,
+   "end": 41.4,
+   "beat": 7
+  },
+  {
+   "w": "swim",
+   "t": 41.4,
+   "end": 41.54,
+   "beat": 7
+  },
+  {
+   "w": "in",
+   "t": 41.54,
+   "end": 41.68,
+   "beat": 7
+  },
+  {
+   "w": "it",
+   "t": 41.68,
+   "end": 41.94,
+   "beat": 7
+  },
+  {
+   "w": "It",
+   "t": 42.04,
+   "end": 42.16,
+   "beat": 7
+  },
+  {
+   "w": "would",
+   "t": 42.16,
+   "end": 42.32,
+   "beat": 7
+  },
+  {
+   "w": "eat",
+   "t": 42.32,
+   "end": 42.5,
+   "beat": 7
+  },
+  {
+   "w": "through",
+   "t": 42.5,
+   "end": 42.66,
+   "beat": 7
+  },
+  {
+   "w": "your",
+   "t": 42.66,
+   "end": 42.86,
+   "beat": 7
+  },
+  {
+   "w": "ship",
+   "t": 42.86,
+   "end": 43.1,
+   "beat": 7
+  },
+  {
+   "w": "And",
+   "t": 43.7,
+   "end": 43.9,
+   "beat": 8
+  },
+  {
+   "w": "this",
+   "t": 43.9,
+   "end": 44.12,
+   "beat": 8
+  },
+  {
+   "w": "world",
+   "t": 44.12,
+   "end": 44.38,
+   "beat": 8
+  },
+  {
+   "w": "is",
+   "t": 44.38,
+   "end": 44.6,
+   "beat": 8
+  },
+  {
+   "w": "not",
+   "t": 44.6,
+   "end": 44.8,
+   "beat": 8
+  },
+  {
+   "w": "alone",
+   "t": 44.8,
+   "end": 45.02,
+   "beat": 8
+  },
+  {
+   "w": "out",
+   "t": 45.02,
+   "end": 45.26,
+   "beat": 8
+  },
+  {
+   "w": "here",
+   "t": 45.26,
+   "end": 45.5,
+   "beat": 8
+  },
+  {
+   "w": "It",
+   "t": 45.66,
+   "end": 45.74,
+   "beat": 8
+  },
+  {
+   "w": "has",
+   "t": 45.74,
+   "end": 45.92,
+   "beat": 8
+  },
+  {
+   "w": "lost",
+   "t": 45.92,
+   "end": 46.08,
+   "beat": 8
+  },
+  {
+   "w": "a",
+   "t": 46.08,
+   "end": 46.28,
+   "beat": 8
+  },
+  {
+   "w": "lot",
+   "t": 46.28,
+   "end": 46.38,
+   "beat": 8
+  },
+  {
+   "w": "of",
+   "t": 46.38,
+   "end": 46.56,
+   "beat": 8
+  },
+  {
+   "w": "mass",
+   "t": 46.56,
+   "end": 46.76,
+   "beat": 8
+  },
+  {
+   "w": "over",
+   "t": 46.76,
+   "end": 46.96,
+   "beat": 8
+  },
+  {
+   "w": "its",
+   "t": 46.96,
+   "end": 47.18,
+   "beat": 8
+  },
+  {
+   "w": "life",
+   "t": 47.18,
+   "end": 47.58,
+   "beat": 8
+  },
+  {
+   "w": "Hydrogen",
+   "t": 48.0,
+   "end": 48.18,
+   "beat": 8
+  },
+  {
+   "w": "and",
+   "t": 48.18,
+   "end": 48.46,
+   "beat": 8
+  },
+  {
+   "w": "helium",
+   "t": 48.46,
+   "end": 48.72,
+   "beat": 8
+  },
+  {
+   "w": "are",
+   "t": 48.72,
+   "end": 49.06,
+   "beat": 8
+  },
+  {
+   "w": "escaping",
+   "t": 49.06,
+   "end": 49.28,
+   "beat": 8
+  },
+  {
+   "w": "from",
+   "t": 49.28,
+   "end": 49.58,
+   "beat": 8
+  },
+  {
+   "w": "it",
+   "t": 49.58,
+   "end": 49.72,
+   "beat": 8
+  },
+  {
+   "w": "right",
+   "t": 49.72,
+   "end": 49.92,
+   "beat": 8
+  },
+  {
+   "w": "now",
+   "t": 49.92,
+   "end": 50.19,
+   "beat": 8
+  },
+  {
+   "w": "They",
+   "t": 50.88,
+   "end": 51.1,
+   "beat": 9
+  },
+  {
+   "w": "stream",
+   "t": 51.1,
+   "end": 51.26,
+   "beat": 9
+  },
+  {
+   "w": "away",
+   "t": 51.26,
+   "end": 51.58,
+   "beat": 9
+  },
+  {
+   "w": "in",
+   "t": 51.58,
+   "end": 51.76,
+   "beat": 9
+  },
+  {
+   "w": "a",
+   "t": 51.76,
+   "end": 51.86,
+   "beat": 9
+  },
+  {
+   "w": "long",
+   "t": 51.86,
+   "end": 52.22,
+   "beat": 9
+  },
+  {
+   "w": "comet-like",
+   "t": 52.24,
+   "end": 52.52,
+   "beat": 9
+  },
+  {
+   "w": "tail",
+   "t": 52.8,
+   "end": 53.14,
+   "beat": 9
+  },
+  {
+   "w": "And",
+   "t": 53.36,
+   "end": 53.58,
+   "beat": 9
+  },
+  {
+   "w": "that",
+   "t": 53.58,
+   "end": 53.84,
+   "beat": 9
+  },
+  {
+   "w": "tail",
+   "t": 53.84,
+   "end": 54.06,
+   "beat": 9
+  },
+  {
+   "w": "glows",
+   "t": 54.06,
+   "end": 54.56,
+   "beat": 9
+  },
+  {
+   "w": "It",
+   "t": 54.84,
+   "end": 55.0,
+   "beat": 9
+  },
+  {
+   "w": "glows",
+   "t": 55.0,
+   "end": 55.24,
+   "beat": 9
+  },
+  {
+   "w": "in",
+   "t": 55.24,
+   "end": 55.38,
+   "beat": 9
+  },
+  {
+   "w": "the",
+   "t": 55.38,
+   "end": 55.56,
+   "beat": 9
+  },
+  {
+   "w": "dark",
+   "t": 55.56,
+   "end": 55.8,
+   "beat": 9
+  },
+  {
+   "w": "So",
+   "t": 56.45,
+   "end": 56.72,
+   "beat": 10
+  },
+  {
+   "w": "picture",
+   "t": 56.82,
+   "end": 56.9,
+   "beat": 10
+  },
+  {
+   "w": "a",
+   "t": 56.9,
+   "end": 57.2,
+   "beat": 10
+  },
+  {
+   "w": "burning-ice",
+   "t": 57.2,
+   "end": 57.42,
+   "beat": 10
+  },
+  {
+   "w": "planet",
+   "t": 57.7,
+   "end": 57.96,
+   "beat": 10
+  },
+  {
+   "w": "dragging",
+   "t": 57.96,
+   "end": 58.32,
+   "beat": 10
+  },
+  {
+   "w": "a",
+   "t": 58.32,
+   "end": 58.54,
+   "beat": 10
+  },
+  {
+   "w": "glowing",
+   "t": 58.54,
+   "end": 58.8,
+   "beat": 10
+  },
+  {
+   "w": "tail",
+   "t": 58.8,
+   "end": 59.02,
+   "beat": 10
+  },
+  {
+   "w": "of",
+   "t": 59.02,
+   "end": 59.2,
+   "beat": 10
+  },
+  {
+   "w": "gas",
+   "t": 59.2,
+   "end": 59.44,
+   "beat": 10
+  },
+  {
+   "w": "behind",
+   "t": 59.44,
+   "end": 59.66,
+   "beat": 10
+  },
+  {
+   "w": "it",
+   "t": 59.66,
+   "end": 60.08,
+   "beat": 10
+  },
+  {
+   "w": "A",
+   "t": 60.32,
+   "end": 60.4,
+   "beat": 10
+  },
+  {
+   "w": "hot",
+   "t": 60.4,
+   "end": 60.8,
+   "beat": 10
+  },
+  {
+   "w": "dense",
+   "t": 60.86,
+   "end": 61.16,
+   "beat": 10
+  },
+  {
+   "w": "impossible",
+   "t": 61.68,
+   "end": 61.68,
+   "beat": 10
+  },
+  {
+   "w": "world",
+   "t": 61.68,
+   "end": 62.2,
+   "beat": 10
+  },
+  {
+   "w": "screaming",
+   "t": 62.2,
+   "end": 62.5,
+   "beat": 10
+  },
+  {
+   "w": "around",
+   "t": 62.5,
+   "end": 62.72,
+   "beat": 10
+  },
+  {
+   "w": "its",
+   "t": 62.72,
+   "end": 62.96,
+   "beat": 10
+  },
+  {
+   "w": "star",
+   "t": 62.96,
+   "end": 63.28,
+   "beat": 10
+  },
+  {
+   "w": "It",
+   "t": 63.7,
+   "end": 63.74,
+   "beat": 10
+  },
+  {
+   "w": "is",
+   "t": 63.74,
+   "end": 63.84,
+   "beat": 10
+  },
+  {
+   "w": "one",
+   "t": 63.84,
+   "end": 63.98,
+   "beat": 10
+  },
+  {
+   "w": "of",
+   "t": 63.98,
+   "end": 64.06,
+   "beat": 10
+  },
+  {
+   "w": "the",
+   "t": 64.06,
+   "end": 64.16,
+   "beat": 10
+  },
+  {
+   "w": "strangest",
+   "t": 64.16,
+   "end": 64.48,
+   "beat": 10
+  },
+  {
+   "w": "things",
+   "t": 64.48,
+   "end": 64.72,
+   "beat": 10
+  },
+  {
+   "w": "in",
+   "t": 64.72,
+   "end": 64.86,
+   "beat": 10
+  },
+  {
+   "w": "the",
+   "t": 64.86,
+   "end": 64.96,
+   "beat": 10
+  },
+  {
+   "w": "galaxy",
+   "t": 64.96,
+   "end": 65.26,
+   "beat": 10
+  },
+  {
+   "w": "And",
+   "t": 65.64,
+   "end": 65.74,
+   "beat": 10
+  },
+  {
+   "w": "it",
+   "t": 65.74,
+   "end": 65.84,
+   "beat": 10
+  },
+  {
+   "w": "is",
+   "t": 65.84,
+   "end": 66.08,
+   "beat": 10
+  },
+  {
+   "w": "just",
+   "t": 66.08,
+   "end": 66.18,
+   "beat": 10
+  },
+  {
+   "w": "sitting",
+   "t": 66.18,
+   "end": 66.38,
+   "beat": 10
+  },
+  {
+   "w": "there",
+   "t": 66.38,
+   "end": 66.84,
+   "beat": 10
+  },
+  {
+   "w": "Burning",
+   "t": 66.96,
+   "end": 67.06,
+   "beat": 10
+  },
+  {
+   "w": "its",
+   "t": 67.06,
+   "end": 67.3,
+   "beat": 10
+  },
+  {
+   "w": "ice",
+   "t": 67.3,
+   "end": 67.68,
+   "beat": 10
+  },
+  {
+   "w": "Quietly",
+   "t": 67.78,
+   "end": 68.12,
+   "beat": 10
+  },
+  {
+   "w": "Forever",
+   "t": 68.42,
+   "end": 68.58,
+   "beat": 10
+  }
+ ],
+ "notes": [
+  "  UNPLACED script[7]='And' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[8]='it' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[9]='is' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[10]='on' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[11]='fire' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[12]='and' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[13]='it' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[14]='does' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[15]='not' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[16]='melt' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[17]='This' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[18]='is' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[19]='Gliese' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[20]='436' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[21]='b' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[22]='It' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[23]='is' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[24]='about' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[25]='the' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[26]='size' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[27]='of' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[28]='Neptune' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[29]='A' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[30]='giant' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[31]='world' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[32]='made' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[33]='almost' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[34]='entirely' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[35]='of' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[36]='water' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[37]='Now' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[38]='here' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[39]='is' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[40]='the' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[41]='part' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[42]='that' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[43]='makes' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[44]='no' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[45]='sense' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[46]='Ice' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[47]='should' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[48]='melt' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[49]='That' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[50]='is' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[51]='what' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[52]='ice' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[53]='does' (prev whisper idx 6, next 7)",
+  "  UNPLACED script[54]='But' (prev whisper idx 6, next 7)",
+  "  near-miss script[183]='comet-like' -> whisper[135]='comet'",
+  "  near-miss script[197]='burning-ice' -> whisper[150]='burning'",
+  "  MERGED script[7]='And' -> merged into following token whisper[7]='This'",
+  "  MERGED script[8]='it' -> merged into following token whisper[7]='This'",
+  "  MERGED script[9]='is' -> merged into following token whisper[7]='This'",
+  "  MERGED script[10]='on' -> merged into following token whisper[7]='This'",
+  "  MERGED script[11]='fire' -> merged into following token whisper[7]='This'",
+  "  MERGED script[12]='and' -> merged into following token whisper[7]='This'",
+  "  MERGED script[13]='it' -> merged into following token whisper[7]='This'",
+  "  MERGED script[14]='does' -> merged into following token whisper[7]='This'",
+  "  MERGED script[15]='not' -> merged into following token whisper[7]='This'",
+  "  MERGED script[16]='melt' -> merged into following token whisper[7]='This'",
+  "  MERGED script[17]='This' -> merged into following token whisper[7]='This'",
+  "  MERGED script[18]='is' -> merged into following token whisper[7]='This'",
+  "  MERGED script[19]='Gliese' -> merged into following token whisper[7]='This'",
+  "  MERGED script[20]='436' -> merged into following token whisper[7]='This'",
+  "  MERGED script[21]='b' -> merged into following token whisper[7]='This'",
+  "  MERGED script[22]='It' -> merged into following token whisper[7]='This'",
+  "  MERGED script[23]='is' -> merged into following token whisper[7]='This'",
+  "  MERGED script[24]='about' -> merged into following token whisper[7]='This'",
+  "  MERGED script[25]='the' -> merged into following token whisper[7]='This'",
+  "  MERGED script[26]='size' -> merged into following token whisper[7]='This'",
+  "  MERGED script[27]='of' -> merged into following token whisper[7]='This'",
+  "  MERGED script[28]='Neptune' -> merged into following token whisper[7]='This'",
+  "  MERGED script[29]='A' -> merged into following token whisper[7]='This'",
+  "  MERGED script[30]='giant' -> merged into following token whisper[7]='This'",
+  "  MERGED script[31]='world' -> merged into following token whisper[7]='This'",
+  "  MERGED script[32]='made' -> merged into following token whisper[7]='This'",
+  "  MERGED script[33]='almost' -> merged into following token whisper[7]='This'",
+  "  MERGED script[34]='entirely' -> merged into following token whisper[7]='This'",
+  "  MERGED script[35]='of' -> merged into following token whisper[7]='This'",
+  "  MERGED script[36]='water' -> merged into following token whisper[7]='This'",
+  "  MERGED script[37]='Now' -> merged into following token whisper[7]='This'",
+  "  MERGED script[38]='here' -> merged into following token whisper[7]='This'",
+  "  MERGED script[39]='is' -> merged into following token whisper[7]='This'",
+  "  MERGED script[40]='the' -> merged into following token whisper[7]='This'",
+  "  MERGED script[41]='part' -> merged into following token whisper[7]='This'",
+  "  MERGED script[42]='that' -> merged into following token whisper[7]='This'",
+  "  MERGED script[43]='makes' -> merged into following token whisper[7]='This'",
+  "  MERGED script[44]='no' -> merged into following token whisper[7]='This'",
+  "  MERGED script[45]='sense' -> merged into following token whisper[7]='This'",
+  "  MERGED script[46]='Ice' -> merged into following token whisper[7]='This'",
+  "  MERGED script[47]='should' -> merged into following token whisper[7]='This'",
+  "  MERGED script[48]='melt' -> merged into following token whisper[7]='This'",
+  "  MERGED script[49]='That' -> merged into following token whisper[7]='This'",
+  "  MERGED script[50]='is' -> merged into following token whisper[7]='This'",
+  "  MERGED script[51]='what' -> merged into following token whisper[7]='This'",
+  "  MERGED script[52]='ice' -> merged into following token whisper[7]='This'",
+  "  MERGED script[53]='does' -> merged into following token whisper[7]='This'",
+  "  MERGED script[54]='But' -> merged into following token whisper[7]='This'"
+ ]
+}

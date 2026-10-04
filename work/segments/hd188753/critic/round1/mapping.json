@@ -1,0 +1,11 @@
+{
+  "seed": 42,
+  "A": {
+    "label": "ref",
+    "path": "C:\\VIBE_CODE_CENTRAL\\Gauntlet3\\work\\ref_full.mp4"
+  },
+  "B": {
+    "label": "ours",
+    "path": "C:\\VIBE_CODE_CENTRAL\\Gauntlet3\\work\\segments\\hd188753\\round_1.mp4"
+  }
+}

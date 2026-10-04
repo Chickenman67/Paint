@@ -1,0 +1,286 @@
+{
+ "title": "Pine Gap - Australia's Most Secret Eavesdropping Station",
+ "wrote_to": "segments/pinegap/script.json",
+ "target": {
+  "wpm": 165,
+  "max_sentence_words": 10,
+  "note": "short declaratives, one idea per beat. Little to no pause between sentences."
+ },
+ "narration": "Look at this place.\nThere is nothing here.\nThat is the point.\nIt sits in central Australia.\nThe desert runs out for miles.\nThen you see the white spheres.\nA whole cluster of them.\nThey sit behind layers of wire.\nThey look like ordinary buildings.\nThey are not buildings.\nThis is Pine Gap.\nIt runs under a secret agreement.\nAmerica and Australia share it.\nFor decades the public was told nothing.\nThey called it a space research facility.\nWe now know what the white balls are.\nThey are radomes.\nA radome is a protective cover.\nInside each one sits a satellite dish.\nThe cover hides the dish's exact angle.\nNobody outside can tell who is watched.\nThis is a top level listening post.\nIt belongs to the Five Eyes group.\nFive Eyes shares the signal between nations.\nSpy satellites pass overhead every day.\nTheir signals land at Pine Gap.\nThe signals include phone calls.\nThey include radio traffic.\nThey include missile launch data.\nGetting close is nearly impossible.\nAirspace is locked to eighteen thousand feet.\nArmed guards walk the perimeter.\nCrossing the fence means seven years in prison.\nNo one goes inside.",
+ "word_count": 192,
+ "est_wpm": 165,
+ "beats": [
+  {
+   "n": 1,
+   "id": "b01",
+   "beat": "HOOK",
+   "line": "Look at this place.",
+   "visual": "wide empty red desert, nothing on screen; label 'nothing here'",
+   "register": "paint"
+  },
+  {
+   "n": 2,
+   "id": "b02",
+   "beat": "PIVOT",
+   "line": "There is nothing here.",
+   "visual": "same empty desert, held",
+   "register": "paint"
+  },
+  {
+   "n": 3,
+   "id": "b03",
+   "beat": "REVEAL",
+   "line": "That is the point.",
+   "visual": "character close-up, deadpan; speech bubble 'nothing. on purpose'",
+   "register": "paint"
+  },
+  {
+   "n": 4,
+   "id": "b04",
+   "beat": "ESTABLISH",
+   "line": "It sits in central Australia.",
+   "visual": "map of Australia, a dot in the center",
+   "register": "paint"
+  },
+  {
+   "n": 5,
+   "id": "b05",
+   "beat": "IMAGE",
+   "line": "The desert runs out for miles.",
+   "visual": "the desert horizon, empty, long",
+   "register": "paint"
+  },
+  {
+   "n": 6,
+   "id": "b06",
+   "beat": "IMAGE",
+   "line": "Then you see the white spheres.",
+   "visual": "white sphere domes appear on the horizon, filling frame",
+   "register": "paint"
+  },
+  {
+   "n": 7,
+   "id": "b07",
+   "beat": "FACT",
+   "line": "A whole cluster of them.",
+   "visual": "dome cluster, wide, fence in foreground",
+   "register": "paint"
+  },
+  {
+   "n": 8,
+   "id": "b08",
+   "beat": "FACT",
+   "line": "They sit behind layers of wire.",
+   "visual": "wire fence layer, close",
+   "register": "paint"
+  },
+  {
+   "n": 9,
+   "id": "b09",
+   "beat": "REVEAL",
+   "line": "They look like ordinary buildings.",
+   "visual": "dome; label 'ordinary buildings'",
+   "register": "paint"
+  },
+  {
+   "n": 10,
+   "id": "b10",
+   "beat": "REVEAL",
+   "line": "They are not buildings.",
+   "visual": "dome; label 'not buildings'",
+   "register": "paint"
+  },
+  {
+   "n": 11,
+   "id": "b11",
+   "beat": "TITLE",
+   "line": "This is Pine Gap.",
+   "visual": "title 'PINE GAP'; two flags, US and Australia",
+   "register": "paint"
+  },
+  {
+   "n": 12,
+   "id": "b12",
+   "beat": "FACT",
+   "line": "It runs under a secret agreement.",
+   "visual": "two flags beside the domes",
+   "register": "paint"
+  },
+  {
+   "n": 13,
+   "id": "b13",
+   "beat": "FACT",
+   "line": "America and Australia share it.",
+   "visual": "government building with a closed shutter over the door",
+   "register": "paint"
+  },
+  {
+   "n": 14,
+   "id": "b14",
+   "beat": "FACT",
+   "line": "For decades the public was told nothing.",
+   "visual": "closed shutter, close",
+   "register": "paint"
+  },
+  {
+   "n": 15,
+   "id": "b15",
+   "beat": "PIVOT",
+   "line": "They called it a space research facility.",
+   "visual": "character shrugging; speech bubble 'wait, what are they?'",
+   "register": "paint"
+  },
+  {
+   "n": 16,
+   "id": "b16",
+   "beat": "REVEAL",
+   "line": "We now know what the white balls are.",
+   "visual": "close on one white sphere; label peels to 'RADOME'",
+   "register": "paint"
+  },
+  {
+   "n": 17,
+   "id": "b17",
+   "beat": "REVEAL",
+   "line": "They are radomes.",
+   "visual": "the word 'RADOME' stamped over the sphere",
+   "register": "paint"
+  },
+  {
+   "n": 18,
+   "id": "b18",
+   "beat": "FACT",
+   "line": "A radome is a protective cover.",
+   "visual": "radome cutaway label",
+   "register": "paint"
+  },
+  {
+   "n": 19,
+   "id": "b19",
+   "beat": "FACT",
+   "line": "Inside each one sits a satellite dish.",
+   "visual": "cutaway: white cover lifts to reveal a dish inside",
+   "register": "paint"
+  },
+  {
+   "n": 20,
+   "id": "b20",
+   "beat": "FACT",
+   "line": "The cover hides the dish's exact angle.",
+   "visual": "dish inside the lifted cover",
+   "register": "paint"
+  },
+  {
+   "n": 21,
+   "id": "b21",
+   "beat": "REVEAL",
+   "line": "Nobody outside can tell who is watched.",
+   "visual": "arrow showing the angle hidden by the cover",
+   "register": "paint"
+  },
+  {
+   "n": 22,
+   "id": "b22",
+   "beat": "REVEAL",
+   "line": "This is a top level listening post.",
+   "visual": "character peeking from behind the cover; speech bubble 'looking at who?'",
+   "register": "paint"
+  },
+  {
+   "n": 23,
+   "id": "b23",
+   "beat": "ESCALATE",
+   "line": "It belongs to the Five Eyes group.",
+   "visual": "globe with signal lines; number '1' badge",
+   "register": "paint"
+  },
+  {
+   "n": 24,
+   "id": "b24",
+   "beat": "ESCALATE",
+   "line": "Five Eyes shares the signal between nations.",
+   "visual": "five eye icons in a row, labeled 'FIVE EYES'",
+   "register": "paint"
+  },
+  {
+   "n": 25,
+   "id": "b25",
+   "beat": "ESCALATE",
+   "line": "Spy satellites pass overhead every day.",
+   "visual": "globe with signal lines; nation links",
+   "register": "paint"
+  },
+  {
+   "n": 26,
+   "id": "b26",
+   "beat": "ESCALATE",
+   "line": "Their signals land at Pine Gap.",
+   "visual": "satellite overhead dropping beams",
+   "register": "paint"
+  },
+  {
+   "n": 27,
+   "id": "b27",
+   "beat": "ESCALATE",
+   "line": "The signals include phone calls.",
+   "visual": "signals landing at Pine Gap on a dish",
+   "register": "paint"
+  },
+  {
+   "n": 28,
+   "id": "b28",
+   "beat": "FACT",
+   "line": "They include radio traffic.",
+   "visual": "icons: phone, radio",
+   "register": "paint"
+  },
+  {
+   "n": 29,
+   "id": "b29",
+   "beat": "ESCALATE",
+   "line": "They include missile launch data.",
+   "visual": "icon: missile, red",
+   "register": "paint"
+  },
+  {
+   "n": 30,
+   "id": "b30",
+   "beat": "PIVOT",
+   "line": "Getting close is nearly impossible.",
+   "visual": "character creeping toward the fence and stopping; speech bubble 'no further'",
+   "register": "paint"
+  },
+  {
+   "n": 31,
+   "id": "b31",
+   "beat": "FACT",
+   "line": "Airspace is locked to eighteen thousand feet.",
+   "visual": "tall cylinder over the base; big number '18,000 ft'",
+   "register": "paint"
+  },
+  {
+   "n": 32,
+   "id": "b32",
+   "beat": "FACT",
+   "line": "Armed guards walk the perimeter.",
+   "visual": "drone with a red X over it, bounced back",
+   "register": "paint"
+  },
+  {
+   "n": 33,
+   "id": "b33",
+   "beat": "FACT",
+   "line": "Crossing the fence means seven years in prison.",
+   "visual": "perimeter fence with guard silhouettes and spotlights",
+   "register": "paint"
+  },
+  {
+   "n": 34,
+   "id": "b34",
+   "beat": "FINALE",
+   "line": "No one goes inside.",
+   "visual": "domes at night, dark; character awed; speech bubble 'we may never know'",
+   "register": "paint"
+  }
+ ]
+}

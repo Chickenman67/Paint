@@ -1,0 +1,51 @@
+{
+  "segment": "HD 80606 b",
+  "round": 1,
+  "verdict": "ref_wins",
+  "confidence": "high",
+  "summary": "Ref wins on the painterly radial gradient signature, on the stickman-as-subject framing, on the clean white-band sans-serif header, and on the integrated hand-lettered 'So Close' label beat. Ours is structurally correct (orbit, sun, fever beat, shock waves) but the stickman is too small/corner-placed and the visuals are flat-shaded.",
+  "per_criterion": {
+    "style_fidelity": {"score": 3, "notes": "Same gap as seg 1: missing the painterly stipple texture / radial gradient signature on stars and planets. The ref's big yellow→orange→red sun with smooth radial gradient and no banding is the visual signature of the show."},
+    "layout": {"score": 5, "notes": "Ours uses title-strip + full-bleed illustration (Layout A), matches ref structure. Ref's title strip is WHITE with clean sans-serif; ours is BLACK with hand-wobbled yellow. Wrong fill and wrong typeface."},
+    "type": {"score": 3, "notes": "Ours has lower-case 'b' in t0 and t3 captions ('HD 80606 b is a gas giant on the most') — should be ALL CAPS per ref. The 'So Close' beat in ref t5 is a hand-lettered yellow-with-black-outline integrated label, not a floating caption — we don't have an equivalent beat."},
+    "palette": {"score": 4, "notes": "Ours is correct palette family (red gas giant, yellow sun, black starfield) but flat fills. Ref uses smooth radial gradient (yellow center → orange → red outer, no banding) and the gas giant has interior structure (red core visible through blue/yellow envelope, see t0_B)."},
+    "audio_alignment": {"score": 7, "notes": "Not visible in static frames. Re-evaluate after whisper alignment file is in place."},
+    "character": {"score": 3, "notes": "Ref stickman is BIG and CENTRAL — the SUBJECT of the frame. t0_B has stickman at ~50% frame height, awestruck face, hand raised. t1_B is JUST the stickman against empty starfield — a pure emotional beat with no diagram. Ours stickman is small (~10% frame) and corner-placed (t0, t3) or off-frame (t1, t2). The ref's beat pattern is: SCALE UP the stickman when the emotional beat lands, not shrink him to a stamp."},
+    "captions": {"score": 5, "notes": "t0 and t3 have lower-case 'b' (should be ALL CAPS). t5 caption 'WINDS AT KILOMETERS PER SECOND. / SUPERSONIC SHOCK WAVES.' violates §7 single-line rule. The 'So Close' integrated hand-lettered label is the ref's signature beat type for emotional peaks — we don't have it."}
+  },
+  "biggest_gap": {
+    "name": "STICKMAN SCALE AND FRAMING — stickman is the SUBJECT, not a corner stamp",
+    "description": "Reference seg 2 stickman is 40-50% of frame height, central or left-central, and is THE subject of the frame. The ref uses the stickman as the primary visual element during emotional beats (t0_B awestruck face, t1_B pure stickman against empty starfield). Ours stickman is 10% of frame, corner-placed, and reads as decoration. The ref's t1 is the most extreme example: a single stickman against empty starfield, no diagram at all — the entire beat is the surrogate's reaction. This is the surrogate anchor pattern from §6: 'if you can delete the narration and still get the emotional arc from the stickman shots, the segment is well-designed.' Ours fails this test.",
+    "fix": "In every beat that includes the stickman: (1) scale stickman to 40-50% of frame height (currently ~10%), (2) place him central or left-central (not corner), (3) add at least one beat per segment where the stickman is the SOLE subject (no diagram, no planet — just the character against the bg). The pure-stickman beat is the emotional climax of the segment, not filler."
+  },
+  "secondary_gaps": [
+    {
+      "name": "PAINTERLY RADIAL GRADIENT ON THE SUN (and planets)",
+      "description": "Ref sun is a smooth radial gradient yellow→orange→red with no banding. Ours sun is a flat yellow disc with a flat red core disc and a hard edge between them. The ref gas giant (t0_B) has a complex multi-color radial gradient (blue→dark red→bright red center) showing interior structure. Ours gas giant has a flat yellow envelope and a flat red core disc.",
+      "fix": "Implement work/lib/texture.py with: radial_gradient(size, colors, stops) for the painterly sun, banded_planet(size, base_rgb, n_bands, palette) for the gas giant. Use these in every star/planet render. Replace the flat-color disc renders in work/segments/hd80606/_frames_r2.py."
+    },
+    {
+      "name": "MISSING 'SO CLOSE' INTEGRATED HAND-LETTERED LABEL BEAT",
+      "description": "Ref t5_B is the 'So Close' beat: the planet engulfed in a red-orange flame halo, hand-lettered 'So Close' label INTEGRATED WITH the planet (yellow text with black outline, sitting on top of the planet's surface). Ours t5 has the shock-wave rings but no flame halo and no integrated label. This is a ref beat type — the integrated hand-lettered label is the emotional punctuation of the segment.",
+      "fix": "Add a 'flame_halo' card component to work/lib/cards.py: a wobbly red-orange radial gradient flame-shape around a planet. Add a 'integrated_label' component: hand-lettered text with a black outline that sits on top of a planet (not in a caption band). Use this as the climax beat of seg 2 (the moment of closest approach)."
+    },
+    {
+      "name": "WRONG HEADER TYPEFACE (same as seg 1)",
+      "description": "Ours uses wobbly hand-lettered yellow text in a black header strip. Ref uses clean sans-serif ALL CAPS in a WHITE band.",
+      "fix": "Same as seg 1: replace title-strip component. White band, Consolas Bold ALL CAPS, no stroke."
+    },
+    {
+      "name": "§7 TWO-LINE CAPTION ON t5",
+      "description": "'WINDS AT KILOMETERS PER SECOND. / SUPERSONIC SHOCK WAVES.' — 2 lines. Should be single line.",
+      "fix": "Compress to 'WINDS AT KM/S. SUPERSONIC SHOCK WAVES.' (39 chars) or similar. Add hard check in caption renderer."
+    },
+    {
+      "name": "ALL CAPS CASING VIOLATIONS ON t0, t3",
+      "description": "Captions have lower-case 'b' ('HD 80606 b is a gas giant on the most'). Ref uses ALL CAPS for everything.",
+      "fix": "Enforce ALL CAPS in caption rendering. Add a .upper() pass in the caption renderer before layout."
+    }
+  ],
+  "frames_reviewed": ["t0_A", "t1_A", "t2_A", "t3_A", "t4_A", "t5_A", "t0_B", "t1_B", "t2_B", "t3_B", "t4_B", "t5_B"],
+  "ours_label": "A (per _assignment.json: A=ours, B=ref)",
+  "ref_label": "B (per _assignment.json: A=ours, B=ref)"
+}

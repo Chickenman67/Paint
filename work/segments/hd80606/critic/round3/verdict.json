@@ -1,0 +1,115 @@
+{
+  "segment": "HD 80606 b",
+  "round": 3,
+  "target_duration_s": 40,
+  "winner": "ref_wins",
+  "margin": "narrower_than_round_2",
+  "criteria": {
+    "style_fidelity": {
+      "ours": 2,
+      "ref": 4,
+      "notes": "Ref nails the painterly stipple, banded gas-giant with hand-drawn striations, and the fire/spike aura around the close-pass planet. Ours' banded planet (t02) reads as a generic red/blue gradient with no stipple; the orange sun (t14/t20/t28) is a flat radial gradient. Wobbly outlines are present but the texture is missing."
+    },
+    "layout": {
+      "ours": 2,
+      "ref": 4,
+      "notes": "Ref uses one idea per card and makes the caption PART of the diagram ('SO CLOSE' overlay on planet, 'WINDS AT KM/S' on the aura). Ours t14/t20/t28 are three diagram-only beats (orbit + sun + planet) with NO caption anywhere on the card — the beat just hangs on an empty starfield. ours_t36 finally integrates caption+character+stamp, which is the closest we get to ref's discipline."
+    },
+    "type": {
+      "ours": 3,
+      "ref": 4,
+      "notes": "Ours uses ALL CAPS caption typography in a single family — good match for ref. Ref's type is heavier, bolder, with thick black outline so it stays legible when overlaid on a busy diagram; ours' captions (e.g. t36 'EVERY 40 DAYS. COOKED. FROZEN. COOKED.') are smaller and feel like a separate band, not integrated into the visual."
+    },
+    "palette": {
+      "ours": 2,
+      "ref": 4,
+      "notes": "Ref is disciplined: orange / yellow / black / cream. Every element in every frame pulls from that set. Ours splinters: blue orbit ellipse, red/blue banded planet, yellow sun, orange stamp, cream paper card — five different hues across six frames with no unifying logic. The HD 80606 b identity (a 'fever', a 'whiplash') should be encoded in a single hot-palette story; ours has no story."
+    },
+    "audio_alignment": {
+      "ours": 3,
+      "ref": 3,
+      "notes": "ours_t14 and ours_t20 are visually identical (planet on left, sun on right, no caption) — suggests a static hold across 6 seconds of audio. ref_t113 and ref_t119 are also visually identical, so this is a wash not a regression. ours_t08 has a clean single-card character beat. ours_t36 lands the 'every 40 days' stamp card. Snap-cut discipline is okay; the issue is what each card SHOWS during its hold, not when it cuts."
+    },
+    "character": {
+      "ours": 3,
+      "ref": 3,
+      "notes": "Round 2 gap 'stickman scale' is CLOSED: ours_t02 (~40%), ours_t08 (~50%), ours_t36 (~40%) all sit in ref's range. Round 2 gap 'expression variety' is CLOSED: scream (t02), worried/deadpan (t08), deadpan (t36) are three distinct expressions. Round 2 gap 'single-card composition' is PARTIALLY closed — t02 and t36 are clean, but t14/t20/t28 are stickman-less and caption-less. Ref has a stickman in t101 and t107 (50%+ scale, with strong poses); we match scale but our stickman is only in 3 of 6 frames."
+    }
+  },
+  "per_frame_notes": [
+    {
+      "ours": "ours_t02.png",
+      "ref": "ref_t101.png",
+      "topic": "intro / planet reveal",
+      "ours_notes": "Stickman (~40%) screaming with hand extended at the banded planet on the right. Character reaction is good. Planet reads as a generic red/blue gradient with no painterly stipple; no fire aura to signal 'hot close pass'.",
+      "ref_notes": "Stickman (~20%, smaller) on left, but the planet fills the right half with a banded gas-giant inside a fire/spike aura and 'HD 80606 B' header band. 'A FEVER EVERY FORTY DAYS' in heavy orange ALL CAPS top-left. The caption is the visual event.",
+      "verdict": "ref wins this pair — ref's caption-on-diagram integration and the fire aura do the work; ours' stickman is better but the planet reads flat."
+    },
+    {
+      "ours": "ours_t08.png",
+      "ref": "ref_t107.png",
+      "topic": "character beat / '4x Jupiter' scale",
+      "ours_notes": "Stickman alone on black starfield, hands-out worried expression. '4 X JUPITER' + 'A GAS GIANT ON A WILD ORBIT' caption top-left. Good size, good expression.",
+      "ref_notes": "Stickman alone (~50%, much larger) with open-mouth 'OH NO' / shocked expression and hand on hip. No caption, no diagram — pure character beat. The reference trusts the stickman to carry the beat solo.",
+      "verdict": "ref wins this pair — ref's pure-character beat is bolder and the stickman fills more of the frame; ours has the caption competing for attention. ours is a respectable second."
+    },
+    {
+      "ours": "ours_t14.png",
+      "ref": "ref_t113.png",
+      "topic": "orbit / close approach",
+      "ours_notes": "Orbit diagram: small planet on left, large orange/yellow sun on right, cyan ellipse, black starfield. NO stickman, NO caption. The card is three elements (orbit, sun, planet) but no text, no character.",
+      "ref_notes": "Massive yellow bold black-outlined 'SO CLOSE' text overlaid directly on the banded planet, with smaller yellow sun on the right. The caption IS the diagram — the text tells you the meaning, the planet is the picture.",
+      "verdict": "ref wins decisively — ref's caption-on-diagram integration is the single strongest design move in this segment. ours' empty starfield orbit diagram is the round's biggest miss."
+    },
+    {
+      "ours": "ours_t20.png",
+      "ref": "ref_t119.png",
+      "topic": "orbit / close approach (held)",
+      "ours_notes": "Identical to t14: same orbit diagram, no stickman, no caption. Static hold across 6 seconds.",
+      "ref_notes": "Identical to t113: same 'SO CLOSE' composition. Reference also holds a static frame, but the hold carries weight because the caption is integrated.",
+      "verdict": "ref wins by default — both hold static frames, but ref's hold has a caption embedded so it doesn't read as a frozen still."
+    },
+    {
+      "ours": "ours_t28.png",
+      "ref": "ref_t127.png",
+      "topic": "whip lash / winds",
+      "ours_notes": "Orbit diagram with planet now positioned near the sun on the right. Still no stickman, no caption. Same empty starfield problem.",
+      "ref_notes": "'WINDS AT KM/S' in heavy yellow black-outlined text overlaid on the banded planet inside the orange fire aura. Caption + planet + aura, all integrated, all on one card.",
+      "verdict": "ref wins decisively — same caption-on-diagram pattern; ours has no caption at all on this beat."
+    },
+    {
+      "ours": "ours_t36.png",
+      "ref": "ref_t135.png",
+      "topic": "rhythm / 'every 40 days'",
+      "ours_notes": "Stickman on left, 'EVERY 40 DAYS. COOKED. FROZEN. COOKED.' orange ALL CAPS caption top-left, paper-style card on right with '40' stamped in orange circle. This is our best frame — character + caption + stamp card all integrated.",
+      "ref_notes": "'So Close' yellow bold black-outlined text overlaid on the banded planet inside the fire aura, with a massive yellow/orange sun filling the right side. 'HD 80606 B' header band at top. Caption + diagram + character identity all in one composition.",
+      "verdict": "ours wins this pair — ours_t36 is the only frame in the round that matches ref's caption-on-diagram discipline. Closest we get to a clean ref-style beat."
+    }
+  ],
+  "round_3_progress_check": {
+    "round_2_gap_stickman_scale": "CLOSED — ours_t02/t08/t36 are 40-50% frame, in ref's range.",
+    "round_2_gap_expression_variety": "CLOSED — scream, worried, deadpan across three frames.",
+    "round_2_gap_cluttered_single_card_compositions": "PARTIALLY CLOSED — ours_t02 and ours_t36 are clean. ours_t14/t20/t28 still stack 3 elements (orbit + sun + planet) on a single beat with no visual rhythm change."
+  },
+  "biggest_gap": "Caption-on-diagram integration and palette discipline. Ref overlays huge yellow ALL-CAPS text as the visual event itself ('SO CLOSE' on planet, 'WINDS AT KM/S' on planet, 'A FEVER EVERY FORTY DAYS' top-left). The caption is not a separate text band — it sits ON the diagram, and the typography is heavy enough to read against a busy background. Ours leaves multiple diagram beats (t14, t20, t28) caption-less against empty black starfields, which kills the beat rhythm. The palette compounds it: ref is disciplined orange/yellow/black/cream; ours splinters into blue ellipse + red/blue planet + yellow sun + orange stamp + cream paper with no unifying logic. The HD 80606 b identity ('fever', 'whiplash', 'close pass') should be encoded in a single hot-palette story; ours has no story. Round 3 closed stickman scale and expression variety — the remaining gap is what each card SHOWS during its hold, not when it cuts.",
+  "sub_gaps": [
+    "Fire/spike aura missing: ref wraps the close-pass planet in orange flame spikes; ours' planet has no aura at all. The aura is the visual shorthand for 'this planet is being cooked'.",
+    "No stipple on planet portrait: ref's banded gas-giant has painterly stipple and hand-drawn striations; ours' planet (t02) is a smooth red/blue gradient. The stipple is half the Paint-Explainer look on planet portraits.",
+    "Header band ('HD 80606 b') missing: ref puts the planet name in a top header band on every frame; ours has no header band, so segment identity has to be re-established by the viewer each beat.",
+    "Stickman coverage: ref has the stickman in roughly half the frames; ours is in 3 of 6. The reference uses the stickman as a punctuation mark, ours uses him as a single beat.",
+    "Caption scale + weight: ref's captions are 60-80pt with thick black outline so they read against the diagram; ours' captions are smaller and live in a separate band, so they compete with the diagram instead of merging with it."
+  ],
+  "round_4_directives": [
+    "INTEGRATE CAPTIONS ONTO DIAGRAMS. Stop putting the caption in a separate text band. Overlay heavy ALL-CAPS text (60-80pt, thick black outline) directly on the planet, the sun, the orbit line — wherever the visual event is. This is ref's single strongest design move and ours' single biggest miss. Target frames: t14, t20, t28 must all carry an integrated caption like 'SO CLOSE' or '4 DAYS FROM COOKED' or 'PERIHELION'.",
+    "LOCK THE PALETTE TO ORANGE / YELLOW / BLACK / CREAM. This is a 'fever' planet — the whole segment should read as heat. Remove the blue orbit ellipse, remove the red/blue planet gradient, remove the cyan anywhere. The sun is yellow/orange, the planet is orange/red, the orbit is a thin cream line, the background is black, the text is yellow or orange with black outline. Five hues max; never let blue appear in this segment.",
+    "ADD A FIRE / SPIKE AURA around the close-pass planet in t14/t20/t28 (and the t02 intro). The aura is the visual code for 'this planet is being cooked right now' — ref uses it on every close-pass frame. Ours' planet has no aura, so the viewer has to read the caption to understand it's hot. Make the heat visible.",
+    "ADD A HEADER BAND ('HD 80606 b' in 72pt wobbly hand-lettered, with the segment accent color) on every frame, not just the intro. Ref puts the planet name in a top band on every frame so segment identity is always present. Ours loses the identity between frames.",
+    "ADD PAINTERLY STIPPLE TO THE PLANET PORTRAIT. Ref's banded gas-giant has hand-drawn striations and stipple; ours' planet is a smooth red/blue gradient. Lay 1-2px black stipple dots across the banded regions before the color fill, and use 2-3 hand-jittered striation lines per band. This is the single biggest style-fidelity gap.",
+    "PUT THE STICKMAN IN MORE BEATS. Ref has him in ~half the frames; ours has him in 3 of 6. The stickman is the emotional anchor — when the narrator says 'and then it gets worse', the viewer needs to see a face react. Target: at least 4 of 6 frames should have the stickman, with the perihelion and the 'frozen again' beats both carrying character reactions.",
+    "UPGRADE TYPE WEIGHT. Ref's captions are heavy black-outlined ALL CAPS that read against any background. Ours' captions are thinner and sit in a corner band. Either: (a) overlay heavy type on the diagram like ref, or (b) if a separate band is kept, the type must be 60pt+ with a 3-4px black outline so it stays legible against the starfield.",
+    "SNAP-CUT ON THE 'EVERY 40 DAYS' BEAT. ours_t36 already gets this right with the stamp card — keep that exact pattern. The 'COOKED. FROZEN. COOKED.' rhythm needs a snap cut to a new card at each clause, not a cross-fade. ours_t36 is the round's strongest frame because it follows this rule.",
+    "DIAGRAM HOLDS MUST CARRY INFORMATION. ours_t14 and ours_t20 are visually identical — a static hold across 6 seconds of audio with no visual change. Either: (a) animate the planet along the orbit (a 6-second motion-only transition, capped at 0.2s cross-fade), or (b) snap-cut to a new diagram card at the clause break. A static 6-second hold of the same frame is a dead beat."
+  ],
+  "verdict_confidence": "moderate",
+  "notes_for_orchestrator": "Round 3 made real progress — stickman scale and expression variety are now in spec. The remaining gap is no longer 'character' but 'what each card shows during its hold'. ours_t36 is the proof that we CAN match ref's discipline when we try. The round_4 directives are aimed at making t14/t20/t28 look more like t36, and at locking the palette to orange/yellow/black so the segment reads as a coherent 'fever' story. If round 4 integrates captions and locks the palette, this should be a coin-flip. If round 4 does not, ref will continue to win."
+}

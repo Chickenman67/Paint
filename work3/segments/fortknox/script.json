@@ -1,0 +1,366 @@
+{
+ "title": "Fort Knox - The Vault Nobody Has Seen",
+ "wrote_to": "segments/fortknox/script.json",
+ "target": {
+  "wpm": 165,
+  "max_sentence_words": 10,
+  "note": "short declaratives, one idea per beat. Little to no pause between sentences."
+ },
+ "narration": "This is the most secure building on Earth.\nEveryone in the country knows the name.\nAlmost nobody has ever been inside.\nIt holds the gold of other nations.\nNot only the gold of America.\nIt sits in the hills of Kentucky.\nA long low building made of brick.\nFrom the road it looks like a school.\nIt is not a school at all.\nThis is Fort Knox, Kentucky.\nWork began there in 1939.\nThe building was finished in 1944.\nFive years of poured concrete and stone.\nThe roof was modelled on Gothic halls.\nVaulted stone arches above the corridors.\nEurope, rebuilt in the middle of Kentucky.\nThe doors mattered more than the roof.\nThe main door weighs about 56 tons.\nIt is reportedly the heaviest vault door made.\nA round steel face, cropped by the frame.\nIt swings on a solid steel hinge.\nSteel plate, then concrete, then more steel.\nThe concrete runs right through the walls.\nThe walls are thicker than the doors.\nA castle built to outlast a siege.\nThe gold sits on nine floors.\nRows of bars stacked to the ceiling.\nThe reserve ran into the hundreds of billions.\nAt its peak it weighed 12,000 tonnes.\nThe stacks filled whole wings of it.\nMuch of that gold belongs to other governments.\nSmall national flags above one vault door.\nThe vault holds their gold as well.\nOnly a small share stays on site.\nOnly a few hundred tonnes remain.\nThe rest was moved out years ago.\nA visitor counter, a ledger, a stamp.\nThousands of people tour it every year.\nSchool field trips arrive each spring.\nA line of children in a corridor.\nThey walk above the stored gold.\nThey never walk below the gold.\nThe inner doors stay bolted shut.\nAlmost nobody alive has seen inside.",
+ "word_count": 300,
+ "est_wpm": 165,
+ "beats": [
+  {
+   "n": 1,
+   "id": "b01",
+   "beat": "HOOK",
+   "line": "This is the most secure building on Earth.",
+   "visual": "flat brick wall filling the whole frame, one gold-lit archway glowing in it; character tiny at the base, awed, looking up",
+   "register": "paint"
+  },
+  {
+   "n": 2,
+   "id": "b02",
+   "beat": "HOOK",
+   "line": "Everyone in the country knows the name.",
+   "visual": "character close-up, flat mouth, one eyebrow line raised; speech bubble 'everyone knows it'",
+   "register": "paint"
+  },
+  {
+   "n": 3,
+   "id": "b03",
+   "beat": "HOOK",
+   "line": "Almost nobody has ever been inside.",
+   "visual": "character shrugging at a chained gate, hands turned up; speech bubble 'been inside? no.'",
+   "register": "paint"
+  },
+  {
+   "n": 4,
+   "id": "b04",
+   "beat": "IMAGE",
+   "line": "It holds the gold of other nations.",
+   "visual": "open vault interior, long ranks of gold bars receding to the back wall",
+   "register": "paint"
+  },
+  {
+   "n": 5,
+   "id": "b05",
+   "beat": "PIVOT",
+   "line": "Not only the gold of America.",
+   "visual": "same vault, but the bars carry many small national flags on their ends; character pointing at them",
+   "register": "paint"
+  },
+  {
+   "n": 6,
+   "id": "b06",
+   "beat": "ESTABLISH",
+   "line": "It sits in the hills of Kentucky.",
+   "visual": "hand-drawn map of Kentucky, one dot marked in the north-central hills; label 'KENTUCKY'",
+   "register": "paint"
+  },
+  {
+   "n": 7,
+   "id": "b07",
+   "beat": "IMAGE",
+   "line": "A long low building made of brick.",
+   "visual": "long low brick building seen from the road, filling the full width of the frame, flat roofline",
+   "register": "paint"
+  },
+  {
+   "n": 8,
+   "id": "b08",
+   "beat": "FACT",
+   "line": "From the road it looks like a school.",
+   "visual": "the same building drawn with school windows and a bell tower; character standing small at the door",
+   "register": "paint"
+  },
+  {
+   "n": 9,
+   "id": "b09",
+   "beat": "REVEAL",
+   "line": "It is not a school at all.",
+   "visual": "the school windows and bell peel away, steel vault plates and bolts underneath; character deadpan",
+   "register": "paint"
+  },
+  {
+   "n": 10,
+   "id": "b10",
+   "beat": "TITLE",
+   "line": "This is Fort Knox, Kentucky.",
+   "visual": "title card, hand-lettered 'FORT KNOX' stamped across a gold bar, Kentucky outline behind it",
+   "register": "paint"
+  },
+  {
+   "n": 11,
+   "id": "b11",
+   "beat": "FACT",
+   "line": "Work began there in 1939.",
+   "visual": "old calendar page, the year 1939 circled in red pencil; shovel and trowel beside it",
+   "register": "paint"
+  },
+  {
+   "n": 12,
+   "id": "b12",
+   "beat": "FACT",
+   "line": "The building was finished in 1944.",
+   "visual": "calendar page beside it, 1944 circled, a line drawn between the two dates",
+   "register": "paint"
+  },
+  {
+   "n": 13,
+   "id": "b13",
+   "beat": "IMAGE",
+   "line": "Five years of poured concrete and stone.",
+   "visual": "site under construction, concrete mixer, timber forms, workers as simple flat figures",
+   "register": "paint"
+  },
+  {
+   "n": 14,
+   "id": "b14",
+   "beat": "FACT",
+   "line": "The roof was modelled on Gothic halls.",
+   "visual": "roof trusses being raised over the hall, Gothic pointed arches already set below them",
+   "register": "paint"
+  },
+  {
+   "n": 15,
+   "id": "b15",
+   "beat": "IMAGE",
+   "line": "Vaulted stone arches above the corridors.",
+   "visual": "interior corridor, stone vaulted arches receding overhead, lamps on the floor casting flat pools",
+   "register": "paint"
+  },
+  {
+   "n": 16,
+   "id": "b16",
+   "beat": "COMPARISON",
+   "line": "Europe, rebuilt in the middle of Kentucky.",
+   "visual": "the corridor arch drawn beside a European cathedral arch, side by side, matching shapes",
+   "register": "paint"
+  },
+  {
+   "n": 17,
+   "id": "b17",
+   "beat": "PIVOT",
+   "line": "The doors mattered more than the roof.",
+   "visual": "character pushing on a small steel door that does not move; speech bubble 'the doors matter'",
+   "register": "paint"
+  },
+  {
+   "n": 18,
+   "id": "b18",
+   "beat": "ESCALATE",
+   "line": "The main door weighs about 56 tons.",
+   "visual": "the round vault door drawn enormous, cropped by both frame edges; character tiny at its foot",
+   "register": "paint"
+  },
+  {
+   "n": 19,
+   "id": "b19",
+   "beat": "ESCALATE",
+   "line": "It is reportedly the heaviest vault door made.",
+   "visual": "the same door with a hand-lettered label '56 TONS' arced across it; character flattened against it",
+   "register": "paint"
+  },
+  {
+   "n": 20,
+   "id": "b20",
+   "beat": "ESCALATE",
+   "line": "A round steel face, cropped by the frame.",
+   "visual": "close on the door face: concentric steel rings, a wheel handle, deep bolt holes; character awed",
+   "register": "paint"
+  },
+  {
+   "n": 21,
+   "id": "b21",
+   "beat": "IMAGE",
+   "line": "It swings on a solid steel hinge.",
+   "visual": "the hinge block alone, drawn huge, a thick steel pin running through it",
+   "register": "paint"
+  },
+  {
+   "n": 22,
+   "id": "b22",
+   "beat": "FACT",
+   "line": "Steel plate, then concrete, then more steel.",
+   "visual": "door cross-section, layer by layer: steel plate, concrete, steel plate, each layer labelled",
+   "register": "paint"
+  },
+  {
+   "n": 23,
+   "id": "b23",
+   "beat": "ESCALATE",
+   "line": "The concrete runs right through the walls.",
+   "visual": "cross-section of the surrounding wall, concrete a solid mass past both frame edges",
+   "register": "paint"
+  },
+  {
+   "n": 24,
+   "id": "b24",
+   "beat": "REVEAL",
+   "line": "The walls are thicker than the doors.",
+   "visual": "the wall mass drawn taller than the door beside it, one word stamped across it: 'THICKER'",
+   "register": "paint"
+  },
+  {
+   "n": 25,
+   "id": "b25",
+   "beat": "COMPARISON",
+   "line": "A castle built to outlast a siege.",
+   "visual": "the building drawn as a small castle with towers and an arrow slit",
+   "register": "paint"
+  },
+  {
+   "n": 26,
+   "id": "b26",
+   "beat": "PIVOT",
+   "line": "The gold sits on nine floors.",
+   "visual": "cutaway of the building, nine stacked floors labelled, gold on each; character climbing the levels",
+   "register": "paint"
+  },
+  {
+   "n": 27,
+   "id": "b27",
+   "beat": "ESCALATE",
+   "line": "Rows of bars stacked to the ceiling.",
+   "visual": "gold bars stacked to the ceiling and past the top edge of the frame, rows going back",
+   "register": "paint"
+  },
+  {
+   "n": 28,
+   "id": "b28",
+   "beat": "FACT",
+   "line": "The reserve ran into the hundreds of billions.",
+   "visual": "huge hand-lettered figure 'HUNDREDS OF BILLIONS' painted across the gold stacks",
+   "register": "paint"
+  },
+  {
+   "n": 29,
+   "id": "b29",
+   "beat": "FACT",
+   "line": "At its peak it weighed 12,000 tonnes.",
+   "visual": "a scale comparison, a small car drawn under a gold bar; label 'about 1 kilo'",
+   "register": "paint"
+  },
+  {
+   "n": 30,
+   "id": "b30",
+   "beat": "ESCALATE",
+   "line": "The stacks filled whole wings of it.",
+   "visual": "the whole cutaway filled edge to edge with gold, no empty floor left showing",
+   "register": "paint"
+  },
+  {
+   "n": 31,
+   "id": "b31",
+   "beat": "FACT",
+   "line": "Much of that gold belongs to other governments.",
+   "visual": "ledger page open on a desk, a long column of country names with weights beside them",
+   "register": "paint"
+  },
+  {
+   "n": 32,
+   "id": "b32",
+   "beat": "IMAGE",
+   "line": "Small national flags above one vault door.",
+   "visual": "small national flags in a row painted along the wall above one vault door",
+   "register": "paint"
+  },
+  {
+   "n": 33,
+   "id": "b33",
+   "beat": "PIVOT",
+   "line": "The vault holds their gold as well.",
+   "visual": "character nodding at the flag row; speech bubble 'not all of it is ours'",
+   "register": "paint"
+  },
+  {
+   "n": 34,
+   "id": "b34",
+   "beat": "FACT",
+   "line": "Only a small share stays on site.",
+   "visual": "the full gold hall drawn, then the same hall drawn nearly bare; labels 'THEN' and 'TODAY'",
+   "register": "paint"
+  },
+  {
+   "n": 35,
+   "id": "b35",
+   "beat": "ESCALATE",
+   "line": "Only a few hundred tonnes remain.",
+   "visual": "a small cluster of bars alone in the middle of a wide empty floor; character small beside them",
+   "register": "paint"
+  },
+  {
+   "n": 36,
+   "id": "b36",
+   "beat": "FACT",
+   "line": "The rest was moved out years ago.",
+   "visual": "an arrow leaving the building, drawn in outline, pointing off the right edge of the frame",
+   "register": "paint"
+  },
+  {
+   "n": 37,
+   "id": "b37",
+   "beat": "IMAGE",
+   "line": "A visitor counter, a ledger, a stamp.",
+   "visual": "visitor counter with a ledger, an ink stamp, a guard desk in flat fills",
+   "register": "paint"
+  },
+  {
+   "n": 38,
+   "id": "b38",
+   "beat": "FACT",
+   "line": "Thousands of people tour it every year.",
+   "visual": "a queue of visitor figures at the counter, drawn as simple shapes, no faces",
+   "register": "paint"
+  },
+  {
+   "n": 39,
+   "id": "b39",
+   "beat": "FACT",
+   "line": "School field trips arrive each spring.",
+   "visual": "school bus parked outside, children as small flat figures filing toward the door",
+   "register": "paint"
+  },
+  {
+   "n": 40,
+   "id": "b40",
+   "beat": "IMAGE",
+   "line": "A line of children in a corridor.",
+   "visual": "a line of children from behind in a long bright corridor, one hand on the wall",
+   "register": "paint"
+  },
+  {
+   "n": 41,
+   "id": "b41",
+   "beat": "COMPARISON",
+   "line": "They walk above the stored gold.",
+   "visual": "the corridor floor drawn in cutaway, gold stacks visible right beneath their feet",
+   "register": "paint"
+  },
+  {
+   "n": 42,
+   "id": "b42",
+   "beat": "PIVOT",
+   "line": "They never walk below the gold.",
+   "visual": "the children stopped at a chained inner door; character holding a hand out, speech bubble 'not this way'",
+   "register": "paint"
+  },
+  {
+   "n": 43,
+   "id": "b43",
+   "beat": "ESCALATE",
+   "line": "The inner doors stay bolted shut.",
+   "visual": "the inner steel door shut, bolts drawn heavy across it, a red lamp above",
+   "register": "paint"
+  },
+  {
+   "n": 44,
+   "id": "b44",
+   "beat": "FINALE",
+   "line": "Almost nobody alive has seen inside.",
+   "visual": "night exterior, the building almost black, one gold-lit archway; character alone in the foreground, flat mouth, speech bubble 'never seen'",
+   "register": "paint"
+  }
+ ]
+}

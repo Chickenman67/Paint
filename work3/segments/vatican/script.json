@@ -1,0 +1,318 @@
+{
+ "title": "Vatican Archives - The Room With No Windows",
+ "wrote_to": "segments/vatican/script.json",
+ "target": {
+  "wpm": 165,
+  "max_sentence_words": 10,
+  "note": "short declaratives, one idea per beat. Little to no pause between sentences."
+ },
+ "narration": "Beneath Vatican City there is an archive.\nThe rooms down there have no windows.\nThe place is called the Vatican Archives.\nThe archive doors opened in 1939.\nThey opened once, for outside scholars.\nThen the doors closed again, quietly.\nThe rooms run deep under the hill.\nThe shelves stretch out for kilometres.\nA wooden ladder slides along a rail.\nNo electric light is allowed down there.\nEvery window was walled up on purpose.\nNobody may photograph a single page.\nNot even a phone screen is allowed.\nA camera flash would harm the paper.\nSome of that paper cannot be opened.\nThe old pages have fused together.\nOpen them and the paper tears.\nSo most of those boxes stay shut.\nSome documents are never consulted again.\nThey were catalogued once, then shelved.\nA single index card, one line on it.\nThat one line is the whole record.\nFragile pages are filmed instead of opened.\nOther pages stay closed for ever.\nA microfilm reel beside a sealed box.\nThe shelving system itself is kept quiet.\nFew people know how the stacks run.\nThe actual plan is filed elsewhere, upstairs.\nNobody has ever carried it down.\nA reader lost between two tall shelves.\nThe Vatican has shelved many older records.\nSome have stayed shut for years.\nOthers open for a chosen few only.\nAccess is a favour, not a right.\nA hand holding out a small key.\nThe stacks hold centuries nobody has read.\nNobody knows what is on the lowest shelves.\nThe dark down there is absolute.",
+ "word_count": 255,
+ "est_wpm": 165,
+ "beats": [
+  {
+   "n": 1,
+   "id": "b01",
+   "beat": "HOOK",
+   "line": "Beneath Vatican City there is an archive.",
+   "visual": "cross-section of a hill under Vatican City, one dark chamber cut into the rock, filling the frame",
+   "register": "paint"
+  },
+  {
+   "n": 2,
+   "id": "b02",
+   "beat": "HOOK",
+   "line": "The rooms down there have no windows.",
+   "visual": "close on a windowless stone wall, bricks filled in where glass would be",
+   "register": "paint"
+  },
+  {
+   "n": 3,
+   "id": "b03",
+   "beat": "TITLE",
+   "line": "The place is called the Vatican Archives.",
+   "visual": "hand-lettered 'THE VATICAN ARCHIVES' stamped tall across the archive door",
+   "register": "paint"
+  },
+  {
+   "n": 4,
+   "id": "b04",
+   "beat": "FACT",
+   "line": "The archive doors opened in 1939.",
+   "visual": "old calendar page with the year 1939 ringed in red pencil",
+   "register": "paint"
+  },
+  {
+   "n": 5,
+   "id": "b05",
+   "beat": "FACT",
+   "line": "They opened once, for outside scholars.",
+   "visual": "a small group of scholars at a plain wooden table, no ornament",
+   "register": "paint"
+  },
+  {
+   "n": 6,
+   "id": "b06",
+   "beat": "PIVOT",
+   "line": "Then the doors closed again, quietly.",
+   "visual": "the same heavy door shut again, character standing deadpan before it",
+   "register": "paint"
+  },
+  {
+   "n": 7,
+   "id": "b07",
+   "beat": "ESTABLISH",
+   "line": "The rooms run deep under the hill.",
+   "visual": "cutaway of stacked chambers descending under the hill, each one deeper than the last",
+   "register": "paint"
+  },
+  {
+   "n": 8,
+   "id": "b08",
+   "beat": "IMAGE",
+   "line": "The shelves stretch out for kilometres.",
+   "visual": "one endless shelf run filling the frame edge to edge, receding to no end",
+   "register": "paint"
+  },
+  {
+   "n": 9,
+   "id": "b09",
+   "beat": "IMAGE",
+   "line": "A wooden ladder slides along a rail.",
+   "visual": "wooden rolling ladder hooked onto a shelf rail, close",
+   "register": "paint"
+  },
+  {
+   "n": 10,
+   "id": "b10",
+   "beat": "FACT",
+   "line": "No electric light is allowed down there.",
+   "visual": "bare bulb behind a wire cage, switched off; label 'NO ELECTRIC LIGHT'",
+   "register": "paint"
+  },
+  {
+   "n": 11,
+   "id": "b11",
+   "beat": "ESTABLISH",
+   "line": "Every window was walled up on purpose.",
+   "visual": "mason's blocked-up window arch, fresh brick inside an old stone frame",
+   "register": "paint"
+  },
+  {
+   "n": 12,
+   "id": "b12",
+   "beat": "PIVOT",
+   "line": "Nobody may photograph a single page.",
+   "visual": "a hand holding a camera below a page, red slash across it; character shrugging",
+   "register": "paint"
+  },
+  {
+   "n": 13,
+   "id": "b13",
+   "beat": "ESCALATE",
+   "line": "Not even a phone screen is allowed.",
+   "visual": "phone screen glowing flat on a cradle beside a parchment sheet",
+   "register": "paint"
+  },
+  {
+   "n": 14,
+   "id": "b14",
+   "beat": "COMPARISON",
+   "line": "A camera flash would harm the paper.",
+   "visual": "camera flash burst drawn as a white star over brittle brown paper",
+   "register": "paint"
+  },
+  {
+   "n": 15,
+   "id": "b15",
+   "beat": "FACT",
+   "line": "Some of that paper cannot be opened.",
+   "visual": "an open box of fused pages, edges welded in a single pale block",
+   "register": "paint"
+  },
+  {
+   "n": 16,
+   "id": "b16",
+   "beat": "ESCALATE",
+   "line": "The old pages have fused together.",
+   "visual": "close on two pages stuck face to face, a torn corner hanging loose",
+   "register": "paint"
+  },
+  {
+   "n": 17,
+   "id": "b17",
+   "beat": "ESCALATE",
+   "line": "Open them and the paper tears.",
+   "visual": "a page being lifted and splitting, jagged tear line in red",
+   "register": "paint"
+  },
+  {
+   "n": 18,
+   "id": "b18",
+   "beat": "REVEAL",
+   "line": "So most of those boxes stay shut.",
+   "visual": "lid lowered on a wooden box, hands flat on the shut top",
+   "register": "paint"
+  },
+  {
+   "n": 19,
+   "id": "b19",
+   "beat": "PIVOT",
+   "line": "Some documents are never consulted again.",
+   "visual": "character reaching for a box, then stopping; speech bubble 'not this one'",
+   "register": "paint"
+  },
+  {
+   "n": 20,
+   "id": "b20",
+   "beat": "FACT",
+   "line": "They were catalogued once, then shelved.",
+   "visual": "an old catalogue page with one single line of handwriting, the rest blank",
+   "register": "paint"
+  },
+  {
+   "n": 21,
+   "id": "b21",
+   "beat": "IMAGE",
+   "line": "A single index card, one line on it.",
+   "visual": "one index card in a card tray, most of the tray empty around it",
+   "register": "paint"
+  },
+  {
+   "n": 22,
+   "id": "b22",
+   "beat": "REVEAL",
+   "line": "That one line is the whole record.",
+   "visual": "magnifier over that one line of writing, character awed",
+   "register": "paint"
+  },
+  {
+   "n": 23,
+   "id": "b23",
+   "beat": "FACT",
+   "line": "Fragile pages are filmed instead of opened.",
+   "visual": "a reel-to-reel microfilm machine, a page flattened under the lens",
+   "register": "paint"
+  },
+  {
+   "n": 24,
+   "id": "b24",
+   "beat": "ESCALATE",
+   "line": "Other pages stay closed for ever.",
+   "visual": "a sealed box on a shelf stamped with a red 'CLOSED' band",
+   "register": "paint"
+  },
+  {
+   "n": 25,
+   "id": "b25",
+   "beat": "COMPARISON",
+   "line": "A microfilm reel beside a sealed box.",
+   "visual": "microfilm reel on the left, sealed box on the right, drawn to the same size",
+   "register": "paint"
+  },
+  {
+   "n": 26,
+   "id": "b26",
+   "beat": "PIVOT",
+   "line": "The shelving system itself is kept quiet.",
+   "visual": "a diagram of the whole stack layout, half covered by a hand",
+   "register": "paint"
+  },
+  {
+   "n": 27,
+   "id": "b27",
+   "beat": "REVEAL",
+   "line": "Few people know how the stacks run.",
+   "visual": "character squinting at a shelf-end placard, shoulders hunched",
+   "register": "paint"
+  },
+  {
+   "n": 28,
+   "id": "b28",
+   "beat": "FACT",
+   "line": "The actual plan is filed elsewhere, upstairs.",
+   "visual": "a plan rolled up and locked in an upstairs drawer, labelled in a different hand",
+   "register": "paint"
+  },
+  {
+   "n": 29,
+   "id": "b29",
+   "beat": "ESCALATE",
+   "line": "Nobody has ever carried it down.",
+   "visual": "an empty hand leaving the stairs, no plan in it; floor line drawn as a threshold",
+   "register": "paint"
+  },
+  {
+   "n": 30,
+   "id": "b30",
+   "beat": "IMAGE",
+   "line": "A reader lost between two tall shelves.",
+   "visual": "character small, seen from above, wedged between two towering shelf faces",
+   "register": "paint"
+  },
+  {
+   "n": 31,
+   "id": "b31",
+   "beat": "FACT",
+   "line": "The Vatican has shelved many older records.",
+   "visual": "shelf row with a wide dark gap where bound volumes should sit",
+   "register": "paint"
+  },
+  {
+   "n": 32,
+   "id": "b32",
+   "beat": "ESCALATE",
+   "line": "Some have stayed shut for years.",
+   "visual": "a wall calendar with a decade of pages unturned, thick and swollen",
+   "register": "paint"
+  },
+  {
+   "n": 33,
+   "id": "b33",
+   "beat": "FACT",
+   "line": "Others open for a chosen few only.",
+   "visual": "one box drawn out on a table under a lamp, three people standing at a respectful distance",
+   "register": "paint"
+  },
+  {
+   "n": 34,
+   "id": "b34",
+   "beat": "PIVOT",
+   "line": "Access is a favour, not a right.",
+   "visual": "a hand held out flat, palm up; character looking away from it",
+   "register": "paint"
+  },
+  {
+   "n": 35,
+   "id": "b35",
+   "beat": "IMAGE",
+   "line": "A hand holding out a small key.",
+   "visual": "one small key resting in an open palm, flat fills, plain background",
+   "register": "paint"
+  },
+  {
+   "n": 36,
+   "id": "b36",
+   "beat": "FINALE",
+   "line": "The stacks hold centuries nobody has read.",
+   "visual": "vast shelf run again, this time packed with unlabelled boxes, none of them open",
+   "register": "paint"
+  },
+  {
+   "n": 37,
+   "id": "b37",
+   "beat": "FINALE",
+   "line": "Nobody knows what is on the lowest shelves.",
+   "visual": "character at the bottom of a shelf, looking down; speech bubble 'nobody knows'",
+   "register": "paint"
+  },
+  {
+   "n": 38,
+   "id": "b38",
+   "beat": "FINALE",
+   "line": "The dark down there is absolute.",
+   "visual": "the lowest shelf in near-total black, only the character awed at the edge of the dark",
+   "register": "paint"
+  }
+ ]
+}

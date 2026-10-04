@@ -1,0 +1,49 @@
+{
+  "round": 6,
+  "verdict_type": "blind_adjudication",
+  "date": "2026-09-30",
+  "method": {
+    "blinding": "Frames re-copied with a FRESH random per-pair flip into critic_blind2_r6/ (4 of 11 pairs flipped). Key sealed in work/segments/_KEY2_SEALED.json, deliberately NOT read until all 11 verdicts were written to _r6_blind_notes.md. The prior blinding (critic_blind_r6/) was uniform A=ours, which is itself a bias vector.",
+    "why_main_loop": "Subagent and Workflow critics cannot run: free-stack returns 400 'no confirmed vision support', sonnet requires an unavailable opencode key, opus/fable do not resolve as aliases, haiku is Cloudflare-blocked. The main loop HAS vision. The orchestrator was re-blinded rather than allowed to judge known provenance.",
+    "adjudicator_caveat": "The orchestrator had previously read the round-6 _KEY.json, so it was unblinded going in. The re-blind with fresh random flips was the mitigation. Residual risk: the adjudicator has now seen reference frames in earlier (unblinded) inspection, so a subtle prior toward recognizing the reference's look cannot be fully excluded."
+  },
+  "tally": {
+    "ours_wins": 10,
+    "ref_wins": 1,
+    "total_pairs": 11,
+    "by_segment": {
+      "hd188753": { "ours_wins": 5, "ref_wins": 1 },
+      "hd80606": { "ours_wins": 5, "ref_wins": 0 }
+    }
+  },
+  "confidence": "CONTAMINATED — do not treat as a clean win",
+  "pairing_defect": {
+    "finding": "At least 4 of the 11 reference-side frames are NOT frames from work/ref_full.mp4. They are smooth airbrushed radial-gradient renders of suns/planets with no hand-drawn linework, no flat-fill wobble, and no character. One has a mouse cursor composited into it. At least one carries a title strip reading a DIFFERENT segment name than the segment it was paired against.",
+    "consequence": "Our frames were compared partly against weaker, off-genre, and mis-sourced competition. The 10/11 margin is therefore inflated. The wins are genuine on craft grounds (composed cards, integrated captions, painterly texture, recurring character) but the score overstates how far ahead we are versus the actual reference.",
+    "action_required": "Re-extract the reference-side frames from ref_full.mp4 at verified chapter offsets and re-run this comparison before any round-7 decision."
+  },
+  "per_pair": [
+    { "pair": 1, "segment": "hd188753", "ours_t": 2, "picked": "B", "winner": "ours", "margin": "decisive", "note": "Loser side was a 2x2 contact sheet, not a 16:9 card - wrong aspect, four compositions, different visual language. Not a comparable frame at any timestamp." },
+    { "pair": 2, "segment": "hd188753", "ours_t": 10, "picked": "A", "winner": "ours", "margin": "narrow", "note": "Reference-side had better character work (expressive pose, worried mouth) but carried a hard vertical seam artifact top-to-bottom and a one-armed floating silhouette. Our side had a stray red stroke across the torso and a head fused to a sun disc. Craft defects outranked character advantage." },
+    { "pair": 3, "segment": "hd188753", "ours_t": 20, "picked": "B", "winner": "ours", "margin": "clear", "note": "The one pair where the more polished frame lost. Reference side was a perfectly smooth airbrushed sun with zero hand-drawn linework, no caption, no character. The question is which is better AS a Paint-Explainer frame, not which is prettier." },
+    { "pair": 4, "segment": "hd188753", "ours_t": 35, "picked": "A", "winner": "ref", "margin": "narrow (contested)", "note": "OUR ONLY LOSS. Our side was a lone stickman on a moon surface, feet planted, correct 5-6 head proportion, natural arms, compliant two-eyes-and-thin-mouth face - the most 6-compliant character in the segment - but it carried NO caption. The side that won was preferred on scene-based house style. This verdict is genuinely close and should be re-examined; the opposing frame's head was partly occluded by a red sun, which argues against it." },
+    { "pair": 5, "segment": "hd188753", "ours_t": 50, "picked": "A", "winner": "ours", "margin": "clear", "note": "Ours carried a distinct new expression (relaxed smile - the only positive emotion in the segment) plus painterly stipple and a hand-drawn orbit ring. The other side had a mouse cursor composited into the frame and off-palette neon green." },
+    { "pair": 6, "segment": "hd188753", "ours_t": 60, "picked": "A", "winner": "ours", "margin": "decisive", "note": "Ours was a composed frame with character, integrated type, and world. The other side was a bare text card on an empty starfield - the exact 'dropped to pure text' failure the round-5 critic named." },
+    { "pair": 1, "segment": "hd80606", "ours_t": 3, "picked": "A", "winner": "ours", "margin": "clear", "note": "Composed title card: character as hero at ~72% height, two-level gold type, '4 X JUPITER' annotation carrying the fact. Opposing side repeated the vertical seam and malformed figure." },
+    { "pair": 2, "segment": "hd80606", "ours_t": 10, "picked": "A", "winner": "ours", "margin": "clear but PAIRING DEFECTIVE", "note": "Ours repeated pair 1's title card across a 7s gap, meaning the sampling points landed on the same card; meanwhile the opposing side had drifted to a generic sun belonging to no segment. Even a good frame loses a mismatched comparison. Finding: the title card is held far too long and critic sampling must be spread across distinct cards." },
+    { "pair": 3, "segment": "hd80606", "ours_t": 20, "picked": "B", "winner": "ours", "margin": "clear", "note": "Ours was a fully-composed PERIHELION card: banded planet, '800X STARLIGHT' integrated on the subject, character, fire aura, locked orange/cream palette, painterly stipple. The other side was a well-drawn but completely unoccupied landscape - no character, no subject, no caption." },
+    { "pair": 4, "segment": "hd80606", "ours_t": 30, "picked": "A", "winner": "ours", "margin": "clear", "note": "Ours carried subject + integrated fact ('BACK OUT' on the planet) + character + palette. The other side was a large character head on a blank white field with no setting and no information." },
+    { "pair": 5, "segment": "hd80606", "ours_t": 37, "picked": "A", "winner": "ours", "margin": "clear", "note": "Ours carried subject + integrated fact ('WINDS AT KM/S') + character + painterly texture. The other side was a handsome but craftless airbrushed object render." }
+  ],
+  "biggest_gap": "STICKMAN ANATOMY AND THE MISSING SHIRT. Across our winning frames the recurring character regresses between variants: a stiff T-pose/antenna-arm build, a cream mannequin build with circular joint blobs at every joint, and a correct build (seg-1 pair 4) that is only used occasionally. There is no single canonical figure the audience can lock onto - which defeats the entire purpose of a recurring character. Compounding this, NO card in either segment gives the character the canonical accent shirt, so he has no signature and no consistent silhouette. Secondary gaps: (a) several cards carry no caption at all, (b) a stray red stroke runs down the torso in seg-1 pair 2, (c) the type covers the character's face in seg-1 pair 6, (d) seg 2 holds its title card across a 7s+ span.",
+  "next_round_directives": [
+    "Pick ONE canonical stickman build and use it everywhere. The mannequin-with-joint-blobs and the T-pose are two different characters. Seg-1 pair 4 (planted feet, natural arms, 5-6 heads, two eyes + thin mouth) is the correct reference - reproduce it in every frame.",
+    "Give the character his canonical accent shirt on every appearance. Without it he has no signature.",
+    "No card goes out without a caption unless it is a deliberate 1-2s establishing shot.",
+    "Fix the stray red stroke artifact on the torso (seg-1 pair 2).",
+    "Do not place type across the character's face (seg-1 pair 6) - offset the label.",
+    "Cut the seg-2 title card to 2-3s instead of holding it 7s+.",
+    "Re-extract all reference-side frames from ref_full.mp4 at verified offsets and re-run this blind comparison before trusting any round-7 decision."
+  ],
+  "cap_note": "CLAUDE.md section 8 caps a segment at 5 rounds. Both segments are at 6. Per the user's ruling the cap is ENFORCED AS WRITTEN - no round 7 is authorized. The 10/11 result does not override the cap; it is recorded here as the round-6 verdict and both segments are flagged for human review."
+}

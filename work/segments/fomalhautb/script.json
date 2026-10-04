@@ -1,0 +1,112 @@
+{
+ "title": "Fomalhaut b: The First Planet We Ever Saw. Maybe.",
+ "wrote_to": "fomalhautb/script.json",
+ "target": {
+  "wpm": 160,
+  "max_sentence_words": 10,
+  "note": "v2: short declaratives, simple words, one idea per beat"
+ },
+ "narration": "Fomalhaut is the brightest star in the autumn sky. Easy to spot. Hard to forget.\nAround it lies a ring. A wide, thin belt of dust and ice. It sits far past where any planet should be.\nIn 2008, something inside that ring caught the light and held it.\nThe first planet ever imaged in visible light around a star that was not our Sun.\nThat was the headline. The whole field sat back. That was supposed to be the end of the argument.\nIt was not the end. The signal is so faint that some astronomers still call it a dust cloud.\nJust dust, kicked up by something invisible passing through the ring on its way out.\nOr a real world, holding that whole belt in its gravity.\nSame light. Same picture. Two very different things. No telescope alive can tell them apart.\nThen there is the orbit. It swings in close to the star, then throws itself far out into the cold.\nAn orbit that wild does not stay tidy for long.\nOne bad pass. One nudge from that star. And it never comes back around.\nSo the likeliest ending is a long, silent fall out of the system. Nothing left out there to catch it.\nThe first planet we ever saw in visible light. Maybe a cloud. Maybe a world. Maybe already gone.",
+ "word_count": 226,
+ "est_wpm": 160,
+ "beats": [
+  {
+   "n": 1,
+   "id": "hook_brightest_star",
+   "beat": "HOOK",
+   "line": "Fomalhaut is the brightest star in the autumn sky. Easy to spot. Hard to forget.",
+   "visual": "big bright star with rays; character looking up, speech bubble 'you have seen it'"
+  },
+  {
+   "n": 2,
+   "id": "the_ring",
+   "beat": "RING",
+   "line": "Around it lies a ring. A wide, thin belt of dust and ice. It sits far past where any planet should be.",
+   "visual": "wide edge-on dust ring around the star; yellow label 'a ring, way too far out'"
+  },
+  {
+   "n": 3,
+   "id": "light_in_the_ring",
+   "beat": "THE_LIGHT",
+   "line": "In 2008, something inside that ring caught the light and held it.",
+   "visual": "a bright dot inside the ring holding the light; red circle drawn around it"
+  },
+  {
+   "n": 4,
+   "id": "first_visible_planet",
+   "beat": "FIRST_SIGHT",
+   "line": "The first planet ever imaged in visible light around a star that was not our Sun.",
+   "visual": "the dot labelled 'first planet ever seen'; big number '1st'"
+  },
+  {
+   "n": 5,
+   "id": "the_headline",
+   "beat": "HEADLINE",
+   "line": "That was the headline. The whole field sat back. That was supposed to be the end of the argument.",
+   "visual": "character awed, speech bubble 'case closed'"
+  },
+  {
+   "n": 6,
+   "id": "not_the_end",
+   "beat": "DOUBT",
+   "line": "It was not the end. The signal is so faint that some astronomers still call it a dust cloud.",
+   "visual": "the faint dot, confused circles; red label 'maybe just dust'"
+  },
+  {
+   "n": 7,
+   "id": "maybe_dust",
+   "beat": "DUST",
+   "line": "Just dust, kicked up by something invisible passing through the ring on its way out.",
+   "visual": "a dust puff streaming through the ring on a dashed path"
+  },
+  {
+   "n": 8,
+   "id": "maybe_world",
+   "beat": "WORLD",
+   "line": "Or a real world, holding that whole belt in its gravity.",
+   "visual": "a small world at the ring's edge, curved gravity lines"
+  },
+  {
+   "n": 9,
+   "id": "two_things_same_pixels",
+   "beat": "AMBIGUOUS",
+   "line": "Same light. Same picture. Two very different things. No telescope alive can tell them apart.",
+   "visual": "the same dot shown twice, labelled 'cloud' and 'world'; yellow confusion circles"
+  },
+  {
+   "n": 10,
+   "id": "the_orbit",
+   "beat": "ORBIT",
+   "line": "Then there is the orbit. It swings in close to the star, then throws itself far out into the cold.",
+   "visual": "a wild oval orbit, close pass at the star then a long far reach off-frame"
+  },
+  {
+   "n": 11,
+   "id": "orbit_not_tidy",
+   "beat": "UNTIDY",
+   "line": "An orbit that wild does not stay tidy for long.",
+   "visual": "the oval wobbling; red arrow showing instability"
+  },
+  {
+   "n": 12,
+   "id": "one_bad_pass",
+   "beat": "BAD_PASS",
+   "line": "One bad pass. One nudge from that star. And it never comes back around.",
+   "visual": "a close pass by the star, then the path breaks off; character worried"
+  },
+  {
+   "n": 13,
+   "id": "the_long_fall",
+   "beat": "THE_FALL",
+   "line": "So the likeliest ending is a long, silent fall out of the system. Nothing left out there to catch it.",
+   "visual": "the world sliding off the frame edge into empty dark; speech bubble 'gone'"
+  },
+  {
+   "n": 14,
+   "id": "cloud_world_or_gone",
+   "beat": "FINALE",
+   "line": "The first planet we ever saw in visible light. Maybe a cloud. Maybe a world. Maybe already gone.",
+   "visual": "the dot fading out; three short labels 'cloud / world / gone'; character alone"
+  }
+ ]
+}

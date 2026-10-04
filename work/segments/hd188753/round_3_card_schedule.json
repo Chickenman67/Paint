@@ -1,0 +1,93 @@
+[
+  {
+    "id": "intro",
+    "start": 0.0,
+    "end": 2.64,
+    "expression": "oval",
+    "pose": "standing"
+  },
+  {
+    "id": "not_a_line",
+    "start": 2.76,
+    "end": 4.5,
+    "expression": "smirk",
+    "pose": "shrugged"
+  },
+  {
+    "id": "waltz",
+    "start": 4.82,
+    "end": 5.68,
+    "expression": "flat",
+    "pose": "standing"
+  },
+  {
+    "id": "three_suns_detail",
+    "start": 6.02,
+    "end": 11.36,
+    "expression": "squint",
+    "pose": "pointing"
+  },
+  {
+    "id": "planet_portrait",
+    "start": 12.2,
+    "end": 21.94,
+    "expression": "oval",
+    "pose": "hands_up"
+  },
+  {
+    "id": "konacki",
+    "start": 21.94,
+    "end": 30.28,
+    "expression": "flat",
+    "pose": "standing"
+  },
+  {
+    "id": "orbit_diagram",
+    "start": 30.28,
+    "end": 33.82,
+    "expression": "worried",
+    "pose": "pointing"
+  },
+  {
+    "id": "force_diagram",
+    "start": 33.82,
+    "end": 38.42,
+    "expression": "scream",
+    "pose": "cowering"
+  },
+  {
+    "id": "wobble_orbit",
+    "start": 38.42,
+    "end": 46.06,
+    "expression": "worried",
+    "pose": "shrugged"
+  },
+  {
+    "id": "no_idea_weather",
+    "start": 46.06,
+    "end": 51.68,
+    "expression": "terrified",
+    "pose": "cowering"
+  },
+  {
+    "id": "calendar_lie",
+    "start": 51.68,
+    "end": 58.56,
+    "expression": "sad_smile",
+    "pose": "shrugged"
+  },
+  {
+    "id": "sits_there",
+    "start": 58.56,
+    "end": 63.6,
+    "expression": "relief",
+    "pose": "hands_down"
+  },
+  {
+    "id": "lineup_grid",
+    "start": 63.6,
+    "end": 64.64,
+    "expression": "frown",
+    "pose": "pointing"
+  }
+]

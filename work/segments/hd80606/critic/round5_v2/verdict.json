@@ -1,0 +1,43 @@
+{
+  "segment": "hd80606",
+  "round": "5v2",
+  "verdict": "ours_wins",
+  "ours_wins_count": 6,
+  "ref_wins_count": 0,
+  "pairs_analyzed": 6,
+  "paradigm_shift_closed": true,
+  "offset_confirmed": true,
+  "stickman_integration_analysis": {
+    "pair_1_t2_vs_t12": {
+      "ours_has_stickman": true,
+      "ref_has_stickman": true,
+      "better_embedding": "tie - both integrate stickman into planetary scene"
+    },
+    "pair_2_t8_vs_t18": {
+      "ours_has_stickman": true,
+      "ref_has_stickman": false,
+      "better_embedding": "ours - maintains character presence in orbital diagram vs pure diagram"
+    },
+    "pair_3_t14_vs_t24": {
+      "ours_has_stickman": true,
+      "ref_has_stickman": false,
+      "better_embedding": "ours - stickman reacting to sun vs abstract multi-star diagram"
+    },
+    "pair_4_t20_vs_t30": {
+      "ours_has_stickman": true,
+      "ref_has_stickman": false,
+      "better_embedding": "ours - stickman under radiating sun vs empty crater surface"
+    },
+    "pair_5_t28_vs_t38": {
+      "ours_has_stickman": true,
+      "ref_has_stickman": true,
+      "better_embedding": "ours - distressed expression clearly visible vs neutral standing pose"
+    },
+    "pair_6_t36_vs_t46": {
+      "ours_has_stickman": true,
+      "ref_has_stickman": false,
+      "better_embedding": "ours - stickman on calendar showing passage of time vs pure planet illustration"
+    }
+  },
+  "biggest_remaining_gap": "None identified - ours successfully implements stickman-in-scene paradigm across all 6 sampled moments. Ref uses stickman in only 2 of 6 frames, with 4 frames showing pure diagrams without character anchoring."
+}

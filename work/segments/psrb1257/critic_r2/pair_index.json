@@ -1,0 +1,188 @@
+[
+ {
+  "n": 1,
+  "id": "hook_dead",
+  "our_t": 1.13,
+  "ref_t": 205.753
+ },
+ {
+  "n": 2,
+  "id": "hook_talking",
+  "our_t": 3.37,
+  "ref_t": 207.244
+ },
+ {
+  "n": 3,
+  "id": "hook_not_alone",
+  "our_t": 5.66,
+  "ref_t": 208.769
+ },
+ {
+  "n": 4,
+  "id": "psr_size",
+  "our_t": 8.21,
+  "ref_t": 210.467
+ },
+ {
+  "n": 5,
+  "id": "psr_collapse",
+  "our_t": 10.97,
+  "ref_t": 212.305
+ },
+ {
+  "n": 6,
+  "id": "psr_spin",
+  "our_t": 13.49,
+  "ref_t": 213.983
+ },
+ {
+  "n": 7,
+  "id": "psr_rate",
+  "our_t": 15.72,
+  "ref_t": 215.468
+ },
+ {
+  "n": 8,
+  "id": "psr_beams",
+  "our_t": 17.82,
+  "ref_t": 216.867
+ },
+ {
+  "n": 9,
+  "id": "psr_lighthouse",
+  "our_t": 20.24,
+  "ref_t": 218.479
+ },
+ {
+  "n": 10,
+  "id": "psr_name",
+  "our_t": 23.48,
+  "ref_t": 220.636
+ },
+ {
+  "n": 11,
+  "id": "planet_masses",
+  "our_t": 26.72,
+  "ref_t": 222.794
+ },
+ {
+  "n": 12,
+  "id": "planet_minefield",
+  "our_t": 30.05,
+  "ref_t": 225.011
+ },
+ {
+  "n": 13,
+  "id": "planet_periods",
+  "our_t": 33.69,
+  "ref_t": 227.435
+ },
+ {
+  "n": 14,
+  "id": "how_find",
+  "our_t": 36.85,
+  "ref_t": 229.54
+ },
+ {
+  "n": 15,
+  "id": "how_signature",
+  "our_t": 40.18,
+  "ref_t": 231.757
+ },
+ {
+  "n": 16,
+  "id": "how_1990",
+  "our_t": 44.0,
+  "ref_t": 234.301
+ },
+ {
+  "n": 17,
+  "id": "how_two_years",
+  "our_t": 47.27,
+  "ref_t": 236.479
+ },
+ {
+  "n": 18,
+  "id": "how_grave",
+  "our_t": 50.28,
+  "ref_t": 238.483
+ },
+ {
+  "n": 19,
+  "id": "how_steady",
+  "our_t": 53.36,
+  "ref_t": 240.534
+ },
+ {
+  "n": 20,
+  "id": "how_tug",
+  "our_t": 56.03,
+  "ref_t": 242.312
+ },
+ {
+  "n": 21,
+  "id": "how_first",
+  "our_t": 59.23,
+  "ref_t": 244.443
+ },
+ {
+  "n": 22,
+  "id": "name_why",
+  "our_t": 62.36,
+  "ref_t": 246.528
+ },
+ {
+  "n": 23,
+  "id": "name_three",
+  "our_t": 64.65,
+  "ref_t": 248.053
+ },
+ {
+  "n": 24,
+  "id": "name_star",
+  "our_t": 67.46,
+  "ref_t": 249.924
+ },
+ {
+  "n": 25,
+  "id": "name_coordinates",
+  "our_t": 70.81,
+  "ref_t": 252.155
+ },
+ {
+  "n": 26,
+  "id": "name_just_digits",
+  "our_t": 74.03,
+  "ref_t": 254.299
+ },
+ {
+  "n": 27,
+  "id": "close_bother",
+  "our_t": 76.47,
+  "ref_t": 255.924
+ },
+ {
+  "n": 28,
+  "id": "close_no_burn",
+  "our_t": 78.41,
+  "ref_t": 257.216
+ },
+ {
+  "n": 29,
+  "id": "close_formed",
+  "our_t": 80.71,
+  "ref_t": 258.748
+ },
+ {
+  "n": 30,
+  "id": "close_radiation",
+  "our_t": 83.35,
+  "ref_t": 260.506
+ },
+ {
+  "n": 31,
+  "id": "close_finale",
+  "our_t": 86.47,
+  "ref_t": 262.583
+ }
+]

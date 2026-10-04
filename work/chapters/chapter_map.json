@@ -1,0 +1,119 @@
+{
+ "_note": "Reference chapter windows, read by eye from title-strip crops of ref_full.mp4 sampled every 15s (chapters/chapter_strips.png). Boundaries are +/- 3s (half the sample interval). Used to length-match our narration and to pair frames for the label-blind critic. The seg-3 window was independently confirmed frame-accurately at 205.0-265.6.",
+ "ref_duration_s": 916.3,
+ "chapters": [
+  {
+   "n": 1,
+   "key": "hd188753",
+   "title": "HD 188753 AB",
+   "start_s": 10,
+   "end_s": 98,
+   "dur_s": 88,
+   "status": "read from title strips"
+  },
+  {
+   "n": 2,
+   "key": "hd80606",
+   "title": "HD 80606 B",
+   "start_s": 100,
+   "end_s": 204,
+   "dur_s": 104,
+   "status": "read from title strips"
+  },
+  {
+   "n": 3,
+   "key": "psrb1257",
+   "title": "PSR B1257+12",
+   "start_s": 205,
+   "end_s": 266,
+   "dur_s": 61,
+   "verified_frame_accurate": true,
+   "status": "read from title strips"
+  },
+  {
+   "n": 4,
+   "key": "tres2b",
+   "title": "TRES-2B",
+   "start_s": 267,
+   "end_s": 321,
+   "dur_s": 54,
+   "status": "read from title strips"
+  },
+  {
+   "n": 5,
+   "key": "wasp17b",
+   "title": "WASP-17B",
+   "start_s": 322,
+   "end_s": 401,
+   "dur_s": 79,
+   "status": "read from title strips"
+  },
+  {
+   "n": 6,
+   "key": "wasp127b",
+   "title": "WASP-127B",
+   "start_s": 402,
+   "end_s": 471,
+   "dur_s": 69,
+   "status": "read from title strips"
+  },
+  {
+   "n": 7,
+   "key": "gliese436b",
+   "title": "GLIESE 436 B",
+   "start_s": 472,
+   "end_s": 566,
+   "dur_s": 94,
+   "status": "read from title strips"
+  },
+  {
+   "n": 8,
+   "key": "koi55",
+   "title": "KOI-55",
+   "start_s": 567,
+   "end_s": 617,
+   "dur_s": 50,
+   "status": "read from title strips"
+  },
+  {
+   "n": 9,
+   "key": "ltt9779b",
+   "title": "LTT 9779 B",
+   "start_s": 618,
+   "end_s": 701,
+   "dur_s": 83,
+   "status": "read from title strips"
+  },
+  {
+   "n": 10,
+   "key": "fomalhautb",
+   "title": "FOMALHAUT B",
+   "start_s": 702,
+   "end_s": 777,
+   "dur_s": 75,
+   "status": "read from title strips"
+  },
+  {
+   "n": 11,
+   "key": "kelt9b",
+   "title": "KELT-9B",
+   "start_s": 778,
+   "end_s": 850,
+   "dur_s": 72,
+   "status": "read from title strips"
+  },
+  {
+   "n": 12,
+   "key": "psoj3185",
+   "title": "PSO J318.5-22",
+   "start_s": 852,
+   "end_s": 916,
+   "dur_s": 64,
+   "status": "read from title strips"
+  }
+ ],
+ "_totals": {
+  "chapters_mapped": 12,
+  "total_mapped_s": 893
+ }
+}

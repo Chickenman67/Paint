@@ -1,0 +1,286 @@
+{
+ "title": "Area 51 - The Base With No Name",
+ "wrote_to": "segments/area51/script.json",
+ "target": {
+  "wpm": 165,
+  "max_sentence_words": 10,
+  "note": "short declaratives, one idea per beat. Little to no pause between sentences."
+ },
+ "narration": "There is a place with no name.\nIt has a number instead.\nFifty-One.\nIt is the most secret base on Earth.\nIt sits on a dry lake bed.\nIn Nevada, north of Las Vegas.\nThe sign out front reads Groom Lake.\nA second sign warns of arrest.\nNobody will say what is inside.\nThe fence runs for miles across the desert.\nIt surrounds nothing you can see.\nThere is a second fence behind it.\nCameras sit on tall poles along the wire.\nThe base is smaller than its fence.\nNo aircraft may fly overhead.\nRed dashed line drawn across the sky.\nPilots noticed the rule before it was admitted.\nPilots reported lights over the dry lake.\nIn 1955, the reports started.\nRoswell was already three years old.\nThe desert kept the story all the same.\nPilots named the place Hangar 18.\nEmpty hangar door, number painted on the wall.\nOfficially, that hangar is not there.\nNellis Air Force Base runs the site.\nThe budget for the site is not public.\nIn 1989, a man named Bob Lazar spoke.\nHe claimed he had worked there.\nHe described what was parked inside.\nNo employment record of his exists.\nIn 2020, the FBI released its files.\nOne page stamped with the lake's name.\nThe fence is still standing there.\nNobody has ever looked inside.",
+ "word_count": 222,
+ "est_wpm": 165,
+ "beats": [
+  {
+   "n": 1,
+   "id": "b01",
+   "beat": "HOOK",
+   "line": "There is a place with no name.",
+   "visual": "wide flat pale desert, one long fence cutting across the frame, nothing behind it; hand-lettered label 'NOTHING OUT HERE'",
+   "register": "paint"
+  },
+  {
+   "n": 2,
+   "id": "b02",
+   "beat": "HOOK",
+   "line": "It has a number instead.",
+   "visual": "close on a blank fence panel, no words on it, empty ground through every gap",
+   "register": "paint"
+  },
+  {
+   "n": 3,
+   "id": "b03",
+   "beat": "TITLE",
+   "line": "Fifty-One.",
+   "visual": "hand-lettered 'AREA 51' stamped huge over the fence line; character small at the base, deadpan",
+   "register": "paint"
+  },
+  {
+   "n": 4,
+   "id": "b04",
+   "beat": "REVEAL",
+   "line": "It is the most secret base on Earth.",
+   "visual": "character close-up, flat mouth; speech bubble 'no name'",
+   "register": "paint"
+  },
+  {
+   "n": 5,
+   "id": "b05",
+   "beat": "ESTABLISH",
+   "line": "It sits on a dry lake bed.",
+   "visual": "pale cracked dry-lake flat stretching to the horizon, mountains as a thin dark strip; label 'DRY LAKE BED'",
+   "register": "paint"
+  },
+  {
+   "n": 6,
+   "id": "b06",
+   "beat": "ESTABLISH",
+   "line": "In Nevada, north of Las Vegas.",
+   "visual": "hand-drawn map of Nevada, a small dot in the north-east; label 'NEVADA'",
+   "register": "paint"
+  },
+  {
+   "n": 7,
+   "id": "b07",
+   "beat": "FACT",
+   "line": "The sign out front reads Groom Lake.",
+   "visual": "weathered sign on a leaning post reading 'GROOM LAKE', sun-bleached",
+   "register": "paint"
+  },
+  {
+   "n": 8,
+   "id": "b08",
+   "beat": "FACT",
+   "line": "A second sign warns of arrest.",
+   "visual": "second sign nailed below it, one word in red: 'ARRESTED'",
+   "register": "paint"
+  },
+  {
+   "n": 9,
+   "id": "b09",
+   "beat": "PIVOT",
+   "line": "Nobody will say what is inside.",
+   "visual": "character shrugging at the fence; speech bubble 'no answer'",
+   "register": "paint"
+  },
+  {
+   "n": 10,
+   "id": "b10",
+   "beat": "IMAGE",
+   "line": "The fence runs for miles across the desert.",
+   "visual": "the fence line running edge to edge and off both sides of the frame, desert on both faces",
+   "register": "paint"
+  },
+  {
+   "n": 11,
+   "id": "b11",
+   "beat": "IMAGE",
+   "line": "It surrounds nothing you can see.",
+   "visual": "same fence from behind, still nothing inside it; character standing small with his back to us",
+   "register": "paint"
+  },
+  {
+   "n": 12,
+   "id": "b12",
+   "beat": "FACT",
+   "line": "There is a second fence behind it.",
+   "visual": "second fence line visible just behind the first, two parallel wires receding",
+   "register": "paint"
+  },
+  {
+   "n": 13,
+   "id": "b13",
+   "beat": "FACT",
+   "line": "Cameras sit on tall poles along the wire.",
+   "visual": "camera on a tall pole above the wire, lens angled down at the dirt road",
+   "register": "paint"
+  },
+  {
+   "n": 14,
+   "id": "b14",
+   "beat": "COMPARISON",
+   "line": "The base is smaller than its fence.",
+   "visual": "the whole base drawn small, with the fence drawn huge around it; labels 'SMALL' and 'HUGE'",
+   "register": "paint"
+  },
+  {
+   "n": 15,
+   "id": "b15",
+   "beat": "FACT",
+   "line": "No aircraft may fly overhead.",
+   "visual": "small jet passing high over the base, seen from below; label 'NO AIRCRAFT OVERHEAD'",
+   "register": "paint"
+  },
+  {
+   "n": 16,
+   "id": "b16",
+   "beat": "ESCALATE",
+   "line": "Red dashed line drawn across the sky.",
+   "visual": "red dashed ceiling line drawn across the sky above the base",
+   "register": "paint"
+  },
+  {
+   "n": 17,
+   "id": "b17",
+   "beat": "REVEAL",
+   "line": "Pilots noticed the rule before it was admitted.",
+   "visual": "small plane pushed back from the red line, a red cross on it; character pointing up",
+   "register": "paint"
+  },
+  {
+   "n": 18,
+   "id": "b18",
+   "beat": "FACT",
+   "line": "Pilots reported lights over the dry lake.",
+   "visual": "pilot silhouette in a dark cockpit at night, a light blinking below",
+   "register": "paint"
+  },
+  {
+   "n": 19,
+   "id": "b19",
+   "beat": "ESTABLISH",
+   "line": "In 1955, the reports started.",
+   "visual": "old calendar page, the year 1955 circled in red pencil",
+   "register": "paint"
+  },
+  {
+   "n": 20,
+   "id": "b20",
+   "beat": "PIVOT",
+   "line": "Roswell was already three years old.",
+   "visual": "another calendar page beside it, 1947 circled, a line drawn between the two dates",
+   "register": "paint"
+  },
+  {
+   "n": 21,
+   "id": "b21",
+   "beat": "ESCALATE",
+   "line": "The desert kept the story all the same.",
+   "visual": "one balloon drifting low over the fence line, half deflated, small in a wide desert frame; hand-lettered '1947' faded in the corner",
+   "register": "paint"
+  },
+  {
+   "n": 22,
+   "id": "b22",
+   "beat": "PIVOT",
+   "line": "Pilots named the place Hangar 18.",
+   "visual": "hangar wall seen head-on, big painted number 18; character small in front of it, shrugging",
+   "register": "paint"
+  },
+  {
+   "n": 23,
+   "id": "b23",
+   "beat": "IMAGE",
+   "line": "Empty hangar door, number painted on the wall.",
+   "visual": "hangar door slid half open, dark inside, the painted 18 at the edge of the frame",
+   "register": "paint"
+  },
+  {
+   "n": 24,
+   "id": "b24",
+   "beat": "ESCALATE",
+   "line": "Officially, that hangar is not there.",
+   "visual": "the same hangar drawn as an empty bay; a red stamp across it reading 'DOES NOT EXIST'",
+   "register": "paint"
+  },
+  {
+   "n": 25,
+   "id": "b25",
+   "beat": "FACT",
+   "line": "Nellis Air Force Base runs the site.",
+   "visual": "two airfield hangars a short drive away, label 'NELLIS AFB'",
+   "register": "paint"
+  },
+  {
+   "n": 26,
+   "id": "b26",
+   "beat": "FACT",
+   "line": "The budget for the site is not public.",
+   "visual": "a paper budget sheet with one line blacked out in thick marker",
+   "register": "paint"
+  },
+  {
+   "n": 27,
+   "id": "b27",
+   "beat": "ESCALATE",
+   "line": "In 1989, a man named Bob Lazar spoke.",
+   "visual": "television set in a living room, a man's face on it; label '1989'; character watching, leaned in",
+   "register": "paint"
+  },
+  {
+   "n": 28,
+   "id": "b28",
+   "beat": "FACT",
+   "line": "He claimed he had worked there.",
+   "visual": "a man at a microphone, flat expression, crowd silhouettes behind him",
+   "register": "paint"
+  },
+  {
+   "n": 29,
+   "id": "b29",
+   "beat": "IMAGE",
+   "line": "He described what was parked inside.",
+   "visual": "his hands sketching a shape in the air: a disc with a dome on top",
+   "register": "paint"
+  },
+  {
+   "n": 30,
+   "id": "b30",
+   "beat": "PIVOT",
+   "line": "No employment record of his exists.",
+   "visual": "an employment file drawer open, one folder missing, empty slot; character deadpan",
+   "register": "paint"
+  },
+  {
+   "n": 31,
+   "id": "b31",
+   "beat": "REVEAL",
+   "line": "In 2020, the FBI released its files.",
+   "visual": "stack of declassified pages on a desk, the top one stamped 'RELEASED 2020'",
+   "register": "paint"
+  },
+  {
+   "n": 32,
+   "id": "b32",
+   "beat": "IMAGE",
+   "line": "One page stamped with the lake's name.",
+   "visual": "close on one page, a line of typed text with 'GROOM LAKE' visible; a finger under the words",
+   "register": "paint"
+  },
+  {
+   "n": 33,
+   "id": "b33",
+   "beat": "FINALE",
+   "line": "The fence is still standing there.",
+   "visual": "the fence again in the same framing as the opening, still nothing behind it",
+   "register": "paint"
+  },
+  {
+   "n": 34,
+   "id": "b34",
+   "beat": "FINALE",
+   "line": "Nobody has ever looked inside.",
+   "visual": "night, the fence almost black, one red light blinking; character small, awed, speech bubble 'never'",
+   "register": "paint"
+  }
+ ]
+}

@@ -1,0 +1,147 @@
+====================================================================================================
+CARDSHEET GATE -- register-aware conformance check
+NO WINNER, NO SCORE, NO RANKING is computed anywhere in this tool, and no two images are ever compared. Each frame is checked against a stated range on its own pixels. Deciding what the numbers mean is the critic's job.
+Measurement reused from work/lib/measure_frames.py (measure()); not reimplemented.
+====================================================================================================
+
+
+####################################################################################################
+# tres2b   (14 frames)
+####################################################################################################
+frame            reg         ink   ink_min    v_cent  dark_msk*     muted* result
+---------------------------------------------------------------------------------
+beat_01.png      SPACE     0.165      0.22     0.207      0.105      0.128   FAIL
+beat_02.png      PAINT     0.189      0.30     0.472      0.123      0.815   FAIL
+beat_03.png      SPACE     0.417      0.22     0.363      0.110      0.317   FAIL
+beat_04.png      PAINT     0.327      0.30     0.619      0.139      0.829   PASS
+beat_05.png      SPACE     0.240      0.22     0.313      0.067      0.118   FAIL
+beat_06.png      PAINT     0.220      0.30     0.756      0.036      0.958   FAIL
+beat_07.png      SPACE     0.248      0.22     0.324      0.092      0.121   FAIL
+beat_08.png      PAINT     0.216      0.30     0.510      0.020      0.786   FAIL
+beat_09.png      SPACE     0.235      0.22     0.282      0.064      0.126   FAIL
+beat_10.png      PAINT     0.492      0.30     0.538      0.052      0.692   PASS
+beat_11.png      SPACE     0.361      0.22     0.464      0.508      0.165   PASS
+beat_12.png      PAINT     0.199      0.30     0.806      0.060      0.936   FAIL
+beat_13.png      SPACE     0.215      0.22     0.303      0.048      0.116   FAIL
+beat_14.png      PAINT     0.186      0.30     0.811      0.048      0.956   FAIL
+* dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY. They are printed, never gated: a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint beats, ~0.97 space beats).
+
+--- tres2b : per-frame detail ---
+
+  beat_01.png  [SPACE]  bg luma 17.0 < 40
+      background #0e0f23 (luma 17.0)   frame mean luma 47.8
+      ink_fraction 0.165   (gate: >= 0.22 for SPACE)   v_centroid 0.207   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.105   muted_fraction 0.128   palette_entropy_bits 1.974
+      FAIL INK_FRACTION  ink_fraction 0.165  min 0.22 for SPACE
+      FAIL V_CENTROID  v_centroid 0.207  must be in [0.42, 0.75]
+
+  beat_02.png  [PAINT]  bg luma 234.1 > 200
+      background #f2ead6 (luma 234.1)   frame mean luma 204.8
+      ink_fraction 0.189   (gate: >= 0.30 for PAINT)   v_centroid 0.472   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.123   muted_fraction 0.815   palette_entropy_bits 0.954
+      FAIL INK_FRACTION  ink_fraction 0.189  min 0.30 for PAINT
+
+  beat_03.png  [SPACE]  bg luma 14.4 < 40
+      background #0c0d1c (luma 14.4)   frame mean luma 75.7
+      ink_fraction 0.417   (gate: >= 0.22 for SPACE)   v_centroid 0.363   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.110   muted_fraction 0.317   palette_entropy_bits 1.476
+      FAIL V_CENTROID  v_centroid 0.363  must be in [0.42, 0.75]
+      FAIL LOW_CONTRAST_TEXT  bbox=[841, 319, 968, 346]  128x28  glyphs=2  run_h=28px
+           text luma 14.5 vs local surround luma 6.3 (surround spread 0.0)  ->  contrast 8.2 (threshold 25.0)
+
+  beat_04.png  [PAINT]  bg luma 234.1 > 200
+      background #f2ead6 (luma 234.1)   frame mean luma 191.3
+      ink_fraction 0.327   (gate: >= 0.30 for PAINT)   v_centroid 0.619   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.139   muted_fraction 0.829   palette_entropy_bits 1.455
+      PASS - all gated checks conform.
+
+  beat_05.png  [SPACE]  bg luma 17.5 < 40
+      background #0e1022 (luma 17.5)   frame mean luma 47.4
+      ink_fraction 0.240   (gate: >= 0.22 for SPACE)   v_centroid 0.313   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.067   muted_fraction 0.118   palette_entropy_bits 1.754
+      FAIL V_CENTROID  v_centroid 0.313  must be in [0.42, 0.75]
+
+  beat_06.png  [PAINT]  bg luma 234.1 > 200
+      background #f2ead6 (luma 234.1)   frame mean luma 211.0
+      ink_fraction 0.220   (gate: >= 0.30 for PAINT)   v_centroid 0.756   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.036   muted_fraction 0.958   palette_entropy_bits 1.007
+      FAIL INK_FRACTION  ink_fraction 0.220  min 0.30 for PAINT
+      FAIL V_CENTROID  v_centroid 0.756  must be in [0.42, 0.75]
+
+  beat_07.png  [SPACE]  bg luma 17.6 < 40
+      background #0e1023 (luma 17.6)   frame mean luma 44.5
+      ink_fraction 0.248   (gate: >= 0.22 for SPACE)   v_centroid 0.324   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.092   muted_fraction 0.121   palette_entropy_bits 1.951
+      FAIL V_CENTROID  v_centroid 0.324  must be in [0.42, 0.75]
+
+  beat_08.png  [PAINT]  bg luma 234.1 > 200
+      background #f2ead6 (luma 234.1)   frame mean luma 204.3
+      ink_fraction 0.216   (gate: >= 0.30 for PAINT)   v_centroid 0.510   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.020   muted_fraction 0.786   palette_entropy_bits 0.936
+      FAIL INK_FRACTION  ink_fraction 0.216  min 0.30 for PAINT
+
+  beat_09.png  [SPACE]  bg luma 17.6 < 40
+      background #0e1023 (luma 17.6)   frame mean luma 47.9
+      ink_fraction 0.235   (gate: >= 0.22 for SPACE)   v_centroid 0.282   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.064   muted_fraction 0.126   palette_entropy_bits 2.112
+      FAIL V_CENTROID  v_centroid 0.282  must be in [0.42, 0.75]
+
+  beat_10.png  [PAINT]  bg luma 231.0 > 200
+      background #f1e6d2 (luma 231.0)   frame mean luma 193.9
+      ink_fraction 0.492   (gate: >= 0.30 for PAINT)   v_centroid 0.538   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.052   muted_fraction 0.692   palette_entropy_bits 1.865
+      PASS - all gated checks conform.
+
+  beat_11.png  [SPACE]  bg luma 16.4 < 40
+      background #0e0f1e (luma 16.4)   frame mean luma 57.4
+      ink_fraction 0.361   (gate: >= 0.22 for SPACE)   v_centroid 0.464   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.508   muted_fraction 0.165   palette_entropy_bits 1.894
+      PASS - all gated checks conform.
+
+  beat_12.png  [PAINT]  bg luma 234.1 > 200
+      background #f2ead6 (luma 234.1)   frame mean luma 208.6
+      ink_fraction 0.199   (gate: >= 0.30 for PAINT)   v_centroid 0.806   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.060   muted_fraction 0.936   palette_entropy_bits 1.015
+      FAIL INK_FRACTION  ink_fraction 0.199  min 0.30 for PAINT
+      FAIL V_CENTROID  v_centroid 0.806  must be in [0.42, 0.75]
+
+  beat_13.png  [SPACE]  bg luma 17.9 < 40
+      background #0f1023 (luma 17.9)   frame mean luma 47.9
+      ink_fraction 0.215   (gate: >= 0.22 for SPACE)   v_centroid 0.303   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.048   muted_fraction 0.116   palette_entropy_bits 1.905
+      FAIL INK_FRACTION  ink_fraction 0.215  min 0.22 for SPACE
+      FAIL V_CENTROID  v_centroid 0.303  must be in [0.42, 0.75]
+
+  beat_14.png  [PAINT]  bg luma 234.1 > 200
+      background #f2ead6 (luma 234.1)   frame mean luma 212.1
+      ink_fraction 0.186   (gate: >= 0.30 for PAINT)   v_centroid 0.811   (gate: 0.42..0.75)
+      informational: dark_mask_fraction 0.048   muted_fraction 0.956   palette_entropy_bits 0.922
+      FAIL INK_FRACTION  ink_fraction 0.186  min 0.30 for PAINT
+      FAIL V_CENTROID  v_centroid 0.811  must be in [0.42, 0.75]
+
+SUMMARY tres2b: 14 frames, 3 passed, 11 failed   [INK_FRACTION=7, V_CENTROID=9, LOW_CONTRAST_TEXT=1, CLIPPED_AT_EDGE=0, MEASUREMENT_ERROR=0]
+
+====================================================================================================
+OVERALL: 14 frames checked, 3 passed, 11 failed
+failing checks: INK_FRACTION=7, LOW_CONTRAST_TEXT=1, V_CENTROID=9
+   FAIL INK_FRACTION         tres2b / beat_01.png
+   FAIL V_CENTROID           tres2b / beat_01.png
+   FAIL INK_FRACTION         tres2b / beat_02.png
+   FAIL V_CENTROID           tres2b / beat_03.png
+   FAIL LOW_CONTRAST_TEXT    tres2b / beat_03.png
+   FAIL V_CENTROID           tres2b / beat_05.png
+   FAIL INK_FRACTION         tres2b / beat_06.png
+   FAIL V_CENTROID           tres2b / beat_06.png
+   FAIL V_CENTROID           tres2b / beat_07.png
+   FAIL INK_FRACTION         tres2b / beat_08.png
+   FAIL V_CENTROID           tres2b / beat_09.png
+   FAIL INK_FRACTION         tres2b / beat_12.png
+   FAIL V_CENTROID           tres2b / beat_12.png
+   FAIL INK_FRACTION         tres2b / beat_13.png
+   FAIL V_CENTROID           tres2b / beat_13.png
+   FAIL INK_FRACTION         tres2b / beat_14.png
+   FAIL V_CENTROID           tres2b / beat_14.png
+NO WINNER, NO SCORE, NO RANKING is computed anywhere in this tool, and no two images are ever compared. Each frame is checked against a stated range on its own pixels. Deciding what the numbers mean is the critic's job.
+====================================================================================================
+
+JSON written to C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/_tres2b_gate_before.json

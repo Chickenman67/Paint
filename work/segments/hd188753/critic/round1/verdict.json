@@ -1,0 +1,46 @@
+{
+  "segment": "HD 188753 Ab",
+  "round": 1,
+  "verdict": "ref_wins",
+  "confidence": "high",
+  "summary": "Ref wins on the painterly stipple texture / radial gradient signature and on the white-band clean-type header. Ours is structurally correct (stickman, orbit, three suns, all the beats present) but flat-shaded, and our hand-wobbled yellow header text reads as the wrong typeface.",
+  "per_criterion": {
+    "style_fidelity": {"score": 4, "notes": "Ours is correct genre (wobbly outlines, flat fills, hand-drawn) but the painterly stipple texture on stars and planets is the single biggest missing signature."},
+    "layout": {"score": 6, "notes": "Ours uses title-strip + full-bleed illustration (Layout A from spec), matches ref structure. Issue: ref's header band is WHITE (60px tall) with clean sans-serif, ours is BLACK with hand-wobbled yellow — wrong typeface AND wrong fill."},
+    "type": {"score": 3, "notes": "Ours uses wobbly hand-lettered yellow for the planet name in a black header strip. Ref uses a CLEAN SANS-SERIF ALL-CAPS in a WHITE band. The yellow wobbly text reads as a different show entirely. The §7 locked type scale (72/36/32) is correct in theory but the typeface family is wrong."},
+    "palette": {"score": 7, "notes": "Mauve + orange accent + lavender bg + black starfield is on-style. Gaps: (a) ref's three suns are smooth radial gradients yellow→orange→red with stipple speckle texture; ours are flat color discs. (b) ref's gas giants have horizontal banded painterly texture; ours are flat mauve fills."},
+    "audio_alignment": {"score": 7, "notes": "Not visible in static frames. Re-evaluate after whisper alignment file is in place. Drag concerns from §5 are a build-pipeline issue, not visible here."},
+    "character": {"score": 7, "notes": "Stickman present in 4/6 frames (t13, t25, t38, t50), with varied poses (hands-up, on-planet-surface, in-oval-with-speech-bubble, on-moon-with-craters). Good surrogate coverage. Gap: t50 (moon surface) is large and central — this is the strongest beat, matches ref intent. But t38 has the §10.9 debug stamp regression (red 'DR. KONACKI' text overlapping caption)."},
+    "captions": {"score": 5, "notes": "Most captions are single-line ALL CAPS — correct. t62 violates §7 with a 2-line caption ('NOT IN A LINE / LIKE A COSMIC CLICHE'). t0 is missing the lower-caption line entirely (only the yellow header is shown — the caption 'A SLOW WOBBLING FIGURE EIGHT' is correctly there as a single line)."}
+  },
+  "biggest_gap": {
+    "name": "PAINTERLY TEXTURE ON STARS AND PLANETS",
+    "description": "Reference stars and gas giants have a distinct painterly signature: smooth radial gradients (yellow→orange→red on stars, no banding) with spray-paint stipple speckle texture overlaid, and horizontal banded texture on gas giants. Ours are flat color fills with wobbly outlines. The ref's t13 (three suns) is the cleanest example: each sun has its own color personality, soft outer halo, and stipple grain. Ours t13 (the same beat) is a mauve disc + 3 sun discs in flat colors. The stipple grain is the visual signature of The Paint Explainer style; without it, the genre reads as 'hand-drawn but generic.'",
+    "fix": "In every beat that shows a star or gas-giant, render with: (1) radial gradient fill via PIL ImageDraw + a custom radial_gradient() function, (2) overlay 1-2% pixel-density random stipple using a deterministic noise mask, (3) for gas giants, add 3-5 horizontal painterly bands as semi-transparent overlay layers. Add this as a work/lib/texture.py module: radial_gradient(size, colors, stops), stipple_overlay(image, density=0.02, color, seed), and banded_planet(image, base_rgb, n_bands, palette)."
+  },
+  "secondary_gaps": [
+    {
+      "name": "WRONG HEADER TYPEFACE",
+      "description": "Ours uses wobbly hand-lettered yellow text in a black header strip. Ref uses clean sans-serif ALL CAPS in a WHITE band. The white band is part of the signature: the header bar is a clean white rectangle, not a styled element.",
+      "fix": "Replace the title-strip component in work/lib/type.py: (1) header background = white rectangle, (2) header text = Consolas Bold (already available per §2), ALL CAPS, black fill, no stroke, (3) keep the wobble on a small 'stamp' element below the header (e.g., '127b' or 'TRIPLE-STAR WORLD') but NOT on the main planet name."
+    },
+    {
+      "name": "§10.9 DEBUG STAMP REGRESSION ON t38",
+      "description": "t38 shows 'DOCTOR KONACKI LOOKED AT THE DATA' caption with a red 'DR. KONACKI' stamp overlapping it. This is a debug artifact that leaked into the build.",
+      "fix": "Add a --no-debug flag to the frame-build CLI (work/lib/cli.py or equivalent). Default to off. The 'DR. KONACKI' stamp should be a callout device UNDER the title text (red underline + arrow per ref t38) not a stamp over the caption."
+    },
+    {
+      "name": "§7 TWO-LINE CAPTION ON t62",
+      "description": "t62 caption is 'NOT IN A LINE / LIKE A COSMIC CLICHE' — split across 2 lines. §7 requires ≤60 chars, ≤12 words, single line.",
+      "fix": "Compress to single line. Either: 'NOT A LINE. LIKE A COSMIC CLICHE.' (40 chars) or drop 'LIKE A COSMIC CLICHE' entirely. Add a hard check in the caption renderer that fails the build if any caption is >60 chars or wraps to >1 line at 32pt."
+    },
+    {
+      "name": "MISSING 2×2 PLANET LINEUP GRID AS ENDING BEAT",
+      "description": "Ref t62 is a 2×2 grid of four planet cards with painterly textures as the segment's closing beat. Ours t62 is a single-card 3-sun X overlay. The 2×2 lineup is a ref beat type that visually summarizes the 12-planet arc and previews what's coming.",
+      "fix": "Add a 'lineup_grid' card type to work/lib/cards.py: 2×2 grid of 4 small planet portraits with single-line captions, takes (planets=[(name, caption, palette), ...]) and renders to the full 1280×720 card area. Use this as the closing beat of every segment."
+    }
+  ],
+  "frames_reviewed": ["t2.0_A", "t13.0_A", "t25.0_A", "t38.0_A", "t50.0_A", "t62.0_A", "t2.0_B", "t13.0_B", "t25.0_B", "t38.0_B", "t50.0_B", "t62.0_B"],
+  "ours_label": "A (per mapping.json: A=ours, B=ref)",
+  "ref_label": "B (per mapping.json: A=ours, B=ref)"
+}

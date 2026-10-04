@@ -1,0 +1,337 @@
+{
+ "beat": "B5 THE NAMING",
+ "segment": "PSR B1257+12",
+ "palette": {
+  "ink": [
+   20,
+   22,
+   28
+  ],
+  "paper": [
+   242,
+   234,
+   214
+  ],
+  "deep": [
+   5,
+   6,
+   11
+  ],
+  "amber": [
+   232,
+   163,
+   61
+  ],
+  "bone": [
+   220,
+   230,
+   236
+  ],
+  "violet": [
+   110,
+   90,
+   156
+  ],
+  "shirt": [
+   200,
+   50,
+   50
+  ]
+ },
+ "accent_roles": {
+  "cream": [
+   242,
+   234,
+   214
+  ],
+  "bone": [
+   220,
+   230,
+   236
+  ],
+  "amber": [
+   232,
+   163,
+   61
+  ],
+  "violet": [
+   110,
+   90,
+   156
+  ]
+ },
+ "geometry": {
+  "W": 1280,
+  "H": 720,
+  "fps": 30,
+  "title_band": {
+   "y0": 22,
+   "y1": 60,
+   "fill": "paper",
+   "text": "ink",
+   "px": 44,
+   "align": "center",
+   "x_center": 640,
+   "content": "PSR B1257+12"
+  },
+  "art_top": 61,
+  "art_bottom": 719,
+  "caption": {
+   "x": 70,
+   "y": 652,
+   "px": 27,
+   "max_px_w": 1100,
+   "max_chars": 60,
+   "max_words": 12,
+   "one_line": true,
+   "on_cream_color": "ink",
+   "on_void_color": "amber"
+  },
+  "stickman": {
+   "x_default": 400,
+   "feet_y": 680,
+   "h_hero": 480,
+   "h_dialog": 400,
+   "h_closeup": 560
+  },
+  "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+  "first_word_rule": "card 1 is up at t=0.0 and the first spoken word must land at t<=0.30, so the header is never late (CLAUDE.md \u00c2\u00a75.5).",
+  "bridges": "0.5s palette bridge after how_first and after name_punchline (round_1_script.md line 110). The segment-exit bridge is the 3.75s white bridge in lib/transition.py \u00e2\u20ac\u201d \u00c2\u00a75.7's '0.5s black frame' is superseded by the measured reference bridge (PALETTE_SPEC.md \u00c2\u00a72).",
+  "gradient_rule": "radial_gradient() is legal on the pulsar core ONLY (psr_size, psr_collapse, psr_beams, how_first, psr_name). Never on the planets, orbit ellipses, the radiation wash, the starfield, the title strip, the skulls, or the stickman (PALETTE_SPEC.md \u00c2\u00a73 denylist).",
+  "motion_rule": "0.25s quantized stamps, never smooth tweens, on every motion in this segment including the stickman."
+ },
+ "type_scale": {
+  "title_band_px": 44,
+  "header_stroke": 0,
+  "caption_px": 27,
+  "caption_stroke": 4,
+  "heavy_px": 64,
+  "heavy_stroke": 4,
+  "stamp_px": 18,
+  "tiny_px": 18,
+  "family_bold": "consolab.ttf",
+  "family_reg": "consola.ttf"
+ },
+ "cards": [
+  {
+   "n": 22,
+   "id": "name_why",
+   "beat": "B5 THE NAMING",
+   "clauses": [
+    25
+   ],
+   "narration": "They named the planets after the things that haunt you.",
+   "words": 10,
+   "start": 61.18,
+   "end": 63.54,
+   "duration": 2.36,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "mist_drift",
+   "motion_xfade_s": 0.2,
+   "caption": "THEY NAMED THE PLANETS AFTER THE THINGS THAT HAUNT YOU.",
+   "banner": null,
+   "accent": "violet",
+   "accent_rgb": [
+    110,
+    90,
+    156
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "worried",
+    "pose": "shrugged",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; a flat violet haze band (wobbly 9-gon, wobble seed 111) spanning x=120..1180, y=420..640 at 9% fill with a 2px violet outline; five flat slate-black 2px silhouettes drifting 3px left-right on 0.25s stamps inside the haze \u00e2\u20ac\u201d deliberately ambiguous, NOT yet skulls; they resolve on the next card. stickman x=400 y_top=300 h=400 worried/shrugged; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 219,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 67.58,
+   "timing_predicted_end": 70.58,
+   "timing_delta_s": -6.4,
+   "_align_word_index": 220,
+   "_align_word": "They",
+   "_align_word_novel": "They"
+  },
+  {
+   "n": 23,
+   "id": "name_three",
+   "beat": "B5 THE NAMING",
+   "clauses": [
+    26
+   ],
+   "narration": "Draugr. Phobetor. Poltergeist.",
+   "words": 3,
+   "start": 63.54,
+   "end": 65.76,
+   "duration": 2.22,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "name_stamp_x3 (one per word \u00e2\u20ac\u201d see timing note)",
+   "motion_xfade_s": 0.2,
+   "caption": "DRAUGR. PHOBETOR. POLTERGEIST.",
+   "banner": null,
+   "accent": "cream",
+   "accent_rgb": [
+    242,
+    234,
+    214
+   ],
+   "card_value": "cream",
+   "stickman": {
+    "expression": "awed_brows",
+    "pose": "pointing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "CREAM CARD. Three SKULL plates, each a 3px slate-black circle 96px across at (330,300)/(700,300)/(1070,300) with two 3px slate-black eye slots and a 3px jaw rule \u00e2\u20ac\u201d cartoon-flat, no gradients, no teeth detail; the reference's detailed teeth-and-tongue mouth is copyrighted character design and is NOT copied. Under each, a heavy 64pt slate-black name stamped in sequence \u00e2\u20ac\u201d 'DRAUGR' / 'PHOBETOR' / 'POLTERGEIST' \u00e2\u20ac\u201d each settling from scale 1.18 to 1.00 on ONE 0.25s stamp. TIMING: word count says 0.9s and that is wrong; these are three multi-syllable names, so expect ~2.0s from the aligned audio and land the three stamps on the three word ONSETS, not on evenly spaced times. stickman x=400 y_top=300 h=400 awed_brows/pointing; caption x=70 y=652 in slate-black",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 229,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 70.66,
+   "timing_predicted_end": 72.66,
+   "timing_delta_s": -7.12,
+   "_align_word_index": 230,
+   "_align_word": "Drouger,",
+   "_align_word_novel": "Draugr."
+  },
+  {
+   "n": 24,
+   "id": "name_star",
+   "beat": "B5 THE NAMING",
+   "clauses": [
+    27
+   ],
+   "narration": "And they named the star PSR B1257 plus twelve.",
+   "words": 9,
+   "start": 65.76,
+   "end": 69.16,
+   "duration": 3.4,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "name_stamp_settle",
+   "motion_xfade_s": 0.2,
+   "caption": "AND THEY NAMED THE STAR PSR B1257+12.",
+   "banner": "PSR B1257+12",
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "flat",
+    "pose": "pointing",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; core cx=880 cy=320 r=36 with a 2px amber limb; the heavy 64pt name plate 'PSR B1257+12' re-stamps at (880,320) in amber with a 3px slate-black outline, settling scale 1.18 -> 1.00 on one 0.25s stamp; the skull plates are GONE \u00e2\u20ac\u201d this beat ends on the star, not on the skulls, so the naming lands on the corpse; 18pt bone stamp 'VIRGO' at (1080,120) \u00e2\u20ac\u201d E1, corrected from 'VELA'; stickman x=400 y_top=200 h=480 flat/pointing; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 232,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 72.74,
+   "timing_predicted_end": 75.44,
+   "timing_delta_s": -6.98,
+   "_align_word_index": 233,
+   "_align_word": "and",
+   "_align_word_novel": "And"
+  },
+  {
+   "n": 25,
+   "id": "name_coordinates",
+   "beat": "B5 THE NAMING",
+   "clauses": [
+    28
+   ],
+   "narration": "The name is not a name. It is a spot in the sky, written in digits.",
+   "words": 16,
+   "start": 69.16,
+   "end": 72.46,
+   "duration": 3.3,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "sky_grid + crosshair_drop",
+   "motion_xfade_s": 0.2,
+   "caption": "A NAME THAT IS JUST COORDINATES.",
+   "banner": "A SPOT ON THE SKY",
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "smirk",
+    "pose": "shrugged",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "bg_void_stars; a 2px bone sky GRID of seven vertical rules and five horizontal rules spanning x=560..1180, y=180..560, with 3px ticks every 60px \u00e2\u20ac\u201d a star chart, drawn plainly, no labels yet; a 3px bone crosshair at (860,330) with a 2px circle r=18 dropping to it on one 0.25s stamp and LOCKING; the crosshair pulses on every subsequent stamp, because this is where the thing is; 64pt heavy bone 'A SPOT ON THE SKY' at (860,640); 18pt bone annotation 'SKY COORDINATES' at (860,600); stickman x=400 y_top=300 h=400 smirk/shrugged \u00e2\u20ac\u201d the wry beat survives, but it is wry at the bureaucracy, not at a punchline; caption x=70 y=652. FACT FLAG E6 (APPLIED) \u00e2\u20ac\u201d this card was id=name_base_eight and asserted a base-eight joke told by Wolszczan and Frail. There is no such joke; the octal reading of 1257 is a numerical accident with no connection to the name, and attributing it to the discoverers was a fabrication. Replaced with the verifiable fact: PSR 1257+12 is a sexagesimal sky coordinate, 12h57m right ascension and plus 12 degrees declination.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 241,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 75.52,
+   "timing_predicted_end": 80.32,
+   "timing_delta_s": -6.36,
+   "_align_word_index": 242,
+   "_align_word": "The",
+   "_align_word_novel": "The"
+  },
+  {
+   "n": 26,
+   "id": "name_just_digits",
+   "beat": "B5 THE NAMING",
+   "clauses": [
+    29
+   ],
+   "narration": "Twelve fifty-seven. Plus twelve. That is the entire name.",
+   "words": 9,
+   "start": 72.46,
+   "end": 75.6,
+   "duration": 3.14,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "digit_flip",
+   "motion_xfade_s": 0.2,
+   "caption": "TWELVE FIFTY-SEVEN. PLUS TWELVE. THAT IS THE ENTIRE NAME.",
+   "banner": null,
+   "accent": "cream",
+   "accent_rgb": [
+    242,
+    234,
+    214
+   ],
+   "card_value": "cream",
+   "stickman": {
+    "expression": "flat",
+    "pose": "hands_down",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "CREAM CARD, deliberately plain. Four 3px slate-black digit frames 120px square at (500,300)/(660,300)/(820,300)/(980,300) holding the digits '1' '2' '5' '7' in heavy 64pt slate-black; beneath the first two frames an 18pt slate-black label 'RIGHT ASCENSION' at (580,400) and beneath the last two an 18pt label '+12 DEGREES, UP AND NORTH' at (900,400), with a 3px leader from the label to the frame pair; a heavy 64pt slate-black 'THAT IS THE NAME' at (640,510). No illustration, no texture, no gradient, nothing else \u00e2\u20ac\u201d the flatness is the point: a dead star reduced to a row of numbers. stickman x=400 y_top=300 h=400 flat/hands_down; caption x=70 y=652 in slate-black. A 0.5s palette bridge follows.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 257,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 80.4,
+   "timing_predicted_end": 83.1,
+   "timing_delta_s": -7.94,
+   "_align_word_index": 258,
+   "_align_word": "1257",
+   "_align_word_novel": "Twelve"
+  }
+ ]
+}

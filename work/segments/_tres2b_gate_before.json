@@ -1,0 +1,647 @@
+{
+  "tool": "_gate.py",
+  "note": "NO WINNER, NO SCORE, NO RANKING is computed anywhere in this tool, and no two images are ever compared. Each frame is checked against a stated range on its own pixels. Deciding what the numbers mean is the critic's job.",
+  "ranges": {
+    "ink_fraction_min": {
+      "PAINT": 0.3,
+      "SPACE": 0.22
+    },
+    "v_centroid": [
+      0.42,
+      0.75
+    ],
+    "low_contrast_luma": 25.0,
+    "clip_size_frac": 0.45
+  },
+  "gated_checks": [
+    "INK_FRACTION",
+    "V_CENTROID",
+    "LOW_CONTRAST_TEXT",
+    "CLIPPED_AT_EDGE",
+    "MEASUREMENT_ERROR"
+  ],
+  "informational_only": [
+    "dark_mask_fraction",
+    "muted_fraction"
+  ],
+  "segments": {
+    "tres2b": [
+      {
+        "basename": "beat_01.png",
+        "path": "tres2b\\cardsheet\\beat_01.png",
+        "register": "SPACE",
+        "register_reason": "bg luma 17.0 < 40",
+        "background_hex": "#0e0f23",
+        "background_luma": 17.0,
+        "mean_luma": 47.8,
+        "gated": {
+          "ink_fraction": 0.16527,
+          "ink_fraction_min": 0.22,
+          "v_centroid": 0.20661,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.104504,
+          "muted_fraction": 0.127807,
+          "palette_entropy_bits": 1.974,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 196,
+          "glyph_like_components": 7,
+          "detail_pixel_fraction": 0.02417
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "INK_FRACTION",
+            "value": 0.16527,
+            "detail": null,
+            "criterion": "min 0.22 for SPACE"
+          },
+          {
+            "check": "V_CENTROID",
+            "value": 0.20661,
+            "detail": null,
+            "criterion": "must be in [0.42, 0.75]"
+          }
+        ],
+        "passed": false
+      },
+      {
+        "basename": "beat_02.png",
+        "path": "tres2b\\cardsheet\\beat_02.png",
+        "register": "PAINT",
+        "register_reason": "bg luma 234.1 > 200",
+        "background_hex": "#f2ead6",
+        "background_luma": 234.1,
+        "mean_luma": 204.8,
+        "gated": {
+          "ink_fraction": 0.18927,
+          "ink_fraction_min": 0.3,
+          "v_centroid": 0.47203,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.122923,
+          "muted_fraction": 0.81536,
+          "palette_entropy_bits": 0.9539,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 72,
+          "glyph_like_components": 9,
+          "detail_pixel_fraction": 0.01653
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "INK_FRACTION",
+            "value": 0.18927,
+            "detail": null,
+            "criterion": "min 0.30 for PAINT"
+          }
+        ],
+        "passed": false
+      },
+      {
+        "basename": "beat_03.png",
+        "path": "tres2b\\cardsheet\\beat_03.png",
+        "register": "SPACE",
+        "register_reason": "bg luma 14.4 < 40",
+        "background_hex": "#0c0d1c",
+        "background_luma": 14.4,
+        "mean_luma": 75.7,
+        "gated": {
+          "ink_fraction": 0.4172,
+          "ink_fraction_min": 0.22,
+          "v_centroid": 0.36311,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.109924,
+          "muted_fraction": 0.317338,
+          "palette_entropy_bits": 1.4758,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 160,
+          "glyph_like_components": 14,
+          "detail_pixel_fraction": 0.03699
+        },
+        "low_contrast_text": [
+          {
+            "check": "LOW_CONTRAST_TEXT",
+            "bbox": [
+              841,
+              319,
+              968,
+              346
+            ],
+            "w": 128,
+            "h": 28,
+            "n_glyphs": 2,
+            "run_h": 28.0,
+            "text_luma": 14.5,
+            "surround_luma": 6.3,
+            "surround_spread": 0.0,
+            "contrast": 8.2,
+            "threshold": 25.0
+          }
+        ],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "V_CENTROID",
+            "value": 0.36311,
+            "detail": null,
+            "criterion": "must be in [0.42, 0.75]"
+          },
+          {
+            "check": "LOW_CONTRAST_TEXT",
+            "value": 8.2,
+            "detail": {
+              "check": "LOW_CONTRAST_TEXT",
+              "bbox": [
+                841,
+                319,
+                968,
+                346
+              ],
+              "w": 128,
+              "h": 28,
+              "n_glyphs": 2,
+              "run_h": 28.0,
+              "text_luma": 14.5,
+              "surround_luma": 6.3,
+              "surround_spread": 0.0,
+              "contrast": 8.2,
+              "threshold": 25.0
+            },
+            "criterion": [
+              841,
+              319,
+              968,
+              346
+            ]
+          }
+        ],
+        "passed": false
+      },
+      {
+        "basename": "beat_04.png",
+        "path": "tres2b\\cardsheet\\beat_04.png",
+        "register": "PAINT",
+        "register_reason": "bg luma 234.1 > 200",
+        "background_hex": "#f2ead6",
+        "background_luma": 234.1,
+        "mean_luma": 191.3,
+        "gated": {
+          "ink_fraction": 0.32655,
+          "ink_fraction_min": 0.3,
+          "v_centroid": 0.61915,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.139148,
+          "muted_fraction": 0.829161,
+          "palette_entropy_bits": 1.4553,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 36,
+          "glyph_like_components": 7,
+          "detail_pixel_fraction": 0.03256
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [],
+        "passed": true
+      },
+      {
+        "basename": "beat_05.png",
+        "path": "tres2b\\cardsheet\\beat_05.png",
+        "register": "SPACE",
+        "register_reason": "bg luma 17.5 < 40",
+        "background_hex": "#0e1022",
+        "background_luma": 17.5,
+        "mean_luma": 47.4,
+        "gated": {
+          "ink_fraction": 0.24027,
+          "ink_fraction_min": 0.22,
+          "v_centroid": 0.31273,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.066783,
+          "muted_fraction": 0.118373,
+          "palette_entropy_bits": 1.7542,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 168,
+          "glyph_like_components": 9,
+          "detail_pixel_fraction": 0.0347
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "V_CENTROID",
+            "value": 0.31273,
+            "detail": null,
+            "criterion": "must be in [0.42, 0.75]"
+          }
+        ],
+        "passed": false
+      },
+      {
+        "basename": "beat_06.png",
+        "path": "tres2b\\cardsheet\\beat_06.png",
+        "register": "PAINT",
+        "register_reason": "bg luma 234.1 > 200",
+        "background_hex": "#f2ead6",
+        "background_luma": 234.1,
+        "mean_luma": 211.0,
+        "gated": {
+          "ink_fraction": 0.22039,
+          "ink_fraction_min": 0.3,
+          "v_centroid": 0.75563,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.035802,
+          "muted_fraction": 0.958435,
+          "palette_entropy_bits": 1.0066,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 37,
+          "glyph_like_components": 7,
+          "detail_pixel_fraction": 0.04002
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "INK_FRACTION",
+            "value": 0.22039,
+            "detail": null,
+            "criterion": "min 0.30 for PAINT"
+          },
+          {
+            "check": "V_CENTROID",
+            "value": 0.75563,
+            "detail": null,
+            "criterion": "must be in [0.42, 0.75]"
+          }
+        ],
+        "passed": false
+      },
+      {
+        "basename": "beat_07.png",
+        "path": "tres2b\\cardsheet\\beat_07.png",
+        "register": "SPACE",
+        "register_reason": "bg luma 17.6 < 40",
+        "background_hex": "#0e1023",
+        "background_luma": 17.6,
+        "mean_luma": 44.5,
+        "gated": {
+          "ink_fraction": 0.24757,
+          "ink_fraction_min": 0.22,
+          "v_centroid": 0.32361,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.092001,
+          "muted_fraction": 0.120597,
+          "palette_entropy_bits": 1.951,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 155,
+          "glyph_like_components": 18,
+          "detail_pixel_fraction": 0.03254
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "V_CENTROID",
+            "value": 0.32361,
+            "detail": null,
+            "criterion": "must be in [0.42, 0.75]"
+          }
+        ],
+        "passed": false
+      },
+      {
+        "basename": "beat_08.png",
+        "path": "tres2b\\cardsheet\\beat_08.png",
+        "register": "PAINT",
+        "register_reason": "bg luma 234.1 > 200",
+        "background_hex": "#f2ead6",
+        "background_luma": 234.1,
+        "mean_luma": 204.3,
+        "gated": {
+          "ink_fraction": 0.21615,
+          "ink_fraction_min": 0.3,
+          "v_centroid": 0.51011,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.019774,
+          "muted_fraction": 0.786225,
+          "palette_entropy_bits": 0.9361,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 130,
+          "glyph_like_components": 6,
+          "detail_pixel_fraction": 0.02264
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "INK_FRACTION",
+            "value": 0.21615,
+            "detail": null,
+            "criterion": "min 0.30 for PAINT"
+          }
+        ],
+        "passed": false
+      },
+      {
+        "basename": "beat_09.png",
+        "path": "tres2b\\cardsheet\\beat_09.png",
+        "register": "SPACE",
+        "register_reason": "bg luma 17.6 < 40",
+        "background_hex": "#0e1023",
+        "background_luma": 17.6,
+        "mean_luma": 47.9,
+        "gated": {
+          "ink_fraction": 0.23544,
+          "ink_fraction_min": 0.22,
+          "v_centroid": 0.2825,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.064225,
+          "muted_fraction": 0.126363,
+          "palette_entropy_bits": 2.1124,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 174,
+          "glyph_like_components": 11,
+          "detail_pixel_fraction": 0.02541
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "V_CENTROID",
+            "value": 0.2825,
+            "detail": null,
+            "criterion": "must be in [0.42, 0.75]"
+          }
+        ],
+        "passed": false
+      },
+      {
+        "basename": "beat_10.png",
+        "path": "tres2b\\cardsheet\\beat_10.png",
+        "register": "PAINT",
+        "register_reason": "bg luma 231.0 > 200",
+        "background_hex": "#f1e6d2",
+        "background_luma": 231.0,
+        "mean_luma": 193.9,
+        "gated": {
+          "ink_fraction": 0.49237,
+          "ink_fraction_min": 0.3,
+          "v_centroid": 0.53838,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.052135,
+          "muted_fraction": 0.691521,
+          "palette_entropy_bits": 1.8646,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 81,
+          "glyph_like_components": 13,
+          "detail_pixel_fraction": 0.04094
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [],
+        "passed": true
+      },
+      {
+        "basename": "beat_11.png",
+        "path": "tres2b\\cardsheet\\beat_11.png",
+        "register": "SPACE",
+        "register_reason": "bg luma 16.4 < 40",
+        "background_hex": "#0e0f1e",
+        "background_luma": 16.4,
+        "mean_luma": 57.4,
+        "gated": {
+          "ink_fraction": 0.36129,
+          "ink_fraction_min": 0.22,
+          "v_centroid": 0.46438,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.508363,
+          "muted_fraction": 0.165085,
+          "palette_entropy_bits": 1.8937,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 172,
+          "glyph_like_components": 13,
+          "detail_pixel_fraction": 0.05239
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [],
+        "passed": true
+      },
+      {
+        "basename": "beat_12.png",
+        "path": "tres2b\\cardsheet\\beat_12.png",
+        "register": "PAINT",
+        "register_reason": "bg luma 234.1 > 200",
+        "background_hex": "#f2ead6",
+        "background_luma": 234.1,
+        "mean_luma": 208.6,
+        "gated": {
+          "ink_fraction": 0.19914,
+          "ink_fraction_min": 0.3,
+          "v_centroid": 0.80567,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.059752,
+          "muted_fraction": 0.935675,
+          "palette_entropy_bits": 1.0152,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 37,
+          "glyph_like_components": 5,
+          "detail_pixel_fraction": 0.04507
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "INK_FRACTION",
+            "value": 0.19914,
+            "detail": null,
+            "criterion": "min 0.30 for PAINT"
+          },
+          {
+            "check": "V_CENTROID",
+            "value": 0.80567,
+            "detail": null,
+            "criterion": "must be in [0.42, 0.75]"
+          }
+        ],
+        "passed": false
+      },
+      {
+        "basename": "beat_13.png",
+        "path": "tres2b\\cardsheet\\beat_13.png",
+        "register": "SPACE",
+        "register_reason": "bg luma 17.9 < 40",
+        "background_hex": "#0f1023",
+        "background_luma": 17.9,
+        "mean_luma": 47.9,
+        "gated": {
+          "ink_fraction": 0.21537,
+          "ink_fraction_min": 0.22,
+          "v_centroid": 0.30263,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.04775,
+          "muted_fraction": 0.116131,
+          "palette_entropy_bits": 1.9046,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 158,
+          "glyph_like_components": 9,
+          "detail_pixel_fraction": 0.02795
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "INK_FRACTION",
+            "value": 0.21537,
+            "detail": null,
+            "criterion": "min 0.22 for SPACE"
+          },
+          {
+            "check": "V_CENTROID",
+            "value": 0.30263,
+            "detail": null,
+            "criterion": "must be in [0.42, 0.75]"
+          }
+        ],
+        "passed": false
+      },
+      {
+        "basename": "beat_14.png",
+        "path": "tres2b\\cardsheet\\beat_14.png",
+        "register": "PAINT",
+        "register_reason": "bg luma 234.1 > 200",
+        "background_hex": "#f2ead6",
+        "background_luma": 234.1,
+        "mean_luma": 212.1,
+        "gated": {
+          "ink_fraction": 0.18599,
+          "ink_fraction_min": 0.3,
+          "v_centroid": 0.81146,
+          "v_centroid_range": [
+            0.42,
+            0.75
+          ]
+        },
+        "informational": {
+          "dark_mask_fraction": 0.047662,
+          "muted_fraction": 0.956459,
+          "palette_entropy_bits": 0.9224,
+          "note": "dark_mask_fraction and muted_fraction are REGISTER-CONFOUNDED and INFORMATIONAL ONLY -- a space card scores high on dark_mask_fraction from its background alone, and muted_fraction is bimodal by design (~0.12 paint, ~0.97 space). Do not gate on either."
+        },
+        "structure": {
+          "detail_components": 44,
+          "glyph_like_components": 5,
+          "detail_pixel_fraction": 0.03226
+        },
+        "low_contrast_text": [],
+        "clipped_at_edge": [],
+        "failures": [
+          {
+            "check": "INK_FRACTION",
+            "value": 0.18599,
+            "detail": null,
+            "criterion": "min 0.30 for PAINT"
+          },
+          {
+            "check": "V_CENTROID",
+            "value": 0.81146,
+            "detail": null,
+            "criterion": "must be in [0.42, 0.75]"
+          }
+        ],
+        "passed": false
+      }
+    ]
+  }
+}

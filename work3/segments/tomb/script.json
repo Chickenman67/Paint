@@ -1,0 +1,374 @@
+{
+ "title": "The Tomb of Qin Shi Huang - The Emperor They Buried With an Army",
+ "wrote_to": "segments/tomb/script.json",
+ "target": {
+  "wpm": 165,
+  "max_sentence_words": 10,
+  "note": "short declaratives, one idea per beat. Little to no pause between sentences."
+ },
+ "narration": "Beneath this field, eight thousand soldiers stand waiting.\nThey are clay, and they are perfect.\nThey stand one way for two thousand years.\nTheir paint left them centuries after burial.\nThey are called the Terracotta Army.\nEight thousand soldiers in the dark.\nSix hundred horses stood beside them.\nThey stand in long rows, in earthen pits.\nThey are all guarding one man.\nHis name is Qin Shi Huang.\nHe was the first emperor of all China.\nIn 221 BC he ended centuries of war.\nChina had been a hundred separate kingdoms.\nHe gave them one script and one ruler.\nOne set of weights for every trade.\nThat one ruler was himself.\nHe burned every book that disagreed with him.\nThe scholars who hid them went down too.\nWork started on it in 246 BC.\nIt took decades of forced labor, unpaid.\nThe mound above the grave copied a pyramid.\nThey called the whole burial a heavenly palace.\nThe whole complex lies outside Xi'an.\nEvery single soldier is a different height.\nNo two of the faces are the same.\nThen the army vanished for two thousand years.\nIn 1974 farmers were digging a well.\nA shovel struck something hard in the dirt.\nIt was a clay shoulder, then a face.\nThe clay broke when the diggers raised it.\nSo the hole was covered over and abandoned.\nIn 2012 a new pit was opened.\nMore than a thousand soldiers lay inside.\nTwo bronze cranes lay broken in the dirt.\nArchaeologists repaired them with modern glue anyway.\nIn 1983 a scientist poured acid on figures.\nNobody can read those markings ever again.\nSoil samples from the mound gave up mercury.\nEnough of it to fill a small pool.\nThe old records say rivers of liquid mercury.\nMercury is a slow poison.\nThe body never really lets it go.\nThe main chamber has never been opened once.\nIt lies under the mound, still sealed.\nBehind the army, the door stays shut.",
+ "word_count": 327,
+ "est_wpm": 165,
+ "beats": [
+  {
+   "n": 1,
+   "id": "b01",
+   "beat": "HOOK",
+   "line": "Beneath this field, eight thousand soldiers stand waiting.",
+   "visual": "wide empty flat brown dirt field outside Xi'an, low horizon, nothing on screen; hand-lettered label 'OUTSIDE XI'AN, CHINA'",
+   "register": "paint"
+  },
+  {
+   "n": 2,
+   "id": "b02",
+   "beat": "HOOK",
+   "line": "They are clay, and they are perfect.",
+   "visual": "cut into the soil: a clay soldier standing upright, undisturbed, dust on its shoulders",
+   "register": "paint"
+  },
+  {
+   "n": 3,
+   "id": "b03",
+   "beat": "IMAGE",
+   "line": "They stand one way for two thousand years.",
+   "visual": "the same clay figure held, full frame, cropped at both side edges",
+   "register": "paint"
+  },
+  {
+   "n": 4,
+   "id": "b04",
+   "beat": "IMAGE",
+   "line": "Their paint left them centuries after burial.",
+   "visual": "close on the figure's shoulder and face, paint flaking away in flakes on the dirt",
+   "register": "paint"
+  },
+  {
+   "n": 5,
+   "id": "b05",
+   "beat": "TITLE",
+   "line": "They are called the Terracotta Army.",
+   "visual": "hand-lettered 'TERRACOTTA ARMY' stamped across the top of a rank of clay figures",
+   "register": "paint"
+  },
+  {
+   "n": 6,
+   "id": "b06",
+   "beat": "FACT",
+   "line": "Eight thousand soldiers in the dark.",
+   "visual": "a dark earthen pit in cross-section, rows of clay figures standing shoulder to shoulder below ground",
+   "register": "paint"
+  },
+  {
+   "n": 7,
+   "id": "b07",
+   "beat": "FACT",
+   "line": "Six hundred horses stood beside them.",
+   "visual": "two clay horses, harnessed, filling the frame, cropped at the left edge",
+   "register": "paint"
+  },
+  {
+   "n": 8,
+   "id": "b08",
+   "beat": "FACT",
+   "line": "They stand in long rows, in earthen pits.",
+   "visual": "long ranks of warriors receding into the dark of the pit, the rows continuing past the frame",
+   "register": "paint"
+  },
+  {
+   "n": 9,
+   "id": "b09",
+   "beat": "REVEAL",
+   "line": "They are all guarding one man.",
+   "visual": "all the clay faces turned the same direction; the character standing among them, small",
+   "register": "paint"
+  },
+  {
+   "n": 10,
+   "id": "b10",
+   "beat": "REVEAL",
+   "line": "His name is Qin Shi Huang.",
+   "visual": "name stamp 'QIN SHI HUANG'; character below it, pointing up at the stamp",
+   "register": "paint"
+  },
+  {
+   "n": 11,
+   "id": "b11",
+   "beat": "ESTABLISH",
+   "line": "He was the first emperor of all China.",
+   "visual": "character full body before a plain map of China; speech bubble 'first emperor'",
+   "register": "paint"
+  },
+  {
+   "n": 12,
+   "id": "b12",
+   "beat": "FACT",
+   "line": "In 221 BC he ended centuries of war.",
+   "visual": "calendar page marked '221 BC'; crossed arrows and broken banners on the map",
+   "register": "paint"
+  },
+  {
+   "n": 13,
+   "id": "b13",
+   "beat": "FACT",
+   "line": "China had been a hundred separate kingdoms.",
+   "visual": "map covered in many small red kingdom shapes with fighting arrows between them",
+   "register": "paint"
+  },
+  {
+   "n": 14,
+   "id": "b14",
+   "beat": "PIVOT",
+   "line": "He gave them one script and one ruler.",
+   "visual": "the red shapes merging into one outline; one road, one script sheet, one crown",
+   "register": "paint"
+  },
+  {
+   "n": 15,
+   "id": "b15",
+   "beat": "FACT",
+   "line": "One set of weights for every trade.",
+   "visual": "a set of bronze weights of different shapes, all stamped with one mark",
+   "register": "paint"
+  },
+  {
+   "n": 16,
+   "id": "b16",
+   "beat": "REVEAL",
+   "line": "That one ruler was himself.",
+   "visual": "a single figure on a throne, arms folded; character below, deadpan; speech bubble 'himself'",
+   "register": "paint"
+  },
+  {
+   "n": 17,
+   "id": "b17",
+   "beat": "ESCALATE",
+   "line": "He burned every book that disagreed with him.",
+   "visual": "a stack of old books going into a fire, hand-drawn flames",
+   "register": "paint"
+  },
+  {
+   "n": 18,
+   "id": "b18",
+   "beat": "ESCALATE",
+   "line": "The scholars who hid them went down too.",
+   "visual": "a robed scholar figure lowered into a pit; character recoiling from the edge",
+   "register": "paint"
+  },
+  {
+   "n": 19,
+   "id": "b19",
+   "beat": "FACT",
+   "line": "Work started on it in 246 BC.",
+   "visual": "plan of the tomb complex drawn on a wall; one square block marked '246 BC'",
+   "register": "paint"
+  },
+  {
+   "n": 20,
+   "id": "b20",
+   "beat": "FACT",
+   "line": "It took decades of forced labor, unpaid.",
+   "visual": "long lines of laborers hauling earth, drawn small and repeating to the horizon",
+   "register": "paint"
+  },
+  {
+   "n": 21,
+   "id": "b21",
+   "beat": "COMPARISON",
+   "line": "The mound above the grave copied a pyramid.",
+   "visual": "the earth mound drawn beside a small stepped pyramid silhouette; label 'pyramid'",
+   "register": "paint"
+  },
+  {
+   "n": 22,
+   "id": "b22",
+   "beat": "REVEAL",
+   "line": "They called the whole burial a heavenly palace.",
+   "visual": "the mound sketched as a celestial palace: stars, a moon disc, cloud bands",
+   "register": "paint"
+  },
+  {
+   "n": 23,
+   "id": "b23",
+   "beat": "ESTABLISH",
+   "line": "The whole complex lies outside Xi'an.",
+   "visual": "a simple hand-drawn map plan with a dot east of a walled city; label 'OUTSIDE XI'AN'",
+   "register": "paint"
+  },
+  {
+   "n": 24,
+   "id": "b24",
+   "beat": "FACT",
+   "line": "Every single soldier is a different height.",
+   "visual": "three clay soldiers side by side, heights visibly different; a measuring stick behind them",
+   "register": "paint"
+  },
+  {
+   "n": 25,
+   "id": "b25",
+   "beat": "FACT",
+   "line": "No two of the faces are the same.",
+   "visual": "two clay faces side by side, clearly different; label 'no two the same'",
+   "register": "paint"
+  },
+  {
+   "n": 26,
+   "id": "b26",
+   "beat": "PIVOT",
+   "line": "Then the army vanished for two thousand years.",
+   "visual": "the empty field again, quiet; character small at the edge of frame",
+   "register": "paint"
+  },
+  {
+   "n": 27,
+   "id": "b27",
+   "beat": "HOOK",
+   "line": "In 1974 farmers were digging a well.",
+   "visual": "1974; two farmers swinging pickaxes beside a half-dug well",
+   "register": "paint"
+  },
+  {
+   "n": 28,
+   "id": "b28",
+   "beat": "FACT",
+   "line": "A shovel struck something hard in the dirt.",
+   "visual": "shovel blade striking something hard, clay chipping off the edge",
+   "register": "paint"
+  },
+  {
+   "n": 29,
+   "id": "b29",
+   "beat": "REVEAL",
+   "line": "It was a clay shoulder, then a face.",
+   "visual": "a clay shoulder and a clay face emerging from the dirt, loose soil falling",
+   "register": "paint"
+  },
+  {
+   "n": 30,
+   "id": "b30",
+   "beat": "FACT",
+   "line": "The clay broke when the diggers raised it.",
+   "visual": "hands lifting a broken clay arm, fragments dropping back into the pit",
+   "register": "paint"
+  },
+  {
+   "n": 31,
+   "id": "b31",
+   "beat": "FACT",
+   "line": "So the hole was covered over and abandoned.",
+   "visual": "the pit filled in, covered with a tarp and a small building over it",
+   "register": "paint"
+  },
+  {
+   "n": 32,
+   "id": "b32",
+   "beat": "REVEAL",
+   "line": "In 2012 a new pit was opened.",
+   "visual": "plan view of an L-shaped corridor of vaults; label 'PIT 1, 2012'",
+   "register": "paint"
+  },
+  {
+   "n": 33,
+   "id": "b33",
+   "beat": "FACT",
+   "line": "More than a thousand soldiers lay inside.",
+   "visual": "the L-shaped pit filled with clay figures, seen from above, cropped at both edges",
+   "register": "paint"
+  },
+  {
+   "n": 34,
+   "id": "b34",
+   "beat": "ESCALATE",
+   "line": "Two bronze cranes lay broken in the dirt.",
+   "visual": "two bronze crane figures lying in fragments on the dirt, both broken",
+   "register": "paint"
+  },
+  {
+   "n": 35,
+   "id": "b35",
+   "beat": "FACT",
+   "line": "Archaeologists repaired them with modern glue anyway.",
+   "visual": "a modern glue brush and epoxy bottle drawn next to a repaired crane body",
+   "register": "paint"
+  },
+  {
+   "n": 36,
+   "id": "b36",
+   "beat": "ESCALATE",
+   "line": "In 1983 a scientist poured acid on figures.",
+   "visual": "a figure pouring acid from a jar onto terracotta armor; surface dissolving",
+   "register": "paint"
+  },
+  {
+   "n": 37,
+   "id": "b37",
+   "beat": "FACT",
+   "line": "Nobody can read those markings ever again.",
+   "visual": "the same armor plate greyed out, its painted surface gone; character looking away",
+   "register": "paint"
+  },
+  {
+   "n": 38,
+   "id": "b38",
+   "beat": "REVEAL",
+   "line": "Soil samples from the mound gave up mercury.",
+   "visual": "a soil sample jar in a lab tray; a bright silver bead forming inside",
+   "register": "paint"
+  },
+  {
+   "n": 39,
+   "id": "b39",
+   "beat": "ESCALATE",
+   "line": "Enough of it to fill a small pool.",
+   "visual": "a low tunnel with a shallow pool of liquid mercury reflecting the lamp",
+   "register": "paint"
+  },
+  {
+   "n": 40,
+   "id": "b40",
+   "beat": "FACT",
+   "line": "The old records say rivers of liquid mercury.",
+   "visual": "an old scroll unrolling; painted on it: two winding silver rivers around a shape",
+   "register": "paint"
+  },
+  {
+   "n": 41,
+   "id": "b41",
+   "beat": "FACT",
+   "line": "Mercury is a slow poison.",
+   "visual": "a silver droplet on a fingertip; character wiping his mouth; label 'poison'",
+   "register": "paint"
+  },
+  {
+   "n": 42,
+   "id": "b42",
+   "beat": "FACT",
+   "line": "The body never really lets it go.",
+   "visual": "a body outline with the silver still lodged in it, drawn flat",
+   "register": "paint"
+  },
+  {
+   "n": 43,
+   "id": "b43",
+   "beat": "FINALE",
+   "line": "The main chamber has never been opened once.",
+   "visual": "a heavy stone door in the dark, shut; one flat painted guard figure beside it",
+   "register": "paint"
+  },
+  {
+   "n": 44,
+   "id": "b44",
+   "beat": "FINALE",
+   "line": "It lies under the mound, still sealed.",
+   "visual": "the sealed mound in cross-section: outer pits, then solid earth, then a black sealed void",
+   "register": "paint"
+  },
+  {
+   "n": 45,
+   "id": "b45",
+   "beat": "FINALE",
+   "line": "Behind the army, the door stays shut.",
+   "visual": "the shut stone door again, held; character very small in the dark beside it; speech bubble 'nobody has opened it'",
+   "register": "paint"
+  }
+ ]
+}

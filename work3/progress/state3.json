@@ -1,0 +1,54 @@
+{
+ "assembly_critic_round1": {
+  "pairs_judged": 12,
+  "ours_wins": 8,
+  "ref_wins": 4,
+  "ours_won": [
+   "p01",
+   "p02",
+   "p04",
+   "p05",
+   "p11",
+   "p15",
+   "p17",
+   "p18"
+  ],
+  "ref_won": [
+   "p03",
+   "p07",
+   "p09",
+   "p13"
+  ],
+  "loss_pattern": "we over-populate/over-inform. p03/p09=ref big expressive head beats our mid-size stickman; p07=ref plain door beats our busy riveted door; p13=ref snowy mountain beats our seed racks.",
+  "note": "verdicts recorded as bare letters before reveal; they held up (no systematic side misread)."
+ },
+ "gate_status": {
+  "date": "2026-10-04",
+  "chapters_ok": 9,
+  "beats_rendered": 331,
+  "note": "full gate WITH render pass: every beat midpoint composited, 0 crashes, 0 title-band collisions, 0 missing/nocap. Determinism re-verified on cheyenne+vatican after caption edits (stable, 40 frames each)."
+ },
+ "render": {
+  "status": "9/9 rendered+muxed OK (stale for 7 chapters pending band fix)",
+  "pipeline_proven": true,
+  "assembly_test": "824s, both streams agree, no desync",
+  "backup": "assembly/bunkers_full.pre-bandfix.mp4"
+ },
+ "band_intrusion_gate": {
+  "date": "2026-10-04",
+  "why": "source scan for cap/draw_title was green on 37 real defects; found by eye on frames from the rendered mp4",
+  "method": "mask the title glyph pixels on a blank page, dilate, count unexplained dark px in title bbox per beat, skip night cards",
+  "found": {
+   "pinegap": 5,
+   "fortknox": 15,
+   "area51": 2,
+   "room39": 6,
+   "mezhgorye": 5,
+   "cheyenne": 6,
+   "svalbard": 1,
+   "tomb": 2
+  },
+  "fixed": "pinegap (clean)",
+  "in_progress": "4 agents fixing fortknox / area51+room39 / mezhgorye+cheyenne / svalbard+tomb"
+ }
+}

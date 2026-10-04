@@ -1,0 +1,126 @@
+{
+ "title": "TrES-2b - The Darkest Planet Ever Found",
+ "wrote_to": "tres2b/script.json",
+ "target": {
+  "wpm": 160,
+  "max_sentence_words": 10,
+  "note": "v2 spec: short declaratives, simple words, one idea per beat. Read-aloud simple."
+ },
+ "narration": "Look at this planet. You will never see it. Not once, not ever.\nIt bounces back less than one percent of the light its star sends down.\nThat is darker than coal. Darker than asphalt. The instruments checked it twice. Both times they agreed.\nHere is the part that makes this darkness obscene. The planet is tidally locked. One side never moves.\nOne half faces the star forever. The other half never sees it at all.\nSo the night side never warms. The day side never cools.\nThat day side is a furnace. Thousands of degrees of gas.\nIt does glow, faintly. A dull red. About two thousand kelvin. Like coals left in a hearth.\nHot enough to strip the skin off your hand. Too dark to reflect the light that made it hot.\nNow watch the star it orbits. The star is what finishes this story.\nThe star is small and red. It is running low on the fuel that keeps it alive.\nSo it is swelling. It is creeping closer. It is pulling the air off the planet.\nThe whole atmosphere comes off in sheets, trailing away as a long glowing tail.\nAnd the darkest planet anyone has ever found is being unmade by its own sun.",
+ "word_count": 209,
+ "est_wpm": 160,
+ "beats": [
+  {
+   "n": 1,
+   "id": "hook_never_see_it",
+   "beat": "HOOK",
+   "line": "Look at this planet. You will never see it. Not once, not ever.",
+   "visual": "planet silhouette, only edge lit; label 'you cannot see this'",
+   "register": "v2"
+  },
+  {
+   "n": 2,
+   "id": "albedo_one_percent",
+   "beat": "ALBEDO",
+   "line": "It bounces back less than one percent of the light its star sends down.",
+   "visual": "big number '1%' with red arrow to the planet; label 'light returned'",
+   "register": "v2"
+  },
+  {
+   "n": 3,
+   "id": "darker_than_coal",
+   "beat": "COMPARISON",
+   "line": "That is darker than coal. Darker than asphalt. The instruments checked it twice. Both times they agreed.",
+   "visual": "coal swatch and asphalt swatch, both lighter than the planet; red X on 'light'",
+   "register": "v2"
+  },
+  {
+   "n": 4,
+   "id": "tidally_locked_reveal",
+   "beat": "REVEAL",
+   "line": "Here is the part that makes this darkness obscene. The planet is tidally locked. One side never moves.",
+   "visual": "character close-up, deadpan; speech bubble 'it cannot turn'",
+   "register": "v2"
+  },
+  {
+   "n": 5,
+   "id": "two_faces_forever",
+   "beat": "TWO_SIDES",
+   "line": "One half faces the star forever. The other half never sees it at all.",
+   "visual": "planet split light/dark side; yellow label 'day' and 'night, always'",
+   "register": "v2"
+  },
+  {
+   "n": 6,
+   "id": "never_warms_never_cools",
+   "beat": "LOCKED",
+   "line": "So the night side never warms. The day side never cools.",
+   "visual": "red box on night side with a thermometer frozen; red box on day side with a furnace",
+   "register": "v2"
+  },
+  {
+   "n": 7,
+   "id": "day_side_furnace",
+   "beat": "FURNACE",
+   "line": "That day side is a furnace. Thousands of degrees of gas.",
+   "visual": "day side glowing red, big number '4000°F'; speech bubble 'nobody can see it'",
+   "register": "v2"
+  },
+  {
+   "n": 8,
+   "id": "dull_red_glow",
+   "beat": "GLOW",
+   "line": "It does glow, faintly. A dull red. About two thousand kelvin. Like coals left in a hearth.",
+   "visual": "dull red coals in a hearth, number '2000 K' in red",
+   "register": "v2"
+  },
+  {
+   "n": 9,
+   "id": "hot_but_too_dark",
+   "beat": "PARADOX",
+   "line": "Hot enough to strip the skin off your hand. Too dark to reflect the light that made it hot.",
+   "visual": "character shielding eyes, 'hot' and 'dark' labels with a confused circle between",
+   "register": "v2"
+  },
+  {
+   "n": 10,
+   "id": "watch_the_star",
+   "beat": "PIVOT",
+   "line": "Now watch the star it orbits. The star is what finishes this story.",
+   "visual": "camera pans to the star; red arrow from planet to star",
+   "register": "v2"
+  },
+  {
+   "n": 11,
+   "id": "star_running_out_of_fuel",
+   "beat": "THE_STAR",
+   "line": "The star is small and red. It is running low on the fuel that keeps it alive.",
+   "visual": "small red star with a fading fuel gauge; red label 'running out'",
+   "register": "v2"
+  },
+  {
+   "n": 12,
+   "id": "swelling_and_closer",
+   "beat": "SWELLING",
+   "line": "So it is swelling. It is creeping closer. It is pulling the air off the planet.",
+   "visual": "star swelling larger, moving closer; atmosphere streaming off planet",
+   "register": "v2"
+  },
+  {
+   "n": 13,
+   "id": "atmosphere_as_tail",
+   "beat": "TAIL",
+   "line": "The whole atmosphere comes off in sheets, trailing away as a long glowing tail.",
+   "visual": "long glowing tail of atmosphere trailing off the planet",
+   "register": "v2"
+  },
+  {
+   "n": 14,
+   "id": "unmade_by_its_own_sun",
+   "beat": "FINALE",
+   "line": "And the darkest planet anyone has ever found is being unmade by its own sun.",
+   "visual": "planet fading, character awed; speech bubble 'its own sun is eating it'",
+   "register": "v2"
+  }
+ ]
+}

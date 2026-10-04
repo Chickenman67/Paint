@@ -1,0 +1,310 @@
+{
+ "title": "Room 39 - The Sealed Bunker Under The Kremlin",
+ "wrote_to": "segments/room39/script.json",
+ "target": {
+  "wpm": 165,
+  "max_sentence_words": 10,
+  "note": "short declaratives, one idea per beat. Little to no pause between sentences."
+ },
+ "narration": "Under the Kremlin, a nuclear bunker waits.\nNobody has ever walked through its door.\nIts code name is Object 739.\nStalin ordered it built in the 1950s.\nHe wanted one refuge of his own.\nIt sits below a small park.\nMoscow itself was built on sinking ground.\nEverything above the ceiling is hardened steel.\nOrdinary buildings nearby rest on thin foundations.\nThe doors were made to close forever.\nEach leaf weighs hundreds of tonnes.\nThey are sealed, and never opened.\nOne closed door, filling the whole frame.\nStalin reportedly never went inside.\nThe corridors were lined with lead.\nFloor to ceiling, plate over plate.\nBelow that, a control room waits.\nThe room is said to hold one console.\nA console drawn small, in the dark.\nOne row of switches, one big button.\nNo official record confirms the console.\nOther bunkers from that era were documented.\nThis one has never been filmed inside.\nSatellite images show only the surface.\nThe entrance sits behind an ordinary fence.\nAn ordinary fence on an ordinary street.\nIt ends at a set of steel doors.\nRumour says they open on a code.\nNo code has ever been published.\nThe whole site is a system.\nA line of sensors ringing the block.\nSomething out there is still listening.\nThe system may have outlived its builder.\nUnder the park, a red light waits.\nRussia has never confirmed what remains.\nNo one has gone down in decades.\nThe door is still shut, and still waiting.",
+ "word_count": 247,
+ "est_wpm": 165,
+ "beats": [
+  {
+   "n": 1,
+   "id": "b01",
+   "beat": "HOOK",
+   "line": "Under the Kremlin, a nuclear bunker waits.",
+   "visual": "cross-section of a city block under a park, one deep chamber cut into the clay; label 'BENEATH THE KREMLIN'",
+   "register": "paint"
+  },
+  {
+   "n": 2,
+   "id": "b02",
+   "beat": "HOOK",
+   "line": "Nobody has ever walked through its door.",
+   "visual": "a single steel door in flat grey concrete, never opened; character small in front of it, looking up",
+   "register": "paint"
+  },
+  {
+   "n": 3,
+   "id": "b03",
+   "beat": "TITLE",
+   "line": "Its code name is Object 739.",
+   "visual": "hand-lettered 'OBJECT 739' stamped across a blueprint of the bunker",
+   "register": "paint"
+  },
+  {
+   "n": 4,
+   "id": "b04",
+   "beat": "ESTABLISH",
+   "line": "Stalin ordered it built in the 1950s.",
+   "visual": "plain black-and-white portrait sketch of Stalin, no shading, label '1950s'",
+   "register": "paint"
+  },
+  {
+   "n": 5,
+   "id": "b05",
+   "beat": "FACT",
+   "line": "He wanted one refuge of his own.",
+   "visual": "one man alone at a desk, drawing a plan by hand",
+   "register": "paint"
+  },
+  {
+   "n": 6,
+   "id": "b06",
+   "beat": "IMAGE",
+   "line": "It sits below a small park.",
+   "visual": "flat green park above, grey chamber below, the two separated by a thick line",
+   "register": "paint"
+  },
+  {
+   "n": 7,
+   "id": "b07",
+   "beat": "FACT",
+   "line": "Moscow itself was built on sinking ground.",
+   "visual": "cross-section of Moscow soil: soft clay layers, water pooling at the bottom",
+   "register": "paint"
+  },
+  {
+   "n": 8,
+   "id": "b08",
+   "beat": "FACT",
+   "line": "Everything above the ceiling is hardened steel.",
+   "visual": "armoured ceiling slab, riveted, drawn very thick; character standing on it for scale",
+   "register": "paint"
+  },
+  {
+   "n": 9,
+   "id": "b09",
+   "beat": "COMPARISON",
+   "line": "Ordinary buildings nearby rest on thin foundations.",
+   "visual": "a thin ordinary basement wall beside it, hand-lettered label 'ABOVE' vs 'BELOW'",
+   "register": "paint"
+  },
+  {
+   "n": 10,
+   "id": "b10",
+   "beat": "ESCALATE",
+   "line": "The doors were made to close forever.",
+   "visual": "close on a huge blast door leaf filling the frame, wheel lock in the middle",
+   "register": "paint"
+  },
+  {
+   "n": 11,
+   "id": "b11",
+   "beat": "FACT",
+   "line": "Each leaf weighs hundreds of tonnes.",
+   "visual": "the same door with a small figure of a truck beside it, for scale; label 'HUNDREDS OF TONNES'",
+   "register": "paint"
+  },
+  {
+   "n": 12,
+   "id": "b12",
+   "beat": "ESCALATE",
+   "line": "They are sealed, and never opened.",
+   "visual": "weld seam drawn across the door edge, bright and uneven, sealing it shut",
+   "register": "paint"
+  },
+  {
+   "n": 13,
+   "id": "b13",
+   "beat": "IMAGE",
+   "line": "One closed door, filling the whole frame.",
+   "visual": "the closed door held dead centre, filling the whole frame, nothing else in shot",
+   "register": "paint"
+  },
+  {
+   "n": 14,
+   "id": "b14",
+   "beat": "PIVOT",
+   "line": "Stalin reportedly never went inside.",
+   "visual": "character shrugging at a desk; speech bubble 'he never went in'",
+   "register": "paint"
+  },
+  {
+   "n": 15,
+   "id": "b15",
+   "beat": "FACT",
+   "line": "The corridors were lined with lead.",
+   "visual": "cutaway corridor cross-section, thick dark plates on floor, walls and ceiling",
+   "register": "paint"
+  },
+  {
+   "n": 16,
+   "id": "b16",
+   "beat": "FACT",
+   "line": "Floor to ceiling, plate over plate.",
+   "visual": "the plates drawn edge to edge, one long continuous band; label 'LEAD LINED'",
+   "register": "paint"
+  },
+  {
+   "n": 17,
+   "id": "b17",
+   "beat": "REVEAL",
+   "line": "Below that, a control room waits.",
+   "visual": "one low chamber at the end of the corridor, single light above it; character tiny, awed",
+   "register": "paint"
+  },
+  {
+   "n": 18,
+   "id": "b18",
+   "beat": "ESCALATE",
+   "line": "The room is said to hold one console.",
+   "visual": "cutaway of the chamber, a blocky console shape under a hanging lamp; label 'SAID TO EXIST'",
+   "register": "paint"
+  },
+  {
+   "n": 19,
+   "id": "b19",
+   "beat": "IMAGE",
+   "line": "A console drawn small, in the dark.",
+   "visual": "the console alone in a wide dark room, one small warm pool of light",
+   "register": "paint"
+  },
+  {
+   "n": 20,
+   "id": "b20",
+   "beat": "ESCALATE",
+   "line": "One row of switches, one big button.",
+   "visual": "close on one row of switches and one large red button under a hinged cover",
+   "register": "paint"
+  },
+  {
+   "n": 21,
+   "id": "b21",
+   "beat": "PIVOT",
+   "line": "No official record confirms the console.",
+   "visual": "character deadpan beside an empty file folder; speech bubble 'no record'",
+   "register": "paint"
+  },
+  {
+   "n": 22,
+   "id": "b22",
+   "beat": "COMPARISON",
+   "line": "Other bunkers from that era were documented.",
+   "visual": "another bunker from the same decade, open to visitors, a queue of small figures",
+   "register": "paint"
+  },
+  {
+   "n": 23,
+   "id": "b23",
+   "beat": "COMPARISON",
+   "line": "This one has never been filmed inside.",
+   "visual": "our bunker door beside it, the visitor line cut off at the edge",
+   "register": "paint"
+  },
+  {
+   "n": 24,
+   "id": "b24",
+   "beat": "ESCALATE",
+   "line": "Satellite images show only the surface.",
+   "visual": "satellite passing overhead looking straight down; only rooftops and trees visible",
+   "register": "paint"
+  },
+  {
+   "n": 25,
+   "id": "b25",
+   "beat": "FACT",
+   "line": "The entrance sits behind an ordinary fence.",
+   "visual": "ordinary grey perimeter fence on an ordinary street, parked cars behind it",
+   "register": "paint"
+  },
+  {
+   "n": 26,
+   "id": "b26",
+   "beat": "IMAGE",
+   "line": "An ordinary fence on an ordinary street.",
+   "visual": "the same fence held from further back, trees, a bench, a bus stop",
+   "register": "paint"
+  },
+  {
+   "n": 27,
+   "id": "b27",
+   "beat": "REVEAL",
+   "line": "It ends at a set of steel doors.",
+   "visual": "the fence line running to a plain steel door set into a brick wall; label 'ENTRANCE'",
+   "register": "paint"
+  },
+  {
+   "n": 28,
+   "id": "b28",
+   "beat": "ESCALATE",
+   "line": "Rumour says they open on a code.",
+   "visual": "a keypad and a small camera on a stalk above the steel door",
+   "register": "paint"
+  },
+  {
+   "n": 29,
+   "id": "b29",
+   "beat": "FACT",
+   "line": "No code has ever been published.",
+   "visual": "the keypad close, no numbers legible, a blank panel of twelve unmarked buttons",
+   "register": "paint"
+  },
+  {
+   "n": 30,
+   "id": "b30",
+   "beat": "ESTABLISH",
+   "line": "The whole site is a system.",
+   "visual": "the whole block drawn as a system: fence, sensors, door, chamber, all linked by one dashed line",
+   "register": "paint"
+  },
+  {
+   "n": 31,
+   "id": "b31",
+   "beat": "IMAGE",
+   "line": "A line of sensors ringing the block.",
+   "visual": "a ring of small sensor boxes around the block, each with a short antenna",
+   "register": "paint"
+  },
+  {
+   "n": 32,
+   "id": "b32",
+   "beat": "FACT",
+   "line": "Something out there is still listening.",
+   "visual": "one sensor box close, a small red lamp lit on its face",
+   "register": "paint"
+  },
+  {
+   "n": 33,
+   "id": "b33",
+   "beat": "ESCALATE",
+   "line": "The system may have outlived its builder.",
+   "visual": "the block's outline dissolving into rust and weeds; the dashed line still runs through it",
+   "register": "paint"
+  },
+  {
+   "n": 34,
+   "id": "b34",
+   "beat": "IMAGE",
+   "line": "Under the park, a red light waits.",
+   "visual": "the park at night, cutaway, a small red glow in the chamber below; no label",
+   "register": "paint"
+  },
+  {
+   "n": 35,
+   "id": "b35",
+   "beat": "FACT",
+   "line": "Russia has never confirmed what remains.",
+   "visual": "an official document on a desk, the relevant line left blank and unmarked",
+   "register": "paint"
+  },
+  {
+   "n": 36,
+   "id": "b36",
+   "beat": "FACT",
+   "line": "No one has gone down in decades.",
+   "visual": "the chamber dark, an empty helmet on a chair, nothing moving",
+   "register": "paint"
+  },
+  {
+   "n": 37,
+   "id": "b37",
+   "beat": "FINALE",
+   "line": "The door is still shut, and still waiting.",
+   "visual": "the steel door held in near-darkness, a red lamp beside it; character small, seen from behind, waiting; no label",
+   "register": "paint"
+  }
+ ]
+}

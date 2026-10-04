@@ -1,0 +1,113 @@
+{
+ "title": "WASP-17b: The Planet That Runs Backwards",
+ "wrote_to": "C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/wasp17b/script.json",
+ "narration": "This planet goes the wrong way around its star.\nAlmost every other world in the galaxy turns the same direction.\nThis one runs backwards.\nIt was never made here.\nIt was thrown, or captured, or flung into this orbit.\nThere is no ordinary reason for a world to turn against its star.\nWhatever put it here left it there.\nNow look at how little of it is actually there.\nIt is one of the puffiest planets we have ever measured.\nSo low in density that it floats like a cork.\nA world the size of Jupiter, made of almost nothing.\nIt should have collapsed into itself a long time ago.\nThe heat down inside holds it open. That is all.\nIts clouds stack so high they look like a wall of weather.\nAnd the wind in them never stops.\nThe whole atmosphere just runs, endlessly, around the day side.\nThose clouds move faster than anything that size should.\nThe side facing the star hits seventeen hundred degrees.\nYou would not land here.\nYou would not orbit here.\nYou would not want to fall asleep here.\nBackwards spin. Almost no weight. Endless wind.\nA planet that lost its place and never noticed.\nEvery part of it is wrong.\nYou are looking at a world nobody planned.\nIt is still there. It is still turning.\nIt was never supposed to be here.",
+ "word_count": 230,
+ "est_wpm": 160,
+ "beats": [
+  {
+   "n": 1,
+   "id": "backwards_hook",
+   "beat": "HOOK",
+   "register": "void",
+   "line": "This planet goes the wrong way around its star.",
+   "visual": "Deep navy starfield with a banded gas giant filling the right half and one fat hand-drawn arrow curling backwards around it, with the cream stickman standing at lower left, flat-line mouth, deadpan, head tipped back to watch the arrow."
+  },
+  {
+   "n": 2,
+   "id": "everyone_else_turns",
+   "beat": "SETUP",
+   "register": "cream",
+   "line": "Almost every other world in the galaxy turns the same direction.\nThis one runs backwards.",
+   "visual": "Cream paper card with a single yellow star at center and six small planets orbiting it in tidy same-direction arrows, one of them drawn on a reversed arrow, with the dark stickman at the right edge shrugging, zigzag mouth, uncomfortable."
+  },
+  {
+   "n": 3,
+   "id": "not_made_here",
+   "beat": "TURN",
+   "register": "void",
+   "line": "It was never made here.\nIt was thrown, or captured, or flung into this orbit.",
+   "visual": "Void card where the gas giant streaks in from off-frame on a hard jagged diagonal, its birthplace ghosted as a dashed circle far away, with the cream stickman at lower right pointing up the path, wide oval mouth, awed."
+  },
+  {
+   "n": 4,
+   "id": "wrong_way_explained",
+   "beat": "WHY",
+   "register": "cream",
+   "line": "There is no ordinary reason for a world to turn against its star.\nWhatever put it here left it there.",
+   "visual": "Cream card with two rough inked stamp boxes up top labeled CAPTURED and FLUNG, each holding a tiny careless sketch, and the dark stickman below them pointing at the left box, flat-line mouth, deadpan, standing."
+  },
+  {
+   "n": 5,
+   "id": "almost_nothing_there",
+   "beat": "REVEAL",
+   "register": "void",
+   "line": "Now look at how little of it is actually there.\nIt is one of the puffiest planets we have ever measured.",
+   "visual": "Void card with the gas giant drawn as a thin, faint balloon outline inside its own oversized ring, most of the ring empty black, with the cream stickman at lower left with a downturned arc mouth, scared, hands up."
+  },
+  {
+   "n": 6,
+   "id": "cork_density",
+   "beat": "LOW_DENSITY",
+   "register": "cream",
+   "line": "So low in density that it floats like a cork.\nA world the size of Jupiter, made of almost nothing.",
+   "visual": "Cream card with a wine cork at left and a Jupiter-sized planet silhouette at right sitting on a thin seesaw beam that barely dips, with the dark stickman crouched by the beam, zigzag mouth, uncomfortable, shrugging."
+  },
+  {
+   "n": 7,
+   "id": "should_have_collapsed",
+   "beat": "TENSION",
+   "register": "void",
+   "line": "It should have collapsed into itself a long time ago.\nThe heat down inside holds it open. That is all.",
+   "visual": "Void card with the planet's outer layers drawn as torn onion contours pressing inward on a small red-orange core, cracks spidering across the shell, with the cream stickman at the far left shielding his eyes, downturned arc mouth, scared."
+  },
+  {
+   "n": 8,
+   "id": "cloud_wall",
+   "beat": "CLOUDS",
+   "register": "cream",
+   "line": "Its clouds stack so high they look like a wall of weather.\nAnd the wind in them never stops.",
+   "visual": "Cream card where a towering vertical stack of flat cloud bands fills nearly the whole frame, small arrows drifting sideways along every band, with the dark stickman at bottom left head tipped straight back, wide oval mouth, awed, looking up."
+  },
+  {
+   "n": 9,
+   "id": "endless_wind",
+   "beat": "WINDS",
+   "register": "void",
+   "line": "The whole atmosphere just runs, endlessly, around the day side.\nThose clouds move faster than anything that size should.",
+   "visual": "Void card with long looping wind streamlines wrapping the planet's day side in a dense ribbon of arrows, all sweeping the same way, with the cream stickman braced at lower left, one arm over his face, zigzag mouth, uncomfortable."
+  },
+  {
+   "n": 10,
+   "id": "dayside_1700",
+   "beat": "HEAT",
+   "register": "cream",
+   "line": "The side facing the star hits seventeen hundred degrees.",
+   "visual": "Cream card dominated by one fat hand-drawn temperature column filled to the top and labeled 1700 C, with heat squiggles rising off it and a tiny planet pressed against its left edge, and the dark stickman standing motionless beside it, downturned arc mouth, scared."
+  },
+  {
+   "n": 11,
+   "id": "you_would_not",
+   "beat": "FATE",
+   "register": "void",
+   "line": "You would not land here.\nYou would not orbit here.\nYou would not want to fall asleep here.",
+   "visual": "Void card, almost empty starfield with one very small planet far off-center and a lot of dead space around it, with the cream stickman small at lower center taking one step backward, hands up, downturned arc mouth, scared."
+  },
+  {
+   "n": 12,
+   "id": "three_wrongs",
+   "beat": "RECAP",
+   "register": "cream",
+   "line": "Backwards spin. Almost no weight. Endless wind.\nA planet that lost its place and never noticed.\nEvery part of it is wrong.",
+   "visual": "Cream card with three short checklist lines stacked at the left reading WRONG WAY, ALMOST NO WEIGHT, ENDLESS WIND, each ticked off in ink, with the dark stickman at the right shrugging, flat-line mouth, deadpan."
+  },
+  {
+   "n": 13,
+   "id": "never_supposed_to_be_here",
+   "beat": "CLOSER",
+   "register": "void",
+   "line": "You are looking at a world nobody planned.\nIt is still there. It is still turning.\nIt was never supposed to be here.",
+   "visual": "Void card with the gas giant alone and small at the center of a wide empty starfield, one faint retrograde arrow looping it, and the cream stickman at lower left standing with hands lowered, wide oval mouth, awed."
+  }
+ ]
+}

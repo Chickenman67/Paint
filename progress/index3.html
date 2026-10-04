@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gauntlet3 v2 — build progress</title>
+<style>
+  :root{
+    --paper:#fdfdfd; --ink:#000; --red:#d61e20; --yellow:#f6e05c;
+    --blue:#3a8cd6; --green:#568c3e; --rule:#d8d8d8; --soft:#666;
+    --card:#fff; --shadow:rgba(0,0,0,.10);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#141414; --ink:#f2f2f2; --red:#ff5a5c; --yellow:#f6e05c;
+      --blue:#6fb3f2; --green:#8cc46a; --rule:#333; --soft:#999;
+      --card:#1c1c1c; --shadow:rgba(0,0,0,.5);
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+       font:16px/1.5 ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif;
+       padding:24px 20px 56px}
+  .wrap{max-width:1000px;margin:0 auto}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+  .sub{color:var(--soft);font-size:14px;margin-bottom:22px}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:10px;
+        padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 2px var(--shadow)}
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;
+           color:var(--soft);margin:0 0 12px;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{text-align:left;font-weight:600;color:var(--soft);font-size:12px;
+     text-transform:uppercase;letter-spacing:.06em;padding:0 8px 8px 0;
+     border-bottom:1px solid var(--rule)}
+  td{padding:8px 8px 8px 0;border-bottom:1px solid var(--rule);
+     font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  .k{font-weight:600}
+  .num{text-align:right}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;
+        font-weight:600;border:1px solid currentColor;white-space:nowrap}
+  .ok{color:var(--green)} .wait{color:var(--soft)} .bad{color:var(--red)}
+  .run{color:var(--blue)}
+  .bar{height:10px;background:var(--rule);border-radius:999px;overflow:hidden;
+       display:flex;margin:2px 0 8px}
+  .bar i{display:block;height:100%}
+  .legend{color:var(--soft);font-size:13px;margin-top:10px}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px}
+  .kv dt{color:var(--soft)} .kv dd{margin:0;font-variant-numeric:tabular-nums}
+  code{background:color-mix(in srgb,var(--ink) 8%,transparent);padding:1px 5px;
+       border-radius:4px;font-size:13px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:720px){.grid2{grid-template-columns:1fr}}
+  .ts{color:var(--soft);font-size:12px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Gauntlet3 — v2 rebuild</h1>
+  <div class="sub" id="phase">loading…</div>
+
+  <div class="card">
+    <h2>Overall</h2>
+    <div class="bar" id="overall"></div>
+    <div class="legend" id="overallText"></div>
+  </div>
+
+  <div class="card">
+    <h2>Segments</h2>
+    <table>
+      <thead><tr>
+        <th>segment</th><th class="num">dur</th><th class="num">wpm</th>
+        <th class="num">words</th><th class="num">pause</th>
+        <th>audio</th><th>aligned</th><th>cards</th><th>video</th>
+      </tr></thead>
+      <tbody id="segs"><tr><td colspan="9">loading…</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Bar (measured)</h2>
+      <dl class="kv" id="measured"></dl>
+    </div>
+    <div class="card">
+      <h2>Our target</h2>
+      <dl class="kv" id="target"></dl>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Pipeline</h2>
+    <div class="kv" id="pipe"></div>
+  </div>
+
+  <div class="ts" id="ts"></div>
+</div>
+
+<script>
+const STATE_URL = "state3.json";
+const ORDER = ["tres2b","wasp17b","wasp127b","gliese436b","koi55","ltt9779b",
+               "fomalhautb","kelt9b","psoj3185"];
+
+const s = (v) => v == null ? "—" : (typeof v === "number" ? v : String(v));
+
+function pill(txt, cls){ return `<span class="pill ${cls}">${txt}</span>`; }
+
+function segRow(k, e){
+  const done = e.audio === "done";
+  const wpmCls = done ? (e.on_target ? "ok" : "bad") : "wait";
+  return `<tr>
+    <td class="k">${k}</td>
+    <td class="num">${done ? s(e.dur_s) : "—"}</td>
+    <td class="num ${wpmCls}">${done ? s(e.wpm) : "—"}</td>
+    <td class="num">${done ? s(e.words) : "—"}</td>
+    <td class="num">${done ? (e.pause_frac*100).toFixed(1)+"%" : "—"}</td>
+    <td>${done ? pill("done","ok") : pill("pending","wait")}</td>
+    <td>${e.aligned ? pill("yes","ok") : pill("no","wait")}</td>
+    <td>${e.cards ? pill("yes","ok") : pill("no","wait")}</td>
+    <td>${e.video ? pill("yes","ok") : pill("no","wait")}</td>
+  </tr>`;
+}
+
+function kv(obj, skip){
+  return Object.entries(obj||{})
+    .filter(([key]) => !(skip||[]).includes(key))
+    .map(([key,v]) => `<dt>${key.replace(/_/g," ")}</dt><dd>${s(v)}</dd>`)
+    .join("");
+}
+
+function render(st){
+  document.getElementById("phase").textContent =
+    (st.project||"") + " — " + (st.phase||"");
+
+  const segs = st.segments || {};
+  const keys = ORDER.filter(k => segs[k]);
+  document.getElementById("segs").innerHTML =
+    keys.length ? keys.map(k => segRow(k, segs[k])).join("")
+                : "<tr><td colspan='9'>no segments yet</td></tr>";
+
+  const tally = {audio:0, aligned:0, cards:0, video:0};
+  keys.forEach(k => {
+    const e = segs[k];
+    if (e.audio === "done") tally.audio++;
+    if (e.aligned) tally.aligned++;
+    if (e.cards) tally.cards++;
+    if (e.video) tally.video++;
+  });
+  const total = keys.length || 1;
+  const seg = (n,c) => `<i style="width:${(n/total*100).toFixed(1)}%;background:var(--${c})"></i>`;
+  document.getElementById("overall").innerHTML =
+      seg(tally.audio,"green") + seg(tally.aligned,"blue")
+    + seg(tally.cards,"yellow") + seg(tally.video,"red");
+  document.getElementById("overallText").innerHTML =
+    `audio <b>${tally.audio}/${total}</b> · aligned <b>${tally.aligned}/${total}</b>`
+    + ` · cards <b>${tally.cards}/${total}</b> · video <b>${tally.video}/${total}</b>`
+    + ` — green=audio, blue=aligned, yellow=cards, red=video`;
+
+  document.getElementById("measured").innerHTML = kv(st.measured,["devices","animation","font"]);
+  document.getElementById("target").innerHTML   = kv(st.target);
+  document.getElementById("pipe").innerHTML     = kv(st.pipeline);
+  document.getElementById("ts").textContent    = "updated: " + (st.last_update||"");
+}
+
+async function tick(){
+  try{
+    const r = await fetch(STATE_URL + "?t=" + Date.now(), {cache:"no-store"});
+    render(await r.json());
+  }catch(err){
+    document.getElementById("phase").textContent =
+      "could not load " + STATE_URL + " (serve this folder over http)";
+  }
+}
+tick();
+setInterval(tick, 4000);
+</script>
+</body>
+</html>

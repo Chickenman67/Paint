@@ -1,0 +1,28 @@
+{
+ "segment": "psrb1257",
+ "round": 2,
+ "video": "round_2_v2.mp4",
+ "method": "paired A/B frames, our_t mapped proportionally onto ref chapter t=205-265.6; FNV-hash blinding of which side is ours; critic = orchestrator (only vision-capable party)",
+ "verdict": "OURS wins",
+ "score": "25/31 paired frames (81%)",
+ "ref_won_pairs": [
+  "p01",
+  "p02",
+  "p03",
+  "p04",
+  "p06",
+  "p27"
+ ],
+ "single_biggest_gap": "CHARACTER GROUNDING + EXPRESSION. The reference places its surrogate LARGE and on a ground plane (olive band) with high-contrast expressive faces (wide-eyed, red angry, a red X over the star); ours floats a small surrogate on starfields. Ours wins on information/diagrams; the reference wins the character beats. This is the round-3 target.",
+ "caveats": [
+  "NOT fully blind: orchestrator already viewed the reference contact sheet earlier this session, so its orb/lighthouse/reaper/ground-band beats are recognized. FNV blinding randomized the A/B letter but cannot undo recognition. A fresh-context vision judge is needed for a fully blind confirmation.",
+  "Proportional time-mapping (91s -> 60.6s ref chapter) sometimes samples a held/recycled ref frame, which flatters ours on non-character beats."
+ ],
+ "secondary_gaps": [
+  "caption occasionally crosses the character legs (left-side cards)",
+  "a few cards (psr_collapse, close_no_burn) are sparse"
+ ],
+ "alignment": "video 91.000s = audio 91.000s, delta 0.000s",
+ "motion_invariant": "0 violations / 29 motion cards",
+ "verdict_status": "won_by_our_own_read_but_flagged_for_fresh_eyes_confirm"
+}

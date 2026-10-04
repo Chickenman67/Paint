@@ -1,0 +1,35 @@
+{
+  "_SEALED": "Do not open this file before returning a verdict. The critic agent must not read this.",
+  "segment": "HD 188753 Ab",
+  "round": 6,
+  "source_dir": "C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/hd188753/r6_critic",
+  "blind_dir": "C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/hd188753/critic_blind_r6",
+  "blind_dir_contents": "12 PNGs named pair_<N>_<A|B>.png plus this _KEY.json. No manifest, no README.",
+  "mapping": {
+    "pair_1": {
+      "A": "ORIGINAL (HD 188753 Ab, ours, round 6)",
+      "B": "REFERENCE"
+    },
+    "pair_2": {
+      "A": "ORIGINAL (HD 188753 Ab, ours, round 6)",
+      "B": "REFERENCE"
+    },
+    "pair_3": {
+      "A": "ORIGINAL (HD 188753 Ab, ours, round 6)",
+      "B": "REFERENCE"
+    },
+    "pair_4": {
+      "A": "ORIGINAL (HD 188753 Ab, ours, round 6)",
+      "B": "REFERENCE"
+    },
+    "pair_5": {
+      "A": "ORIGINAL (HD 188753 Ab, ours, round 6)",
+      "B": "REFERENCE"
+    },
+    "pair_6": {
+      "A": "ORIGINAL (HD 188753 Ab, ours, round 6)",
+      "B": "REFERENCE"
+    }
+  },
+  "note": "In every pair, A is ours and B is the reference. This is uniform, which is itself a blinding weakness: a critic that notices the pattern could infer the answer. Treat this file as sealed regardless."
+}

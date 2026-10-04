@@ -1,0 +1,42 @@
+TITLE = "Svalbard - The Seed Vault, Quietly Leaking"
+
+NARRATION = """Beneath an Arctic mountain, the world's seeds sleep. This is the Svalbard Global Seed Vault. It opened in 2008, on a Norwegian island. A long tunnel runs down into the rock. The rock there is permafrost, frozen for millennia. The vault is cut straight into that ice. Above the doorway, the midsummer sun barely rises. Down inside, the seeds sleep in the cold. The seeds are packed into small foil packets. Around a million samples, from a hundred nations. Wheat, rice, barley, beans, and millet. Every sample in there is a spare copy. The original seed always stays on the farm. Each nation's crop insurance, stored in a mountain. Inside, the air holds at minus eighteen degrees. That is colder than any farm freezer. In that cold, the seeds sleep for centuries. The original plan was simple: shut the door. Then leave the whole vault to the ice. Then, in 2016, the mountain began to leak. Meltwater came in through the entrance tunnel. Water at the door, in a frozen land. The entrance flooded with eight hundred tonnes. The staff were cut off for a year. The seed samples themselves were never touched. They lay above the waterline, in the cold. The same permafrost that keeps it thaws too. The vault is watched now, year round. A new access tunnel is being built. New lights on the snow, night and day. It is still a bunker against catastrophe. Catastrophe is already moving into the mountain. The coldest air on earth is warming here. The seeds are still fine, for now. Somewhere under the snow, it is still seeping."""
+
+# One dict per intended beat, in order. The cutter assigns narration spans.
+BEATS = [
+    {"beat": "HOOK", "visual": "wide flat arctic snowfield at night, white ground to the horizon; one small pale yellow wedge of light lying on the snow, tiny in a big empty frame"},
+    {"beat": "TITLE", "visual": "hand-lettered 'SVALBARD GLOBAL SEED VAULT' stamped across the sky over the mountain; title card hold"},
+    {"beat": "FACT", "visual": "flat map of the north Atlantic with Norway picked out and one small island far above it; label 'SPITSBERGEN'"},
+    {"beat": "IMAGE", "visual": "long straight entrance tunnel in one-point perspective, hand-drawn ribs overhead, receding into black; character small in it, walking away from us"},
+    {"beat": "FACT", "visual": "cutaway of the mountain: layered rock and frozen ground drawn as dense vertical hatching; hand-lettered label 'PERMAFROST'"},
+    {"beat": "REVEAL", "visual": "the same cutaway with a straight rectangular hall carved into the frozen layer, lit warm from inside; character awed at the base of the frame"},
+    {"beat": "FACT", "visual": "the entrance doorway from outside at high summer; a low yellow sun just clearing the ridge, everything still white"},
+    {"beat": "IMAGE", "visual": "inside the cold room: metal shelving running out past both frame edges, stacked flat with foil packets"},
+    {"beat": "FACT", "visual": "close on a hand holding one foil packet up to the light, a crop drawing stamped on the front"},
+    {"beat": "ESCALATE", "visual": "the shelves receding into the dark; big hand-lettered number '1,000,000' stamped across the frame"},
+    {"beat": "FACT", "visual": "five packets pulled forward in a row on one shelf, each stamped with a different crop drawing"},
+    {"beat": "FACT", "visual": "one packet in the vault beside one packet still in a field, drawn side by side; labels 'COPY' and 'ORIGINAL'"},
+    {"beat": "PIVOT", "visual": "character close-up, flat mouth, one hand shading his eyes; speech bubble 'the original stays home'"},
+    {"beat": "REVEAL", "visual": "simple globe with hand-drawn continent shapes, small packet icons dotted over every continent"},
+    {"beat": "FACT", "visual": "a wall thermometer in the cold room; the mercury line far below zero; big number '-18 C'"},
+    {"beat": "COMPARISON", "visual": "an ordinary farm freezer door beside the vault's inner door, drawn side by side for scale"},
+    {"beat": "REVEAL", "visual": "one packet resting on a shelf, drawn very large, dust of frost on it; nothing else in shot"},
+    {"beat": "PIVOT", "visual": "the four heavy doors down the tunnel, receding; character drawing a plan of them on a clipboard"},
+    {"beat": "IMAGE", "visual": "the tunnel doors shut, frost creeping across them, held dead centre and still"},
+    {"beat": "PIVOT", "visual": "wide cutaway of the whole mountain in grey, everything greyed out except one lit chamber; label '2008'"},
+    {"beat": "ESCALATE", "visual": "the tunnel mouth from outside; a brown meltwater channel cutting through the snow straight at the door"},
+    {"beat": "IMAGE", "visual": "a wall of meltwater standing inside the entrance tunnel, the door half behind it, held and cold"},
+    {"beat": "ESCALATE", "visual": "hand-lettered number '800 TONNES' stamped over the flooded tunnel floor"},
+    {"beat": "ESCALATE", "visual": "the entrance shut and barricaded, a lone figure on the snow above it, dwarfed; label '2016'"},
+    {"beat": "PIVOT", "visual": "character close-up, flat mouth, nodding once; speech bubble 'the seeds were fine'"},
+    {"beat": "IMAGE", "visual": "cutaway: water pooled in the tunnel, the seed chamber drawn above it and dry, one clean line between"},
+    {"beat": "REVEAL", "visual": "the same cutaway with the frozen layer drawn thin and ragged, melt arrows working into it; label 'AND MELTING'"},
+    {"beat": "FACT", "visual": "a small camera on a stalk above the tunnel door, and a red lamp lit on its side"},
+    {"beat": "FACT", "visual": "a fresh concrete tunnel mouth being cut into the hillside beside the old one, machinery drawn small"},
+    {"beat": "IMAGE", "visual": "the snowfield at night again, two wedges of light now lying on the snow; character standing between them, small"},
+    {"beat": "PIVOT", "visual": "character mid-frame, hands low, flat mouth, looking straight out at us; speech bubble 'a bunker'"},
+    {"beat": "ESCALATE", "visual": "a thin red line creeping across the mountain's snowline from below; nothing else changes in the frame"},
+    {"beat": "ESCALATE", "visual": "the same arctic slope drawn a few shades warmer, bare grey rock showing through the snow; hand-lettered '-2.6 C PER DECADE'"},
+    {"beat": "PIVOT", "visual": "character close-up, mouth a flat line, holding a single foil packet; speech bubble 'for now'"},
+    {"beat": "FINALE", "visual": "under the snow, the mountain in cutaway, one slow dark line of water moving through the frozen layer; character tiny, awed, no label"},
+]

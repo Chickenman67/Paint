@@ -1,0 +1,294 @@
+{
+ "title": "Svalbard - The Seed Vault, Quietly Leaking",
+ "wrote_to": "segments/svalbard/script.json",
+ "target": {
+  "wpm": 165,
+  "max_sentence_words": 10,
+  "note": "short declaratives, one idea per beat. Little to no pause between sentences."
+ },
+ "narration": "Beneath an Arctic mountain, the world's seeds sleep.\nThis is the Svalbard Global Seed Vault.\nIt opened in 2008, on a Norwegian island.\nA long tunnel runs down into the rock.\nThe rock there is permafrost, frozen for millennia.\nThe vault is cut straight into that ice.\nAbove the doorway, the midsummer sun barely rises.\nDown inside, the seeds sleep in the cold.\nThe seeds are packed into small foil packets.\nAround a million samples, from a hundred nations.\nWheat, rice, barley, beans, and millet.\nEvery sample in there is a spare copy.\nThe original seed always stays on the farm.\nEach nation's crop insurance, stored in a mountain.\nInside, the air holds at minus eighteen degrees.\nThat is colder than any farm freezer.\nIn that cold, the seeds sleep for centuries.\nThe original plan was simple: shut the door.\nThen leave the whole vault to the ice.\nThen, in 2016, the mountain began to leak.\nMeltwater came in through the entrance tunnel.\nWater at the door, in a frozen land.\nThe entrance flooded with eight hundred tonnes.\nThe staff were cut off for a year.\nThe seed samples themselves were never touched.\nThey lay above the waterline, in the cold.\nThe same permafrost that keeps it thaws too.\nThe vault is watched now, year round.\nA new access tunnel is being built.\nNew lights on the snow, night and day.\nIt is still a bunker against catastrophe.\nCatastrophe is already moving into the mountain.\nThe coldest air on earth is warming here.\nThe seeds are still fine, for now.\nSomewhere under the snow, it is still seeping.",
+ "word_count": 268,
+ "est_wpm": 165,
+ "beats": [
+  {
+   "n": 1,
+   "id": "b01",
+   "beat": "HOOK",
+   "line": "Beneath an Arctic mountain, the world's seeds sleep.",
+   "visual": "wide flat arctic snowfield at night, white ground to the horizon; one small pale yellow wedge of light lying on the snow, tiny in a big empty frame",
+   "register": "paint"
+  },
+  {
+   "n": 2,
+   "id": "b02",
+   "beat": "TITLE",
+   "line": "This is the Svalbard Global Seed Vault.",
+   "visual": "hand-lettered 'SVALBARD GLOBAL SEED VAULT' stamped across the sky over the mountain; title card hold",
+   "register": "paint"
+  },
+  {
+   "n": 3,
+   "id": "b03",
+   "beat": "FACT",
+   "line": "It opened in 2008, on a Norwegian island.",
+   "visual": "flat map of the north Atlantic with Norway picked out and one small island far above it; label 'SPITSBERGEN'",
+   "register": "paint"
+  },
+  {
+   "n": 4,
+   "id": "b04",
+   "beat": "IMAGE",
+   "line": "A long tunnel runs down into the rock.",
+   "visual": "long straight entrance tunnel in one-point perspective, hand-drawn ribs overhead, receding into black; character small in it, walking away from us",
+   "register": "paint"
+  },
+  {
+   "n": 5,
+   "id": "b05",
+   "beat": "FACT",
+   "line": "The rock there is permafrost, frozen for millennia.",
+   "visual": "cutaway of the mountain: layered rock and frozen ground drawn as dense vertical hatching; hand-lettered label 'PERMAFROST'",
+   "register": "paint"
+  },
+  {
+   "n": 6,
+   "id": "b06",
+   "beat": "REVEAL",
+   "line": "The vault is cut straight into that ice.",
+   "visual": "the same cutaway with a straight rectangular hall carved into the frozen layer, lit warm from inside; character awed at the base of the frame",
+   "register": "paint"
+  },
+  {
+   "n": 7,
+   "id": "b07",
+   "beat": "FACT",
+   "line": "Above the doorway, the midsummer sun barely rises.",
+   "visual": "the entrance doorway from outside at high summer; a low yellow sun just clearing the ridge, everything still white",
+   "register": "paint"
+  },
+  {
+   "n": 8,
+   "id": "b08",
+   "beat": "IMAGE",
+   "line": "Down inside, the seeds sleep in the cold.",
+   "visual": "inside the cold room: metal shelving running out past both frame edges, stacked flat with foil packets",
+   "register": "paint"
+  },
+  {
+   "n": 9,
+   "id": "b09",
+   "beat": "FACT",
+   "line": "The seeds are packed into small foil packets.",
+   "visual": "close on a hand holding one foil packet up to the light, a crop drawing stamped on the front",
+   "register": "paint"
+  },
+  {
+   "n": 10,
+   "id": "b10",
+   "beat": "ESCALATE",
+   "line": "Around a million samples, from a hundred nations.",
+   "visual": "the shelves receding into the dark; big hand-lettered number '1,000,000' stamped across the frame",
+   "register": "paint"
+  },
+  {
+   "n": 11,
+   "id": "b11",
+   "beat": "FACT",
+   "line": "Wheat, rice, barley, beans, and millet.",
+   "visual": "five packets pulled forward in a row on one shelf, each stamped with a different crop drawing",
+   "register": "paint"
+  },
+  {
+   "n": 12,
+   "id": "b12",
+   "beat": "FACT",
+   "line": "Every sample in there is a spare copy.",
+   "visual": "one packet in the vault beside one packet still in a field, drawn side by side; labels 'COPY' and 'ORIGINAL'",
+   "register": "paint"
+  },
+  {
+   "n": 13,
+   "id": "b13",
+   "beat": "PIVOT",
+   "line": "The original seed always stays on the farm.",
+   "visual": "character close-up, flat mouth, one hand shading his eyes; speech bubble 'the original stays home'",
+   "register": "paint"
+  },
+  {
+   "n": 14,
+   "id": "b14",
+   "beat": "REVEAL",
+   "line": "Each nation's crop insurance, stored in a mountain.",
+   "visual": "simple globe with hand-drawn continent shapes, small packet icons dotted over every continent",
+   "register": "paint"
+  },
+  {
+   "n": 15,
+   "id": "b15",
+   "beat": "FACT",
+   "line": "Inside, the air holds at minus eighteen degrees.",
+   "visual": "a wall thermometer in the cold room; the mercury line far below zero; big number '-18 C'",
+   "register": "paint"
+  },
+  {
+   "n": 16,
+   "id": "b16",
+   "beat": "COMPARISON",
+   "line": "That is colder than any farm freezer.",
+   "visual": "an ordinary farm freezer door beside the vault's inner door, drawn side by side for scale",
+   "register": "paint"
+  },
+  {
+   "n": 17,
+   "id": "b17",
+   "beat": "REVEAL",
+   "line": "In that cold, the seeds sleep for centuries.",
+   "visual": "one packet resting on a shelf, drawn very large, dust of frost on it; nothing else in shot",
+   "register": "paint"
+  },
+  {
+   "n": 18,
+   "id": "b18",
+   "beat": "PIVOT",
+   "line": "The original plan was simple: shut the door.",
+   "visual": "the four heavy doors down the tunnel, receding; character drawing a plan of them on a clipboard",
+   "register": "paint"
+  },
+  {
+   "n": 19,
+   "id": "b19",
+   "beat": "IMAGE",
+   "line": "Then leave the whole vault to the ice.",
+   "visual": "the tunnel doors shut, frost creeping across them, held dead centre and still",
+   "register": "paint"
+  },
+  {
+   "n": 20,
+   "id": "b20",
+   "beat": "PIVOT",
+   "line": "Then, in 2016, the mountain began to leak.",
+   "visual": "wide cutaway of the whole mountain in grey, everything greyed out except one lit chamber; label '2008'",
+   "register": "paint"
+  },
+  {
+   "n": 21,
+   "id": "b21",
+   "beat": "ESCALATE",
+   "line": "Meltwater came in through the entrance tunnel.",
+   "visual": "the tunnel mouth from outside; a brown meltwater channel cutting through the snow straight at the door",
+   "register": "paint"
+  },
+  {
+   "n": 22,
+   "id": "b22",
+   "beat": "IMAGE",
+   "line": "Water at the door, in a frozen land.",
+   "visual": "a wall of meltwater standing inside the entrance tunnel, the door half behind it, held and cold",
+   "register": "paint"
+  },
+  {
+   "n": 23,
+   "id": "b23",
+   "beat": "ESCALATE",
+   "line": "The entrance flooded with eight hundred tonnes.",
+   "visual": "hand-lettered number '800 TONNES' stamped over the flooded tunnel floor",
+   "register": "paint"
+  },
+  {
+   "n": 24,
+   "id": "b24",
+   "beat": "ESCALATE",
+   "line": "The staff were cut off for a year.",
+   "visual": "the entrance shut and barricaded, a lone figure on the snow above it, dwarfed; label '2016'",
+   "register": "paint"
+  },
+  {
+   "n": 25,
+   "id": "b25",
+   "beat": "PIVOT",
+   "line": "The seed samples themselves were never touched.",
+   "visual": "character close-up, flat mouth, nodding once; speech bubble 'the seeds were fine'",
+   "register": "paint"
+  },
+  {
+   "n": 26,
+   "id": "b26",
+   "beat": "IMAGE",
+   "line": "They lay above the waterline, in the cold.",
+   "visual": "cutaway: water pooled in the tunnel, the seed chamber drawn above it and dry, one clean line between",
+   "register": "paint"
+  },
+  {
+   "n": 27,
+   "id": "b27",
+   "beat": "REVEAL",
+   "line": "The same permafrost that keeps it thaws too.",
+   "visual": "the same cutaway with the frozen layer drawn thin and ragged, melt arrows working into it; label 'AND MELTING'",
+   "register": "paint"
+  },
+  {
+   "n": 28,
+   "id": "b28",
+   "beat": "FACT",
+   "line": "The vault is watched now, year round.",
+   "visual": "a small camera on a stalk above the tunnel door, and a red lamp lit on its side",
+   "register": "paint"
+  },
+  {
+   "n": 29,
+   "id": "b29",
+   "beat": "FACT",
+   "line": "A new access tunnel is being built.",
+   "visual": "a fresh concrete tunnel mouth being cut into the hillside beside the old one, machinery drawn small",
+   "register": "paint"
+  },
+  {
+   "n": 30,
+   "id": "b30",
+   "beat": "IMAGE",
+   "line": "New lights on the snow, night and day.",
+   "visual": "the snowfield at night again, two wedges of light now lying on the snow; character standing between them, small",
+   "register": "paint"
+  },
+  {
+   "n": 31,
+   "id": "b31",
+   "beat": "PIVOT",
+   "line": "It is still a bunker against catastrophe.",
+   "visual": "character mid-frame, hands low, flat mouth, looking straight out at us; speech bubble 'a bunker'",
+   "register": "paint"
+  },
+  {
+   "n": 32,
+   "id": "b32",
+   "beat": "ESCALATE",
+   "line": "Catastrophe is already moving into the mountain.",
+   "visual": "a thin red line creeping across the mountain's snowline from below; nothing else changes in the frame",
+   "register": "paint"
+  },
+  {
+   "n": 33,
+   "id": "b33",
+   "beat": "ESCALATE",
+   "line": "The coldest air on earth is warming here.",
+   "visual": "the same arctic slope drawn a few shades warmer, bare grey rock showing through the snow; hand-lettered '-2.6 C PER DECADE'",
+   "register": "paint"
+  },
+  {
+   "n": 34,
+   "id": "b34",
+   "beat": "PIVOT",
+   "line": "The seeds are still fine, for now.",
+   "visual": "character close-up, mouth a flat line, holding a single foil packet; speech bubble 'for now'",
+   "register": "paint"
+  },
+  {
+   "n": 35,
+   "id": "b35",
+   "beat": "FINALE",
+   "line": "Somewhere under the snow, it is still seeping.",
+   "visual": "under the snow, the mountain in cutaway, one slow dark line of water moving through the frozen layer; character tiny, awed, no label",
+   "register": "paint"
+  }
+ ]
+}

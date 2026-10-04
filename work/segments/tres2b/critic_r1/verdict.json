@@ -1,0 +1,31 @@
+{
+ "segment": "tres2b",
+ "round": 1,
+ "verdict": "REF_WINS",
+ "our_score": 6,
+ "pairs": 12,
+ "critic": "orchestrator (label-blind, picks recorded before reveal)",
+ "method": "12 evenly-spaced paired frames, ours at 0.15-0.97 of our duration, ref at the same fraction of its 267-321s chapter window. Blinding by FNV-1a hash; picks recorded before unsealing _KEY.json. ours was A in 6/12.",
+ "caveat": "My first pass read the 560x315 pair thumbnails and over-claimed two gaps ('character missing', 'flat gray ground band'). Re-examined every flagged beat at FULL RESOLUTION and both were wrong: the character is present on all 7 beats that call for him, with a readable per-beat expression, and the ground band has a proper wobbled organic top edge. The gaps below are the corrected, full-res findings. (Lesson recorded: judge at full res, never from contact-sheet thumbnails.)",
+
+ "single_biggest_gap": "The renderer does not distinguish 'draw a diagram' from 'draw an object'. Where a beat calls for an EXPLANATORY DIAGRAM it substitutes flat wireframes or literal props, and where it calls for a luminous body it sometimes delivers a plain disc. Concretely: beat 12 (star swelling toward the planet) should be concentric expanding star outlines with hand arrows AND a filled emissive core -- we drew three bare un-filled red circles that read as a target, no glow. Beat 6 (the day side never cools / night side never warms) should be two thermometers with bulbs, scale ticks, and a clear hot/cold reading -- we drew two rounded gray capsules. By contrast beat 10 (watch the star) is excellent: a stippled emissive red dwarf with a real glow, proving the renderer CAN do luminous bodies when the beat asks for one. The reference wins by making EVERY card carry one idea through subject + label + a directional cue (arrow/loop/glow); we only do that on the good cards and drop to props on the rest.",
+
+ "per_gap": [
+  {"id": "G2-diagrams", "severity": "biggest", "gap": "Explanatory beats rendered as bare wireframes or literal props instead of diagrams. beat 12: three unfilled red circles (a target, not a star). beat 6: two gray capsules (not thermometers -- no bulb, no ticks). Fix: any beat whose script says DIAGRAM/REVEAL/FATE must produce subject + readable label + a directional or motion cue (arrow, loop, glow, gradient), not a static object."},
+  {"id": "G3-flat-disc", "severity": "big", "gap": "The planet is consistently a flat black disc with a thin red rim and no emissive limb. The reference's signature for TrES-2b is a black disc with a GLOWING red-orange limb (crescent) and a soft halo. beat 1/4/12 all show the flat disc. Fix: give the planet a luminous limb (gradient crescent + soft glow) on the beats where it is a subject, and a real outline where it is not."},
+  {"id": "G5-label-collision", "severity": "medium", "gap": "Labels collide with their subjects. beat 6: 'DAY SIDE' overlaps the left thermometer cap; 'NIGHT SIDE' grazes the right thermometer. Fix: place labels clear of the subject silhouette, or with a leader line (like the good 'LYRA' and 'AIR' labels in beats 1 and 13)."},
+  {"id": "G6-thin-outlines", "severity": "medium", "gap": "Large shapes (planet, thermometers, star rings) are drawn with thin (~2-3px) or no outlines. STYLE_CANON measured 6px median on the reference for large shapes. Fix: 5-8px organic outline on large silhouettes, 3-4 detail."}
+ ],
+
+ "what_worked": [
+  "beat 10 watch_the_star: stippled emissive red dwarf with a soft glow halo, amber arc to the planet, grounded character -- the best frame in the segment, and the template for how every luminous body should be drawn.",
+  "beat 13 atmosphere_as_tail: the one frame that BEAT the reference in the blind pair (planet + amber/red sheets peeling into a tapering tail, 'AIR' label on the subject).",
+  "beat 2 albedo_one_percent: the beam stopping dead on the disc, the hair-thin returning sliver, '< 1%' hero type, ALBEDO scale -- a genuinely good explanatory diagram.",
+  "Register discipline holds throughout: void cards are cream-on-black, cream cards are dark-on-cream; the one legal gradient (emissive) is used only on luminous bodies.",
+  "Character present on all 7 beats that call for him, with a distinct readable expression per beat (deadpan / zigzag / downturned-arc / worried). This satisfies CLAUDE.md §6.",
+  "Title strip, rounded hand font, and snap-cut structure match the canon; audio/video sync is exact (0.013s delta) with no drift."
+ ],
+
+ "verdict_status": "ref_wins - rebuild required before lock. Cap allows 4 more rounds.",
+ "alignment": {"video_s": 64.733, "audio_s": 64.720, "delta_s": 0.013, "note": "timeline derived from exact per-beat spans; no predicted timings, no drift."}
+}

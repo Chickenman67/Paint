@@ -1,0 +1,94 @@
+# ---------------------------------------------------------------------------
+# Media binaries -- never commit these.
+#
+# Two distinct reasons, and the first one is not negotiable:
+#
+# 1. COPYRIGHTED REFERENCE MATERIAL. work/ref/, work/ref2/ and work/refscan/
+#    hold video downloaded from YouTube with yt-dlp (ref_full.mp4, 34MB and
+#    37MB, plus extracted audio and frame dumps; work/ref2 alone is 988MB).
+#    This repository is PUBLIC. Committing them would redistribute someone
+#    else's copyrighted video, and it violates this project's own hard
+#    constraint: "No copyrighted assets" and "The reference is a benchmark,
+#    not a source." They are re-downloadable from the source URL on demand, so
+#    nothing is lost by leaving them out.
+#
+# 2. BUILD OUTPUT. Rendered video (work3/assembly/*.mp4, work3/segments/*/
+#    segment.mp4) is regenerable from source with _build_segments.py and
+#    _assemble.py. The .pre-* files are point-in-time backups that exist only to
+#    survive a bad fix pass -- keeping them in git would add ~300MB of history
+#    forever. GitHub also hard-rejects files over 100MB.
+#
+# Everything needed to REBUILD is committed: sources, beats.json, the plan and
+# fact JSONs, and the gates. See README-rebuild.md for the fetch-then-render
+# path.
+# ---------------------------------------------------------------------------
+*.mp4
+*.wav
+*.mkv
+*.mov
+*.webm
+*.m4a
+*.flac
+*.mp3
+
+# Reference material explicitly, belt-and-braces in case a future download
+# lands with an extension not listed above.
+work/ref/
+work/ref2/
+work/refscan/
+work/refstudy/
+work3/measure/refscan/
+ref_*.mp4
+ref_*.wav
+
+# REFERENCE VIDEO FRAMES, as images. The container rules above stop the .mp4/.wav
+# but NOT the stills pulled out of it: work/study/ref_200.png, ref_256.png,
+# ref_300.png, ref_445.png and ref_s1_*.png (12 files, ~2.5MB) are single frames
+# extracted from the downloaded reference video. A frame of someone's copyrighted
+# video is that copyrighted work just as much as the file it came from, and
+# committing one to a PUBLIC repo redistributes it. Same rule as the video, so it
+# gets the same treatment. Ours are named o_*.png under work/study/ours/ and are
+# NOT matched -- keep them.
+work/study/ref_*.png
+work/**/ref_*.png
+
+# Rendered output and per-segment renders.
+work/assembly/
+work3/assembly/
+work3/segments/*/segment.mp4
+work3/segments/*/_silent.mp4
+
+# Debug frame dumps and contact sheets -- regenerable, and there are tens of
+# thousands of them. work/segments alone held 25,040 PNGs (per-frame dumps from
+# the first exoplanet build). These are DIAGNOSTIC OUTPUT, not references, but
+# they are enormous and throwaway.
+measure/
+work3/measure/
+work/segments/**/*.png
+work/_preflight/
+work/_scratch_g7verify/
+work/_emissive_demo/
+work/dbg_b*/
+work/_diag*.png
+work/_g[0-9]*.png
+work/_sm*.png
+work/test_*.png
+work3/measure/_*.png
+work3/lib/_dbg_*.png
+work3/lib/_cmp_*.png
+work3/lib/_test_*.png
+*.log
+!*.md
+
+# Python bytecode and local env.
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Editor / OS cruft.
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

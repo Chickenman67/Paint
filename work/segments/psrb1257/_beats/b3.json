@@ -1,0 +1,242 @@
+{
+ "beat": "B3 THE PLANETS",
+ "segment": "PSR B1257+12",
+ "palette": {
+  "ink": [
+   20,
+   22,
+   28
+  ],
+  "paper": [
+   242,
+   234,
+   214
+  ],
+  "deep": [
+   5,
+   6,
+   11
+  ],
+  "amber": [
+   232,
+   163,
+   61
+  ],
+  "bone": [
+   220,
+   230,
+   236
+  ],
+  "violet": [
+   110,
+   90,
+   156
+  ],
+  "shirt": [
+   200,
+   50,
+   50
+  ]
+ },
+ "accent_roles": {
+  "cream": [
+   242,
+   234,
+   214
+  ],
+  "bone": [
+   220,
+   230,
+   236
+  ],
+  "amber": [
+   232,
+   163,
+   61
+  ],
+  "violet": [
+   110,
+   90,
+   156
+  ]
+ },
+ "geometry": {
+  "W": 1280,
+  "H": 720,
+  "fps": 30,
+  "title_band": {
+   "y0": 22,
+   "y1": 60,
+   "fill": "paper",
+   "text": "ink",
+   "px": 44,
+   "align": "center",
+   "x_center": 640,
+   "content": "PSR B1257+12"
+  },
+  "art_top": 61,
+  "art_bottom": 719,
+  "caption": {
+   "x": 70,
+   "y": 652,
+   "px": 27,
+   "max_px_w": 1100,
+   "max_chars": 60,
+   "max_words": 12,
+   "one_line": true,
+   "on_cream_color": "ink",
+   "on_void_color": "amber"
+  },
+  "stickman": {
+   "x_default": 400,
+   "feet_y": 680,
+   "h_hero": 480,
+   "h_dialog": 400,
+   "h_closeup": 560
+  },
+  "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+  "first_word_rule": "card 1 is up at t=0.0 and the first spoken word must land at t<=0.30, so the header is never late (CLAUDE.md \u00c2\u00a75.5).",
+  "bridges": "0.5s palette bridge after how_first and after name_punchline (round_1_script.md line 110). The segment-exit bridge is the 3.75s white bridge in lib/transition.py \u00e2\u20ac\u201d \u00c2\u00a75.7's '0.5s black frame' is superseded by the measured reference bridge (PALETTE_SPEC.md \u00c2\u00a72).",
+  "gradient_rule": "radial_gradient() is legal on the pulsar core ONLY (psr_size, psr_collapse, psr_beams, how_first, psr_name). Never on the planets, orbit ellipses, the radiation wash, the starfield, the title strip, the skulls, or the stickman (PALETTE_SPEC.md \u00c2\u00a73 denylist).",
+  "motion_rule": "0.25s quantized stamps, never smooth tweens, on every motion in this segment including the stickman."
+ },
+ "type_scale": {
+  "title_band_px": 44,
+  "header_stroke": 0,
+  "caption_px": 27,
+  "caption_stroke": 4,
+  "heavy_px": 64,
+  "heavy_stroke": 4,
+  "stamp_px": 18,
+  "tiny_px": 18,
+  "family_bold": "consolab.ttf",
+  "family_reg": "consola.ttf"
+ },
+ "cards": [
+  {
+   "n": 11,
+   "id": "planet_masses",
+   "beat": "B3 THE PLANETS",
+   "clauses": [
+    14
+   ],
+   "narration": "One is barely heavier than the Moon. Two weigh four times the Earth.",
+   "words": 13,
+   "start": 25.3,
+   "end": 28.14,
+   "duration": 2.84,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "mass_bar_grow",
+   "motion_xfade_s": 0.2,
+   "caption": "ONE BARELY BEATS THE MOON. TWO WEIGH FOUR TIMES EARTH.",
+   "banner": null,
+   "accent": "cream",
+   "accent_rgb": [
+    242,
+    234,
+    214
+   ],
+   "card_value": "cream",
+   "stickman": {
+    "expression": "skeptical",
+    "pose": "pointing",
+    "height": 400,
+    "x_center": 400,
+    "y_top": 300,
+    "feet_y": 700
+   },
+   "sketch": "CREAM CARD. A ledger: three 3px slate-black rules at y=180/300/420 spanning x=560..1180; one flat slate-black disc per row \u00e2\u20ac\u201d Draugr r=16 at x=620, Phobetor r=40 at x=860, Poltergeist r=42 at x=1120 \u00e2\u20ac\u201d so the shape itself carries the fact: one speck, then two near-twin heavies. NO gradient and NO band texture (the three planets are on PALETTE_SPEC.md \u00c2\u00a73's gradient denylist); a 64pt heavy slate-black mass figure grows on each disc in 0.25s stamps \u00e2\u20ac\u201d 'MOON-SIZE' on row 1, '4 EARTH' on rows 2 and 3. FACT FLAG E3 (APPLIED) \u00e2\u20ac\u201d the earlier narration said two of the three weighed about as much as the Moon, which inverted the real picture. True masses are Draugr 0.020, Phobetor 3.9, Poltergeist 4.3 Earth masses: ONE is Moon-ish and TWO are about four Earths. work/scripts.py now reads 'One is barely heavier than the Moon. Two weigh four times the Earth.' Keep the disc radii in the order 16 / 40 / 42 \u00e2\u20ac\u201d Draugr innermost and smallest, the other two large and nearly equal. stickman x=400 y_top=300 h=400 skeptical/pointing; caption x=70 y=652 in slate-black",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 91,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 28.3,
+   "timing_predicted_end": 32.2,
+   "timing_delta_s": -3.0,
+   "_align_word_index": 92,
+   "_align_word": "One",
+   "_align_word_novel": "One"
+  },
+  {
+   "n": 12,
+   "id": "planet_minefield",
+   "beat": "B3 THE PLANETS",
+   "clauses": [
+    15
+   ],
+   "narration": "That is not a solar system. That is rubble in a minefield.",
+   "words": 12,
+   "start": 28.14,
+   "end": 31.96,
+   "duration": 3.82,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "debris_jitter",
+   "motion_xfade_s": 0.2,
+   "caption": "THAT IS NOT A SOLAR SYSTEM. THAT IS RUBBLE IN A MINEFIELD.",
+   "banner": "RUBBLE",
+   "accent": "amber",
+   "accent_rgb": [
+    232,
+    163,
+    61
+   ],
+   "card_value": "void",
+   "stickman": {
+    "expression": "frown",
+    "pose": "hands_down",
+    "height": 480,
+    "x_center": 400,
+    "y_top": 200,
+    "feet_y": 680
+   },
+   "sketch": "bg_void_stars; pulsar core cx=900 cy=180 r=26, cropped by the title strip; an AMBER radiation wash \u00e2\u20ac\u201d a wobbly 8-lobed polygon, wobble seed 71 \u00e2\u20ac\u201d spanning x=340..1240, y=120..660, flat 10% fill with a 2px amber outline; 11 slate-black rock blobs (irregular 7-gons, r=8..26) on a deterministic grid inside the wash, each jittering 2px on its own 0.25s stamp; 64pt heavy 'RUBBLE' amber at (760,400) on the wash; stickman x=400 y_top=200 h=480 frown/hands_down, drawn INSIDE the 10% wash so his black limbs keep full separation; caption x=70 y=652",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 104,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 32.28,
+   "timing_predicted_end": 35.88,
+   "timing_delta_s": -4.14,
+   "_align_word_index": 105,
+   "_align_word": "That",
+   "_align_word_novel": "That"
+  },
+  {
+   "n": 13,
+   "id": "planet_periods",
+   "beat": "B3 THE PLANETS",
+   "clauses": [
+    16
+   ],
+   "narration": "Their laps take twenty-five days, sixty-seven, and ninety-eight.",
+   "words": 8,
+   "start": 31.96,
+   "end": 35.42,
+   "duration": 3.46,
+   "type": "hold",
+   "transition_in": "snap",
+   "motion": "orbit_ring_step",
+   "motion_xfade_s": 0.2,
+   "caption": "THEIR LAPS TAKE 25, 67, AND 98 DAYS.",
+   "banner": "25 / 67 / 98 DAYS",
+   "accent": "bone",
+   "accent_rgb": [
+    220,
+    230,
+    236
+   ],
+   "card_value": "void",
+   "stickman": null,
+   "sketch": "DIAGRAM-ONLY. bg_void_stars; core cx=640 cy=330 r=24; THREE concentric orbit ellipses, all 2px BONE \u00e2\u20ac\u201d violet is a shape color and never carries type, and 18pt violet annotation would be 3.48:1 \u00e2\u20ac\u201d with rx=170/300/430 and ry=58/100/142, all centred (640,330), inner to outer Draugr / Phobetor / Poltergeist; one bone dot r=9 on each ring, advancing one 0.25s step per lap; 18pt bone labels at the ring apexes with 3px leader lines \u00e2\u20ac\u201d '25 D' at (640,262), '67 D' at (640,222), '98 D' at (640,180); the banner '25 / 67 / 98 DAYS' set at 64pt bone at (640,510); NO stickman. This is the diagram the next three cards talk over, so it is drawn to be re-used rather than admired. FACT FLAG E4 (APPLIED) \u00e2\u20ac\u201d the earlier banner read 66 / 204 / 365 days, which are not this system's periods. True orbital periods are 25.262, 66.5419 and 98.2114 days, spoken as 'twenty-five days, sixty-seven, and ninety-eight'. Keep the inner-to-outer order matching those numbers.",
+   "snap_rule": "card n starts at the onset of its first clause word MINUS 0.20s; card n ends at the onset of card n+1's first word (hard cut, no fade). The 0.2s cross-fade is legal ONLY inside a card's in-card motion. All of these are re-derived from round_N_alignment.json.",
+   "first_word_index": 116,
+   "timing_source": "aligned_word_onset",
+   "timing_predicted_start": 35.96,
+   "timing_predicted_end": 38.36,
+   "timing_delta_s": -4.0,
+   "_align_word_index": 117,
+   "_align_word": "Their",
+   "_align_word_novel": "Their"
+  }
+ ]
+}

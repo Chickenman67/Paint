@@ -1,0 +1,105 @@
+{
+ "title": "KELT-9b, the planet hotter than a star",
+ "wrote_to": "C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/kelt9b/script.json",
+ "narration": "This is the hottest planet ever found.\nIt is hotter than most stars in the galaxy.\nNot a little hotter. Considerably hotter.\nEven the word planet feels like rounding it up.\nIts name is KELT plus nine b.\nIt circles closer than any planet should.\nOne year there lasts about a day and a half.\nNothing about the arrangement is survivable for long.\nThe sunrise there happens once every day and a half.\nBecause it never turns its back on the star.\nThe star it rides is a blue furnace, spinning fast.\nUp there it is hotter than the planet it made.\nThe planet is cooking in a light most stars never give.\nIts dayside reaches about forty-six hundred degrees.\nThat is not a temperature. That is a warning.\nHydrogen molecules get torn apart before they can settle.\nIts atmosphere is pulled apart and dragged off into space.\nIt leaves a glowing tail, forever losing weight.\nHere is the part that should stop you.\nOn the dayside, atoms begin to come undone.\nThe bonds that make matter simply lose.\nThis is a planet disassembling itself in plain view.\nThe night side is almost gentle by comparison.\nOne half of it survives. The other half does not.\nAnd there is nowhere cooler to stand.\nNo ocean. No shade. No door.\nJust a point you would call a star from far off.\nYou would call it a planet. You would be generous.\nSomewhere out there, right now, it is happening.",
+ "word_count": 248,
+ "est_wpm": 160,
+ "beats": [
+  {
+   "n": 1,
+   "id": "hook",
+   "beat": "HOOK",
+   "line": "This is the hottest planet ever found.\nIt is hotter than most stars in the galaxy.\nNot a little hotter. Considerably hotter.",
+   "visual": "A blazing white star fills the upper right of a deep navy starfield with a yellow floating caption of its face temperature, and the cream stickman stands at lower left in a flat-line deadpan mouth, arms loose, looking straight up at it.",
+   "register": "void"
+  },
+  {
+   "n": 2,
+   "id": "the_record",
+   "beat": "THE RECORD",
+   "line": "Even the word planet feels like rounding it up.\nIts name is KELT plus nine b.",
+   "visual": "On cream paper a hand-drawn ranked list of the hottest known worlds runs down the left with KELT-9b stamped at the top, and the dark stickman stands at right mid-shrug with a zigzag uncomfortable mouth, palms up.",
+   "register": "cream"
+  },
+  {
+   "n": 3,
+   "id": "the_orbit",
+   "beat": "THE ORBIT",
+   "line": "It circles closer than any planet should.\nOne year there lasts about a day and a half.",
+   "visual": "A tight white orbit circle wraps a bright blue star in the center of a dark starfield, and the cream stickman stands beside it in a wide oval awed mouth, head tipped back, pointing up at the nearest point of the track.",
+   "register": "void"
+  },
+  {
+   "n": 4,
+   "id": "no_escape",
+   "beat": "NO ESCAPE",
+   "line": "Nothing about the arrangement is survivable for long.\nThe sunrise there happens once every day and a half.\nBecause it never turns its back on the star.",
+   "visual": "A cream card splits into a lit half and a dark half with a single arrow showing the planet never rotating away, and the dark stickman stands at the seam in a downturned-arc scared mouth, shielding his eyes with one forearm.",
+   "register": "cream"
+  },
+  {
+   "n": 5,
+   "id": "the_star",
+   "beat": "THE STAR",
+   "line": "The star it rides is a blue furnace, spinning fast.\nUp there it is hotter than the planet it made.",
+   "visual": "A hot blue A-type star with visible surface granulation dominates a deep navy frame beside a small dull planet dot, and the cream stickman stands at lower right with a wide oval awed mouth, one hand raised toward the star.",
+   "register": "void"
+  },
+  {
+   "n": 6,
+   "id": "the_light",
+   "beat": "THE LIGHT",
+   "line": "The planet is cooking in a light most stars never give.",
+   "visual": "A cream card shows a white star on the left firing broad parallel rays onto a pale outlined planet on the right, and the dark stickman crouches beside the planet with a flat-line deadpan mouth, one finger pointing into the ray bundle.",
+   "register": "cream"
+  },
+  {
+   "n": 7,
+   "id": "the_dayside",
+   "beat": "THE DAYSIDE",
+   "line": "Its dayside reaches about forty-six hundred degrees.\nThat is not a temperature. That is a warning.",
+   "visual": "A close crescent of KELT-9b glows white-hot orange along its sunward edge against a black starfield with a 4600F annotation in yellow, and the cream stickman stands in the glow with a zigzag uncomfortable mouth, hands up near his face.",
+   "register": "void"
+  },
+  {
+   "n": 8,
+   "id": "molecules",
+   "beat": "DISSOCIATION",
+   "line": "Hydrogen molecules get torn apart before they can settle.\nIts atmosphere is pulled apart and dragged off into space.\nIt leaves a glowing tail, forever losing weight.",
+   "visual": "On cream paper a neat row of paired hydrogen circles drifts apart into separate dots with arrows separating them, and a comet-like tail of escaping gas trails the planet at right, while the dark stickman stands below in a downturned-arc scared mouth, hands up.",
+   "register": "cream"
+  },
+  {
+   "n": 9,
+   "id": "the_warning",
+   "beat": "THE WARNING",
+   "line": "Here is the part that should stop you.\nOn the dayside, atoms begin to come undone.",
+   "visual": "A single sharp yellow line separates a cool left hemisphere from a white-hot right hemisphere on a dark card, and the cream stickman stands at left in a zigzag uncomfortable mouth, half turned away from the bright side.",
+   "register": "void"
+  },
+  {
+   "n": 10,
+   "id": "unraveling",
+   "beat": "UNRAVELING",
+   "line": "The bonds that make matter simply lose.\nThis is a planet disassembling itself in plain view.\nThe night side is almost gentle by comparison.\nOne half of it survives. The other half does not.",
+   "visual": "A cream card shows the dayside losing its lattice: a tidy grid of joined dots on the left breaking into scattered unconnected dots on the right, and the dark stickman stands beneath in a wide oval awed mouth, shrugging at the scattered half.",
+   "register": "cream"
+  },
+  {
+   "n": 11,
+   "id": "nowhere_cool",
+   "beat": "NOWHERE COOL",
+   "line": "And there is nowhere cooler to stand.\nNo ocean. No shade. No door.\nJust a point you would call a star from far off.",
+   "visual": "A dark card lists three crossed-out icons in a row, ocean, shade, door, each struck through in red ink, and the cream stickman stands below them in a downturned-arc scared mouth, arms crossed tight.",
+   "register": "void"
+  },
+  {
+   "n": 12,
+   "id": "closer",
+   "beat": "CLOSER",
+   "line": "You would call it a planet. You would be generous.\nSomewhere out there, right now, it is happening.",
+   "visual": "A cream card shows KELT-9b as a small bright point among other far-off stars with a long distance arrow pointing to it, and the dark stickman stands at lower right in a flat-line deadpan mouth, shrugging, palm up toward the dot.",
+   "register": "cream"
+  }
+ ]
+}

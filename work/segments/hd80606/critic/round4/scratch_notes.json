@@ -1,0 +1,41 @@
+{
+  "per_frame_notes": [
+    {
+      "pair": 1,
+      "ours_t": 2,
+      "ref_t": 101,
+      "verdict": "ref_wins",
+      "notes": "Round 3 had ref winning this pair. Round 4: ours added the header band (CLOSED directive 4) and added a banded gas-giant (partially closed directive 5), but the planet still has a smooth red/blue gradient with NO painterly stipple (directive 5 NOT CLOSED — the stipple is critical to ref's painterly look), and there is NO fire/spike aura around the planet (directive 3 NOT CLOSED). The blue band on the planet's right side is a major palette violation (directive 2 NOT CLOSED — should be locked to orange/yellow/black/cream). Ours has NO integrated caption overlay (directive 1 NOT CLOSED — no 'A FEVER EVERY 40 DAYS' on this frame). Ref nails every directive: yellow ALL-CAPS caption overlaid on the diagram, fire aura, stippled banded planet, locked palette. The header band on ours is a real improvement but the planet still reads as a generic smooth gradient with a blue accent."
+    }
+    },
+    {
+      "pair": 2,
+      "ours_t": 8,
+      "ref_t": 107,
+      "verdict": "ref_wins",
+      "notes": "Header band is on both frames (directive 4 CLOSED for this pair). Both have stickman. Ours adds caption ('A GAS GIANT ON A WILD ORBIT' + '4 X JUPITER' stamp) and ref strips to pure character. The ref decision is bolder: massive stickman (~70% of frame) with full expression — open mouth, wide eyes, raised eyebrows, hand on hip, gesturing arm. Ours' stickman is smaller (~40%), centered, with a single red mouth dot for expression (flat/deadpan). Ref's beat says 'this is a CHARACTER beat, trust the face' — ours puts the caption and a small stamp on a card that should be a reaction shot. The expression variety in ours is still weak: the mouth is just a single red dot, no real shape language (no open oval, no zigzag, no upside-down arc). Ref nails the canonical face from §6 — eyes don't change, mouth does all the work, and the mouth here is a wide red oval with a tongue/floor visible. Ours' stickman is in the right place but the face reads as a single dot, not an expression. The caption ('A GAS GIANT ON A WILD ORBIT') is also palette-OK (yellow) but the layout still separates text from character — the ref trusts the stickman, ours doesn't."
+    }
+    },
+    {
+      "pair": 3,
+      "ours_t": 14,
+      "ref_t": 113,
+      "verdict": "ref_wins_decisively",
+      "notes": "Round 3 had ref winning decisively on this pair. Round 4: header band is now present on ours (directive 4 PARTIALLY CLOSED — but ref also has it, so this is parity not gain). The fundamental gap is UNCHANGED: ours has NO integrated caption (directive 1 NOT CLOSED), NO fire aura (directive 3 NOT CLOSED), NO painterly stipple (directive 5 NOT CLOSED), and STILL has the cyan/blue orbit ellipse (directive 2 NOT CLOSED — this is the most flagrant palette violation in the round). Ref overlays 'SO CLOSE' in heavy yellow ALL-CAPS with thick black outline DIRECTLY onto the banded gas-giant, the caption IS the visual event. Ours has a small red planet on the left of a large sun with NO text overlay — the viewer is told nothing about what they're seeing. The 'orbit / close approach' beat should be the emotional peak ('the planet comes terrifyingly close to its star') and ours reads as a generic solar-system diagram. Ref also has a stickman on this beat (deadpan small) — direct contradiction of directive 6 (stickman in MORE beats). The blue ellipse is the single biggest palette violation: this segment is a 'fever' planet, the entire visual story should be heat, and ours has a cool blue line cutting through the middle of the frame."
+    },
+    {
+      "pair": 4,
+      "ours_t": 20,
+      "ref_t": 119,
+      "verdict": "ref_wins_decisively",
+      "notes": "Round 3 had ref winning by default on this pair (both held static frames). Round 4: ours is IDENTICAL to t14 — same orbit diagram, same blue ellipse, same red/blue planet, same smooth sun, no caption, no stickman, no aura. This is the static 6-second hold (directive 9 NOT CLOSED) that round 4 was supposed to fix by either animating the planet or snap-cutting to a new card. Ours did neither. Ref has completely different art: a stickman on the left in a hands-on-face peeking/horror pose, a massive stippled orange/yellow star (the FEVER moment) with 'FEVER' heavy yellow ALL-CAPS with black outline INTEGRATED directly onto the planet body. The caption IS the visual event. Locked palette, locked energy. Ours reads as a frozen diagram from a textbook; ref reads as the emotional peak of the segment ('the planet is at perihelion, this is the FEVER'). The 'static hold' is the same on both, but ref's hold is anchored by an integrated caption + character reaction, ours' hold is anchored by an empty starfield. This is the worst beat in the round for ours and the best beat in the round for ref."
+    },
+    {
+      "pair": 5,
+      "ours_t": 28,
+      "ref_t": 127,
+      "verdict": "ref_wins_decisively",
+      "notes": "Round 3 had ref winning decisively on this pair. Round 4: ours is essentially the same orbit diagram again — the planet has moved to the right near the sun, but the cyan/blue ellipse is STILL THERE (directive 2 NOT CLOSED — palette violation unchanged from round 3), the planet still has a blue band (directive 2 NOT CLOSED), the sun is still a smooth yellow/orange radial gradient (directive 5 NOT CLOSED — no stipple, no wobbly outline), and the card is STILL caption-less and stickman-less (directives 1 and 6 NOT CLOSED). The 'whip lash / winds' beat is supposed to land the emotional payload of the segment ('nothing about this planet is reasonable, the winds are absurd') and ours has no text and no character. Ref nails it: stickman on left (3-diamond body, deadpan expression, smaller this frame but present), orange spike-aura star with stippled banded gas-giant inside, 'NOTHING REASONABLE' in heavy yellow ALL-CAPS with thick black outline integrated DIRECTLY onto the planet. The caption IS the diagram. Locked palette. The directive-3 fire aura has been upgraded in ref to a full star body — this is the perihelion peak and the entire visual is the star. Ours reads as a generic solar-system diagram with a misplaced blue planet; ref reads as the climax of the segment. This is the second-worst beat in the round for ours (after t20) — and crucially, t20 and t28 are both 'nothing happened' static diagrams with the same palette violations, so the round 4 build appears to have not modified t14/t20/t28 at all from round 3, which is a regression in build effort even if the per-frame analysis is the same."
+    }
+  ]
+}

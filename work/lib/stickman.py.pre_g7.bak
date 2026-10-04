@@ -1,0 +1,774 @@
+# work/lib/stickman.py — Scene-based stickman composition (paradigm shift)
+#
+# Per round 5 verdicts for both segments:
+#   "The reference embeds the character IN the world being explained, not beside
+#    it as an external narrator."
+#
+# This rewrite shifts from "draw a stickman, paste onto a diagram" to
+# "render a scene with the stickman inhabiting the environment."
+#
+# Every helper returns a PIL Image with the stickman embedded in the scene.
+
+import math
+import random
+from PIL import Image, ImageDraw
+
+# --- Canonical proportions (CLAUDE.md §6, corrected per STYLE_CANON.md §4) ---
+DEFAULT_HEIGHT = 110          # total figure height in px
+HEAD_RADIUS = 14              # head oval radius (height/8 -> ~4.0 heads tall, the
+                              # measured reference proportion; the old HEADS_TALL=5.0
+                              # was decorative and disagreed with its own geometry)
+HEADS_TALL = 4.0
+
+# --- Color scheme (our original character) ---
+INK = (0, 0, 0)
+HEAD_FILL = (255, 255, 255)
+SHIRT = (200, 50, 50)         # red shirt accent
+LIMB = (0, 0, 0)              # pure black limbs
+MOUTH_INTERIOR = (220, 100, 100)  # soft pink/red inside mouth
+
+# Visual stroke widths. STYLE_CANON.md §3: large outlines are 5-8 px, measured
+# median 6 on the reference. The old 3/2 made every figure read as a wire.
+BODY_STROKE = 6
+LIMB_STROKE = 5
+
+# --- THEME (STYLE_CANON.md §4) ---------------------------------------------
+# The reference draws the character LIGHT (cream/white limbs on a thin dark
+# keyline) whenever the figure stands on a dark space background, and DARK
+# (black strokes, white head) on light paint/scene backgrounds. Our renderer was
+# hardcoded black, which made the character vanish into every space card — a
+# correctness bug, not a style preference. See the t=256 close-up for the light form.
+#
+# A theme is a dict of colors + strokes. resolve_theme() returns the right one.
+THEMES = {
+    # light background (paint/scene register): black strokes, white head
+    'light': dict(
+        stroke=(0, 0, 0),          # limbs + body outline
+        head_fill=(255, 255, 255),
+        detail=(0, 0, 0),          # hands, feet (part of the limb)
+        feature=(0, 0, 0),         # eyes, brows, mouth line — DARK on a light head
+        mouth_ink=(0, 0, 0),
+        mouth_interior=(220, 100, 100),
+        shirt=(200, 50, 50),
+        body_stroke=6, limb_stroke=5,
+    ),
+    # dark background (space register): CREAM limbs on a thin dark keyline
+    'dark': dict(
+        stroke=(245, 240, 225),    # cream limbs — the reference's space form
+        head_fill=(245, 240, 225),
+        detail=(245, 240, 225),    # hands/feet are cream too (they are the limb)
+        feature=(25, 25, 30),      # eyes stay DARK inside the cream head
+        mouth_ink=(40, 25, 25),
+        mouth_interior=(196, 88, 96),
+        shirt=(214, 74, 74),
+        body_stroke=6, limb_stroke=5,
+        keyline=(0, 0, 0),         # thin dark outline so cream reads on light art
+    ),
+}
+
+DEFAULT_THEME = 'light'
+
+# The eight canonical poses. Kept in sync by the self-test at the bottom of this
+# module; an unknown pose warns and falls back to 'standing'.
+_POSES = {
+    'standing', 'hands_up', 'hands_down', 'pointing',
+    'thinker', 'cowering', 'shielding_eyes', 'shrugged',
+}
+
+
+def resolve_theme(theme=None):
+    """Return a theme dict. `theme` may be a dict (used as-is) or a name.
+    None -> the light theme."""
+    if isinstance(theme, dict):
+        base = dict(THEMES[DEFAULT_THEME])
+        base.update(theme)
+        return base
+    return dict(THEMES.get(theme or DEFAULT_THEME, THEMES[DEFAULT_THEME]))
+
+
+
+# =============================================================================
+# EXPRESSION LIBRARY — mouth shapes (CLAUDE.md §6)
+# =============================================================================
+# "The mouth shape is the only thing that changes between expressions."
+# Eyes are two dots, always the same. Mouth does all the expressive work.
+
+def mouth_flat(draw, cx, cy, scale=1.0):
+    """Single horizontal line — for 'deadpan' or 'thinking'."""
+    w = int(8 * scale)
+    draw.line([cx - w, cy, cx + w, cy], fill=INK, width=2)
+
+
+def mouth_frown(draw, cx, cy, scale=1.0):
+    """Upside-down arc — for 'scared' or 'sad'."""
+    w = int(7 * scale)
+    draw.arc([cx - w, cy - int(3 * scale), cx + w, cy + int(3 * scale)],
+             180, 360, fill=INK, width=2)
+
+
+def mouth_oval(draw, cx, cy, scale=1.0):
+    """Wide oval — for 'awed' or 'shocked'."""
+    w = int(8 * scale)
+    h = int(5 * scale)
+    draw.ellipse([cx - w, cy - h, cx + w, cy + h], outline=INK, width=2)
+    draw.ellipse([cx - w + 2, cy - h + 2, cx + w - 2, cy + h - 2],
+                 fill=MOUTH_INTERIOR)
+
+
+def mouth_smirk(draw, cx, cy, scale=1.0):
+    """Asymmetric smile — for 'wry' or 'smug'."""
+    draw.line([(cx - int(7 * scale), cy + 1),
+               (cx - int(2 * scale), cy)], fill=INK, width=2)
+    draw.arc([cx - int(2 * scale), cy - int(3 * scale),
+              cx + int(7 * scale), cy + int(3 * scale)],
+             200, 340, fill=INK, width=2)
+
+
+def mouth_zigzag(draw, cx, cy, scale=1.0):
+    """Zigzag line — for 'uncomfortable' or 'sick'."""
+    pts = []
+    for i in range(7):
+        x = cx - 6 + i * 2
+        y = cy + (2 if i % 2 == 0 else -2)
+        pts.append((x, y))
+    for i in range(len(pts) - 1):
+        draw.line([pts[i], pts[i + 1]], fill=INK, width=2)
+
+
+def mouth_smile(draw, cx, cy, scale=1.0):
+    """Standard smile — for 'happy' or 'relief'."""
+    w = int(7 * scale)
+    draw.arc([cx - w, cy - int(3 * scale), cx + w, cy + int(3 * scale)],
+             0, 180, fill=INK, width=2)
+
+
+def mouth_scream(draw, cx, cy, scale=1.0):
+    """Large open mouth — for 'screaming' or 'terrified'."""
+    w = int(7 * scale)
+    h = int(8 * scale)
+    draw.ellipse([cx - w, cy - h, cx + w, cy + h], outline=INK, width=2)
+    draw.ellipse([cx - w + 1, cy - h + 1, cx + w - 1, cy + h - 1],
+                 fill=MOUTH_INTERIOR)
+
+
+def mouth_worried(draw, cx, cy, scale=1.0):
+    """Small frown with raised inner brows — for 'worried' or anxious."""
+    w = int(6 * scale)
+    draw.arc([cx - w, cy - int(2 * scale), cx + w, cy + int(4 * scale)],
+             180, 360, fill=INK, width=2)
+    # Raised inner brows
+    brow_dy = int(4 * scale)
+    draw.line([(cx - int(7 * scale), cy - brow_dy - 1),
+               (cx - int(2 * scale), cy - brow_dy - 4)], fill=INK, width=1)
+    draw.line([(cx + int(2 * scale), cy - brow_dy - 4),
+               (cx + int(7 * scale), cy - brow_dy - 1)], fill=INK, width=1)
+
+
+def mouth_deadpan_grim(draw, cx, cy, scale=1.0):
+    """Deep downturned mouth with flat heavy brows — for 'deadpan-grim' or
+    resigned horror."""
+    w = int(9 * scale)
+    draw.arc([cx - w, cy - int(2 * scale), cx + w, cy + int(5 * scale)],
+             180, 360, fill=INK, width=2)
+    # Flat heavy brows
+    brow_dy = int(5 * scale)
+    draw.line([(cx - int(8 * scale), cy - brow_dy),
+               (cx - int(2 * scale), cy - brow_dy)], fill=INK, width=2)
+    draw.line([(cx + int(2 * scale), cy - brow_dy),
+               (cx + int(8 * scale), cy - brow_dy)], fill=INK, width=2)
+
+
+def mouth_skeptical(draw, cx, cy, scale=1.0):
+    """One brow raised (left) with small flat mouth — for 'skeptical'."""
+    w = int(6 * scale)
+    draw.line([cx - w, cy + 1, cx + w, cy + 1], fill=INK, width=2)
+    # Left brow raised
+    brow_y = cy - int(6 * scale)
+    draw.line([(cx - int(8 * scale), brow_y),
+               (cx - int(2 * scale), brow_y - 3)], fill=INK, width=2)
+    # Right brow flat
+    brow_y2 = cy - int(4 * scale)
+    draw.line([(cx + int(2 * scale), brow_y2 - 1),
+               (cx + int(8 * scale), brow_y2)], fill=INK, width=1)
+
+
+MOUTHS = {
+    'flat': mouth_flat,
+    'frown': mouth_frown,
+    'oval': mouth_oval,
+    'smirk': mouth_smirk,
+    'zigzag': mouth_zigzag,
+    'smile': mouth_smile,
+    'scream': mouth_scream,
+    'worried': mouth_worried,
+    'deadpan_grim': mouth_deadpan_grim,
+    'skeptical': mouth_skeptical,
+    'worried_thinker': mouth_worried,  # same as worried
+    'awed_brows': mouth_oval,          # oval mouth + brows drawn separately
+    'terrified': mouth_scream,         # large open mouth
+    'sad_smile': mouth_frown,          # inverted arc
+    'relief': mouth_smile,             # gentle smile
+    # Pairs with the 'shielding_eyes' POSE. A schedule that asks for the pose
+    # asks for the face too, so this must resolve to a real shape and not fall
+    # through to mouth_flat — a deadpan face on a shielding pose reads as a
+    # shrug, which is the opposite of the beat.
+    'shielding_eyes': mouth_worried,
+    # Used by the hd188753 / hd80606 round-6 schedules. It was previously
+    # absent, so those two segments have been rendering it as a deadpan face
+    # via the old silent fallback. That is the fallback this module no longer
+    # has — add a real shape rather than reintroducing the silent path.
+    'squint': mouth_skeptical,
+}
+
+
+def resolve_mouth(expression):
+    """Look up a mouth function by expression name, failing loudly.
+
+    Every call site used to be ``MOUTHS.get(name, mouth_flat)``, which silently
+    rendered a DEADPAN face for any name not in the table. That is the worst
+    possible failure mode for this character: CLAUDE.md §6 requires the segment's
+    tone to be readable from his face alone, so a typo does not look like a bug
+    on the card, it looks like a flatly wrong performance that survives review.
+
+    Unknown name -> KeyError naming the offender and the valid set.
+    """
+    try:
+        return MOUTHS[expression]
+    except KeyError:
+        raise KeyError(
+            'unknown stickman expression %r; valid names are: %s'
+            % (expression, ', '.join(sorted(MOUTHS)))
+        ) from None
+
+
+def draw_mouth(draw, cx, cy, expression='flat', scale=1.0, theme=None, head_r=None):
+    """Draw the expression mouth, themed and correctly proportioned.
+
+    The mouth functions read the module globals INK and MOUTH_INTERIOR. Rather
+    than re-sign all ten of them, this dispatcher swaps those globals for the
+    duration of the call. That is safe because _draw_stickman_body shadows INK
+    as a *local*, so it never reads or writes the module global.
+
+    Proportion fix: `scale` is now interpreted as a multiple of the DEFAULT head
+    radius (HEAD_RADIUS=14), NOT of total figure height. The old code passed
+    height/DEFAULT_HEIGHT (~2.9 at 320px tall), which blew the scream mouth up to
+    70% of the head. Passing head_r makes the mouth a constant fraction of the
+    face at any figure size.
+    """
+    global INK, MOUTH_INTERIOR
+    th = resolve_theme(theme)
+    prev_ink, prev_int = INK, MOUTH_INTERIOR
+    INK = th['mouth_ink']
+    MOUTH_INTERIOR = th.get('mouth_interior', MOUTH_INTERIOR)
+    if head_r:
+        scale = head_r / HEAD_RADIUS
+        # Cap so the widest mouth (scream) stays inside the lower face. The mouth
+        # centre sits at head_cy + 0.4*head_r and the chin is at head_cy + head_r,
+        # so the largest usable half-height is ~0.5*head_r.
+        max_half = 0.5 * head_r
+        for base_half in (8.0,):        # scream is the tallest mouth
+            if base_half * scale > max_half:
+                scale = max_half / base_half
+    try:
+        resolve_mouth(expression)(draw, cx, cy, scale=scale)
+    finally:
+        INK, MOUTH_INTERIOR = prev_ink, prev_int
+
+
+# =============================================================================
+# LOW-LEVEL POSE DRAWING — called by scene helpers
+# =============================================================================
+
+def _draw_stickman_body(draw, cx, top_y, height, pose='standing', seed=0, theme=None):
+    """Draw the stickman body (head, torso, limbs) at the given position.
+
+    theme: None | name | dict. Selects light-on-dark vs dark-on-light coloring
+    (STYLE_CANON.md §4). Shadowed as locals so the rest of this long function
+    (and the mouth/eye/limb calls below) picks up the themed colors + strokes.
+
+    Returns geometry dict with head_cy, head_r, foot_y for mouth placement."""
+    th = resolve_theme(theme)
+    INK = th['stroke']                 # noqa: F841 - intentionally shadowed
+    HEAD_FILL = th['head_fill']        # noqa: F841
+    BODY_STROKE = th['body_stroke']    # noqa: F841
+    LIMB_STROKE = th['limb_stroke']    # noqa: F841
+    FEATURE = th['feature']            # noqa: F841 - eyes/brows stay dark
+    head_r = int(height / 8)
+    head_cy = top_y + head_r
+    neck_y = head_cy + head_r
+    hip_y = neck_y + int(height * 0.35)
+    foot_y = top_y + height
+
+    # Head
+    draw.ellipse([cx - head_r, top_y, cx + head_r, top_y + 2 * head_r],
+                 outline=INK, fill=HEAD_FILL, width=BODY_STROKE)
+    # Eyes (two dots — same in all expressions). DARK even in the light-on-dark
+    # theme, because they sit inside the cream head.
+    eye_y = head_cy - int(head_r * 0.2)
+    eye_r = max(1, int(head_r * 0.11))
+    draw.ellipse([cx - int(head_r * 0.4) - eye_r, eye_y - eye_r,
+                  cx - int(head_r * 0.4) + eye_r, eye_y + eye_r], fill=FEATURE)
+    draw.ellipse([cx + int(head_r * 0.4) - eye_r, eye_y - eye_r,
+                  cx + int(head_r * 0.4) + eye_r, eye_y + eye_r], fill=FEATURE)
+
+    # Body (spine)
+    draw.line([(cx, neck_y), (cx, hip_y)], fill=INK, width=BODY_STROKE)
+    # Pelvis bridge. Every pose starts its two legs at (cx +/- hip_dx, hip_y) but
+    # the spine stops dead at (cx, hip_y), so the leg tops float with a gap and
+    # the figure looks broken-backed at the waist. The bridge is drawn at LIMB
+    # width and only as wide as the hips: at BODY width it read as a black belt
+    # across every figure.
+    draw.line([(cx - int(head_r * 0.34), hip_y), (cx + int(head_r * 0.34), hip_y)],
+              fill=INK, width=max(2, LIMB_STROKE - 1))
+
+    # Arms and legs vary by pose
+    if pose == 'standing':
+        # Natural relaxed stance. The round-6 critic named the old wide-arm version
+        # a "stiff T-pose / antenna-arm" and it was the single most-repeated defect
+        # across six rounds. Arms hang DOWN and slightly out — but they must clear
+        # the spine, or arm + torso merge into one narrow dark column and the
+        # figure reads as a robe instead of a body with arms.
+        shoulder_y = neck_y + int((hip_y - neck_y) * 0.18)
+        arm_dx = int(head_r * 0.72)          # hands clear of the spine
+        hand_dy = int((hip_y - shoulder_y) * 0.95)   # hands reach hip level
+        for sgn in (-1, 1):
+            hx = cx + sgn * arm_dx
+            hy = shoulder_y + hand_dy
+            draw.line([(cx + sgn * int(head_r * 0.30), shoulder_y), (hx, hy)],
+                      fill=INK, width=LIMB_STROKE)
+            draw.ellipse([hx - 3, hy - 3, hx + 3, hy + 3], fill=INK)
+        # Legs — hip-width separation, feet slightly apart, hips connected
+        hip_dx = int(head_r * 0.30)
+        leg_dx = int(head_r * 0.42)
+        draw.line([(cx - hip_dx, hip_y), (cx - leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.line([(cx + hip_dx, hip_y), (cx + leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        for px, py in [(cx - leg_dx, foot_y), (cx + leg_dx, foot_y)]:
+            draw.ellipse([px - 2, py - 2, px + 2, py + 2], fill=INK)
+
+    elif pose == 'hands_up':
+        # Genuine raised arms (surprise / "wait" / relief). Shoulder -> elbow out
+        # and DOWN to about chest height -> forearm UP, so the hand ends ABOVE
+        # the shoulder and beside the jaw, below the top of the head.
+        # The old version put elbow and hand at the SAME y as the neck, so both
+        # arm segments were horizontal and the pose read as a scarecrow — the
+        # same T-arm defect round 6 named on 'standing'.
+        shoulder_y = neck_y + int((hip_y - neck_y) * 0.12)
+        elbow_dx = int(head_r * 1.25)
+        elbow_y = shoulder_y + int(head_r * 0.70)        # elbow drops to chest
+        hand_dx = int(head_r * 0.95)
+        hand_y = neck_y - int(head_r * 0.25)             # hand rises beside the jaw
+        for sgn in (-1, 1):
+            sx = cx + sgn * int(head_r * 0.26)
+            ex = cx + sgn * elbow_dx
+            hx = cx + sgn * hand_dx
+            draw.line([(sx, shoulder_y), (ex, elbow_y)], fill=INK, width=LIMB_STROKE)
+            draw.line([(ex, elbow_y), (hx, hand_y)], fill=INK, width=LIMB_STROKE)
+            draw.ellipse([hx - 3, hand_y - 3, hx + 3, hand_y + 3], fill=INK)
+        # Legs — round 6: hip-width separation (diamond fix)
+        hip_dx = int(head_r * 0.35)
+        leg_dx = int(head_r * 0.5)
+        draw.line([(cx - hip_dx, hip_y), (cx - leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.line([(cx + hip_dx, hip_y), (cx + leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx - leg_dx - 2, foot_y - 2, cx - leg_dx + 2, foot_y + 2], fill=INK)
+        draw.ellipse([cx + leg_dx - 2, foot_y - 2, cx + leg_dx + 2, foot_y + 2], fill=INK)
+
+    elif pose == 'thinker':
+        # Classic hand-to-chin think. The thinking arm bends at a real elbow:
+        # shoulder -> elbow (out and DOWN to about chest level) -> hand (UP to the
+        # chin). The round-2 version sent the hand sideways at chin level, which
+        # drew a lightning-bolt arm and read as broken. The other arm hangs
+        # naturally from the shoulder, not from the top of the torso.
+        shoulder_y = neck_y + int((hip_y - neck_y) * 0.15)
+        chin_y = head_cy + int(head_r * 0.55)
+        elbow_x = int(head_r * 1.15)
+        elbow_y = shoulder_y + int(head_r * 0.55)
+        # thinking arm (viewer's left)
+        draw.line([(cx - int(head_r * 0.25), shoulder_y), (cx - elbow_x, elbow_y)],
+                  fill=INK, width=LIMB_STROKE)
+        draw.line([(cx - elbow_x, elbow_y), (cx - int(head_r * 0.15), chin_y)],
+                  fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx - int(head_r * 0.15) - 3, chin_y - 3,
+                      cx - int(head_r * 0.15) + 3, chin_y + 3], fill=INK)
+        # other arm hangs at the side
+        arm_dx = int(head_r * 0.55)
+        hand_y = shoulder_y + int((hip_y - shoulder_y) * 0.95)
+        draw.line([(cx + int(head_r * 0.25), shoulder_y), (cx + arm_dx, hand_y)],
+                  fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx + arm_dx - 3, hand_y - 3, cx + arm_dx + 3, hand_y + 3], fill=INK)
+        # Legs — hip-width separation
+        hip_dx = int(head_r * 0.35)
+        leg_dx = int(head_r * 0.5)
+        draw.line([(cx - hip_dx, hip_y), (cx - leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.line([(cx + hip_dx, hip_y), (cx + leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx - leg_dx - 3, foot_y - 3, cx - leg_dx + 3, foot_y + 3], fill=INK)
+        draw.ellipse([cx + leg_dx - 3, foot_y - 3, cx + leg_dx + 3, foot_y + 3], fill=INK)
+
+    elif pose == 'cowering':
+        # Shoulders hunched UP, head tucked, arms wrapped protectively in front,
+        # knees bent so the figure reads as smaller. The round-2 version stood
+        # bolt upright with arms akimbo, which read as "presenting", not cowering.
+        hunch = int(head_r * 0.30)
+        shoulder_y = neck_y + hunch + int((hip_y - neck_y) * 0.12)
+        # protective arms: elbows out, hands together near the chest/sternum
+        elbow_dx = int(head_r * 0.95)
+        elbow_y = shoulder_y + int(head_r * 0.65)
+        hand_x = cx + int(head_r * 0.12)
+        hand_y = shoulder_y + int(head_r * 0.95)
+        for sgn in (-1, 1):
+            draw.line([(cx + sgn * int(head_r * 0.22), shoulder_y),
+                       (cx + sgn * elbow_dx, elbow_y)], fill=INK, width=LIMB_STROKE)
+            draw.line([(cx + sgn * elbow_dx, elbow_y), (hand_x, hand_y)],
+                      fill=INK, width=LIMB_STROKE)
+            draw.ellipse([hand_x - 3, hand_y - 3, hand_x + 3, hand_y + 3], fill=INK)
+        # Legs — deeply bent knees, feet close in
+        hip_dx = int(head_r * 0.28)
+        knee_y = hip_y + int((foot_y - hip_y) * 0.55)
+        knee_dx = int(head_r * 0.55)
+        foot_dx = int(head_r * 0.20)
+        for sgn in (-1, 1):
+            draw.line([(cx + sgn * hip_dx, hip_y), (cx + sgn * knee_dx, knee_y)],
+                      fill=INK, width=LIMB_STROKE)
+            draw.line([(cx + sgn * knee_dx, knee_y), (cx + sgn * foot_dx, foot_y)],
+                      fill=INK, width=LIMB_STROKE)
+            draw.ellipse([cx + sgn * foot_dx - 3, foot_y - 3,
+                          cx + sgn * foot_dx + 3, foot_y + 3], fill=INK)
+
+    elif pose == 'hands_down':
+        # Arms hanging loosely at the sides. They must start at the SHOULDER,
+        # off the spine: the old version began both at cx, so arm + arm + spine
+        # were three thick strokes on the same centre line and merged into one
+        # solid black wedge down the middle of the figure.
+        shoulder_y = neck_y + int((hip_y - neck_y) * 0.15)
+        hand_y = hip_y + int(head_r * 0.35)
+        arm_dx = int(head_r * 0.95)          # hands well clear of the spine
+        for sgn in (-1, 1):
+            sx = cx + sgn * int(head_r * 0.34)
+            hx = cx + sgn * arm_dx
+            draw.line([(sx, shoulder_y), (hx, hand_y)], fill=INK, width=LIMB_STROKE)
+            draw.ellipse([hx - 3, hand_y - 3, hx + 3, hand_y + 3], fill=INK)
+        # Legs — round 6: hip-width separation
+        hip_dx = int(head_r * 0.35)
+        leg_dx = int(head_r * 0.2)
+        draw.line([(cx - hip_dx, hip_y), (cx - leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.line([(cx + hip_dx, hip_y), (cx + leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx - leg_dx - 2, foot_y - 2, cx - leg_dx + 2, foot_y + 2], fill=INK)
+        draw.ellipse([cx + leg_dx - 2, foot_y - 2, cx + leg_dx + 2, foot_y + 2], fill=INK)
+
+    elif pose == 'pointing':
+        # Left arm at side
+        draw.line([(cx, neck_y + 4), (cx - int(head_r * 0.9), hip_y - 4)],
+                  fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx - int(head_r * 0.9) - 2, hip_y - 6,
+                      cx - int(head_r * 0.9) + 2, hip_y - 2], fill=INK)
+        # Right arm pointing
+        point_x = cx + int(height * 0.5)
+        point_y = neck_y + int(height * 0.1)
+        draw.line([(cx, neck_y), (point_x, point_y)], fill=INK, width=LIMB_STROKE)
+        draw.ellipse([point_x - 2, point_y - 2, point_x + 2, point_y + 2], fill=INK)
+        # Legs — round 6: hip-width separation
+        hip_dx = int(head_r * 0.35)
+        leg_dx = int(head_r * 0.5)
+        draw.line([(cx - hip_dx, hip_y), (cx - leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.line([(cx + hip_dx, hip_y), (cx + leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx - leg_dx - 2, foot_y - 2, cx - leg_dx + 2, foot_y + 2], fill=INK)
+        draw.ellipse([cx + leg_dx - 2, foot_y - 2, cx + leg_dx + 2, foot_y + 2], fill=INK)
+
+    elif pose == 'shielding_eyes':
+        # Squint eyes (closed lines)
+        draw.line([(cx - int(head_r * 0.6), eye_y),
+                   (cx - int(head_r * 0.2), eye_y - 1)], fill=INK, width=2)
+        draw.line([(cx + int(head_r * 0.2), eye_y - 1),
+                   (cx + int(head_r * 0.6), eye_y)], fill=INK, width=2)
+        # Round 6 fix: hands at forehead level (NOT above head top)
+        elbow_y = neck_y + int(head_r * 0.8)
+        elbow_x = int(head_r * 1.4)
+        hand_y = top_y + int(head_r * 0.6)  # at forehead, not above head
+        draw.line([(cx, neck_y), (cx + elbow_x, elbow_y)], fill=INK, width=LIMB_STROKE)
+        draw.line([(cx + elbow_x, elbow_y),
+                   (cx + int(head_r * 0.3), hand_y)],
+                  fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx + int(head_r * 0.3) - 3, hand_y - 3,
+                      cx + int(head_r * 0.3) + 3, hand_y + 3], fill=INK)
+        draw.line([(cx, neck_y), (cx - elbow_x, elbow_y)], fill=INK, width=LIMB_STROKE)
+        draw.line([(cx - elbow_x, elbow_y),
+                   (cx - int(head_r * 0.3), hand_y)],
+                  fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx - int(head_r * 0.3) - 3, hand_y - 3,
+                      cx - int(head_r * 0.3) + 3, hand_y + 3], fill=INK)
+        # Legs — round 6: hip-width separation
+        hip_dx = int(head_r * 0.35)
+        leg_dx = int(head_r * 0.6)
+        draw.line([(cx - hip_dx, hip_y), (cx - leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.line([(cx + hip_dx, hip_y), (cx + leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx - leg_dx - 2, foot_y - 2, cx - leg_dx + 2, foot_y + 2], fill=INK)
+        draw.ellipse([cx + leg_dx - 2, foot_y - 2, cx + leg_dx + 2, foot_y + 2], fill=INK)
+
+    elif pose == 'shrugged':
+        # A real shrug: shoulders lifted, upper arms out and slightly down to a
+        # bent elbow, forearms angled back UP and out with the palm up.
+        # The old version was a single straight line from the neck to a point
+        # out at arm_x, both ends level with the torso — that reads as a
+        # horizontal scarecrow, the same T-arm defect round 6 named on
+        # 'standing' (which was fixed there and left here).
+        shoulder_y = neck_y + int((hip_y - neck_y) * 0.12)
+        elbow_x = int(head_r * 1.05)
+        elbow_y = shoulder_y + int(head_r * 0.62)          # elbow drops below shoulder
+        hand_x = int(head_r * 1.65)
+        hand_y = elbow_y - int(head_r * 0.42)             # forearm comes back UP
+        for sgn in (-1, 1):
+            sx = cx + sgn * int(head_r * 0.26)
+            ex = cx + sgn * elbow_x
+            hx = cx + sgn * hand_x
+            draw.line([(sx, shoulder_y), (ex, elbow_y)], fill=INK, width=LIMB_STROKE)
+            draw.line([(ex, elbow_y), (hx, hand_y)], fill=INK, width=LIMB_STROKE)
+            # palm-up hand: a small flat blob, taller than wide would read as a fist
+            draw.ellipse([hx - 4, hand_y - 3, hx + 4, hand_y + 3], fill=INK)
+        # Legs — round 6: hip-width separation
+        hip_dx = int(head_r * 0.35)
+        leg_dx = int(head_r * 0.6)
+        draw.line([(cx - hip_dx, hip_y), (cx - leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.line([(cx + hip_dx, hip_y), (cx + leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.ellipse([cx - leg_dx - 2, foot_y - 2, cx - leg_dx + 2, foot_y + 2], fill=INK)
+        draw.ellipse([cx + leg_dx - 2, foot_y - 2, cx + leg_dx + 2, foot_y + 2], fill=INK)
+
+    else:
+        # Default: standing. Unlike an unknown EXPRESSION (resolve_mouth raises),
+        # an unknown POSE falls back to standing but shouts first: a typo'd pose
+        # must not silently ship as a flatly-wrong performance that survives review.
+        import warnings as _warnings
+        _warnings.warn(
+            'unknown stickman pose %r; falling back to "standing". Valid poses: %s'
+            % (pose, ', '.join(sorted(_POSES))), stacklevel=2)
+        arm_dx = int(head_r * 1.2)
+        arm_y = neck_y + int((hip_y - neck_y) * 0.3)
+        draw.line([(cx, arm_y), (cx - arm_dx, arm_y + int(head_r * 0.6))],
+                  fill=INK, width=LIMB_STROKE)
+        draw.line([(cx, arm_y), (cx + arm_dx, arm_y + int(head_r * 0.6))],
+                  fill=INK, width=LIMB_STROKE)
+        for px, py in [(cx - arm_dx, arm_y + int(head_r * 0.6)),
+                       (cx + arm_dx, arm_y + int(head_r * 0.6))]:
+            draw.ellipse([px - 2, py - 2, px + 2, py + 2], fill=INK)
+        # Legs — round 6: hip-width separation
+        hip_dx = int(head_r * 0.35)
+        leg_dx = int(head_r * 0.5)
+        draw.line([(cx - hip_dx, hip_y), (cx - leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        draw.line([(cx + hip_dx, hip_y), (cx + leg_dx, foot_y)], fill=INK, width=LIMB_STROKE)
+        for px, py in [(cx - leg_dx, foot_y), (cx + leg_dx, foot_y)]:
+            draw.ellipse([px - 2, py - 2, px + 2, py + 2], fill=INK)
+
+    return {'head_cy': head_cy, 'head_r': head_r, 'foot_y': foot_y}
+
+
+def draw_stickman(image, x_center, y_top, height, pose='standing',
+                  mouth='flat', seed=0, theme=None):
+    """Public API: draw a stickman onto an existing PIL image.
+
+    This is the function called by segment frame generators via
+    ``sm.draw_stickman(image, x_center=..., y_top=..., height=..., ...)``.
+    It delegates to _draw_stickman_body for geometry and then renders
+    the mouth expression scaled to head_r.
+
+    theme: 'light' (dark strokes on light art) | 'dark' (cream on space art) |
+           dict | None. Default None resolves to the light theme. Builders MUST
+           pass 'dark' for any card with a dark/space background (STYLE_CANON §4).
+    """
+    draw = ImageDraw.Draw(image)
+    geom = _draw_stickman_body(draw, x_center, y_top, height, pose=pose,
+                               seed=seed, theme=theme)
+    mouth_cy = geom['head_cy'] + int(geom['head_r'] * 0.4)
+    draw_mouth(draw, x_center, mouth_cy, expression=mouth,
+               scale=max(0.8, height / DEFAULT_HEIGHT),
+               theme=theme, head_r=geom['head_r'])
+
+
+# =============================================================================
+# SCENE-BASED COMPOSITION HELPERS (the paradigm shift)
+# =============================================================================
+
+def stickman_on_surface(expression='flat', pose='standing',
+                        surface_color=(180, 140, 100),
+                        sky_gradient=((100, 150, 220), (60, 100, 180)),
+                        ground_y_pct=0.70,
+                        width=1280, height=720,
+                        stickman_height=DEFAULT_HEIGHT,
+                        theme='light'):
+    """Render a stickman standing on a planetary or moon surface.
+
+    Args:
+        expression: mouth shape ('flat', 'frown', 'oval', 'smirk', 'zigzag', etc.)
+        pose: body pose ('standing', 'hands_up', 'pointing', 'shielding_eyes', 'shrugged')
+        surface_color: (R, G, B) for the ground
+        sky_gradient: tuple of two (R, G, B) colors, top to horizon
+        ground_y_pct: where the horizon sits (0.0=top, 1.0=bottom)
+        width, height: image dimensions
+        stickman_height: total height of the stickman in pixels
+
+    Returns:
+        PIL Image with the stickman embedded in the scene.
+    """
+    img = Image.new('RGB', (width, height), sky_gradient[0])
+    draw = ImageDraw.Draw(img)
+
+    # Sky gradient (top to horizon)
+    horizon_y = int(height * ground_y_pct)
+    for y in range(horizon_y):
+        t = y / max(1, horizon_y)
+        r = int(sky_gradient[0][0] * (1 - t) + sky_gradient[1][0] * t)
+        g = int(sky_gradient[0][1] * (1 - t) + sky_gradient[1][1] * t)
+        b = int(sky_gradient[0][2] * (1 - t) + sky_gradient[1][2] * t)
+        draw.line([(0, y), (width, y)], fill=(r, g, b))
+
+    # Surface (flat ground below horizon)
+    draw.rectangle([0, horizon_y, width, height], fill=surface_color)
+
+    # Horizon line (wobbly)
+    for x in range(0, width, 4):
+        jitter = random.randint(-2, 2)
+        draw.line([(x, horizon_y + jitter), (x + 4, horizon_y + jitter)],
+                  fill=INK, width=2)
+
+    # Stickman standing on the surface
+    cx = width // 2
+    foot_y = horizon_y - 5  # feet just above the horizon line
+    top_y = foot_y - stickman_height
+    geom = _draw_stickman_body(draw, cx, top_y, stickman_height, pose=pose,
+                               theme=theme)
+
+    # Mouth (expression)
+    mouth_cy = geom['head_cy'] + int(geom['head_r'] * 0.4)
+    draw_mouth(draw, cx, mouth_cy, expression=expression,
+               scale=max(0.8, stickman_height / DEFAULT_HEIGHT),
+               theme=theme, head_r=geom['head_r'])
+
+    return img
+
+
+def stickman_in_space(expression='oval', pose='hands_up',
+                      celestial_body=None,
+                      body_position=(0.3, 0.4),
+                      body_scale=0.25,
+                      width=1280, height=720,
+                      stickman_height=DEFAULT_HEIGHT,
+                      theme='dark'):
+    """Render a stickman in space, spatially positioned relative to a sun or planet.
+
+    Defaults to theme='dark' (cream on a space background) per STYLE_CANON.md §4.
+
+    Args:
+        expression: mouth shape
+        pose: body pose
+        celestial_body: dict with 'color' (R,G,B) and optional 'glow_radius' for emission
+        body_position: (x_pct, y_pct) where the celestial body's center sits
+        body_scale: size of the body as a fraction of the image diagonal
+        width, height: image dimensions
+        stickman_height: total height of the stickman
+
+    Returns:
+        PIL Image with the stickman embedded in the space scene.
+    """
+    img = Image.new('RGB', (width, height), (10, 10, 20))  # deep space background
+    draw = ImageDraw.Draw(img)
+
+    # Celestial body (sun/planet)
+    if celestial_body:
+        body_cx = int(width * body_position[0])
+        body_cy = int(height * body_position[1])
+        body_r = int(math.sqrt(width**2 + height**2) * body_scale)
+        body_color = celestial_body.get('color', (255, 200, 100))
+        glow_radius = celestial_body.get('glow_radius', 0)
+
+        # Draw glow if emissive
+        if glow_radius > 0:
+            for i in range(glow_radius, 0, -10):
+                alpha = i / glow_radius
+                glow_r = body_r + i
+                # Radial gradient outward (simulated with concentric circles)
+                draw.ellipse([body_cx - glow_r, body_cy - glow_r,
+                              body_cx + glow_r, body_cy + glow_r],
+                             fill=(int(body_color[0] * alpha * 0.3),
+                                   int(body_color[1] * alpha * 0.3),
+                                   int(body_color[2] * alpha * 0.3)))
+
+        # Body itself
+        draw.ellipse([body_cx - body_r, body_cy - body_r,
+                      body_cx + body_r, body_cy + body_r],
+                     fill=body_color, outline=INK, width=3)
+
+    # Stars (small background dots)
+    random.seed(42)
+    for _ in range(80):
+        sx = random.randint(0, width)
+        sy = random.randint(0, height)
+        draw.ellipse([sx - 1, sy - 1, sx + 1, sy + 1], fill=(200, 200, 220))
+
+    # Stickman floating in space (positioned away from the body)
+    cx = int(width * 0.65) if body_position[0] < 0.5 else int(width * 0.35)
+    cy = int(height * 0.6)
+    top_y = cy - stickman_height // 2
+    geom = _draw_stickman_body(draw, cx, top_y, stickman_height, pose=pose,
+                               theme=theme)
+
+    # Mouth (expression)
+    mouth_cy = geom['head_cy'] + int(geom['head_r'] * 0.4)
+    draw_mouth(draw, cx, mouth_cy, expression=expression,
+               scale=max(0.8, stickman_height / DEFAULT_HEIGHT),
+               theme=theme, head_r=geom['head_r'])
+
+    return img
+
+
+def stickman_with_environment(expression='flat', pose='standing',
+                               bg_elements=None,
+                               width=1280, height=720,
+                               stickman_height=DEFAULT_HEIGHT,
+                               stickman_position=(0.5, 0.65),
+                               theme='light'):
+    """General scene-builder: stickman inhabits a scene with background elements.
+
+    Args:
+        expression: mouth shape
+        pose: body pose
+        bg_elements: list of dicts, each with 'type' and type-specific params:
+            {'type': 'rect', 'bounds': (x0, y0, x1, y1), 'fill': (R,G,B)}
+            {'type': 'ellipse', 'bounds': (x0, y0, x1, y1), 'fill': (R,G,B)}
+            {'type': 'line', 'points': [(x0,y0), (x1,y1)], 'stroke': (R,G,B), 'width': W}
+        width, height: image dimensions
+        stickman_height: total height of the stickman
+        stickman_position: (x_pct, y_pct) where the stickman's feet are anchored
+
+    Returns:
+        PIL Image with the stickman embedded in the scene.
+    """
+    img = Image.new('RGB', (width, height), (240, 235, 220))  # cream background
+    draw = ImageDraw.Draw(img)
+
+    # Draw background elements first
+    if bg_elements:
+        for elem in bg_elements:
+            elem_type = elem.get('type')
+            if elem_type == 'rect':
+                draw.rectangle(elem['bounds'], fill=elem['fill'],
+                               outline=elem.get('outline', None),
+                               width=elem.get('width', 0))
+            elif elem_type == 'ellipse':
+                draw.ellipse(elem['bounds'], fill=elem['fill'],
+                             outline=elem.get('outline', None),
+                             width=elem.get('width', 0))
+            elif elem_type == 'line':
+                draw.line(elem['points'], fill=elem['stroke'],
+                          width=elem.get('width', 2))
+
+    # Stickman positioned in the scene
+    cx = int(width * stickman_position[0])
+    foot_y = int(height * stickman_position[1])
+    top_y = foot_y - stickman_height
+    geom = _draw_stickman_body(draw, cx, top_y, stickman_height, pose=pose,
+                               theme=theme)
+
+    # Mouth (expression)
+    mouth_cy = geom['head_cy'] + int(geom['head_r'] * 0.4)
+    draw_mouth(draw, cx, mouth_cy, expression=expression,
+               scale=max(0.8, stickman_height / DEFAULT_HEIGHT),
+               theme=theme, head_r=geom['head_r'])
+
+    return img

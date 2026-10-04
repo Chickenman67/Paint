@@ -1,0 +1,13 @@
+{
+  "seed": 1337,
+  "assignment": {
+    "A": {
+      "true_id": "ours",
+      "path": "C:\\VIBE_CODE_CENTRAL\\Gauntlet3\\work\\segments\\hd80606\\round_1.mp4"
+    },
+    "B": {
+      "true_id": "ref",
+      "path": "C:\\VIBE_CODE_CENTRAL\\Gauntlet3\\work\\ref_full.mp4"
+    }
+  }
+}

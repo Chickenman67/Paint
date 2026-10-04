@@ -1,0 +1,41 @@
+TITLE = "Area 51 - The Base With No Name"
+
+NARRATION = """There is a place with no name. It has a number instead. Fifty-One. It is the most secret base on Earth. It sits on a dry lake bed. In Nevada, north of Las Vegas. The sign out front reads Groom Lake. A second sign warns of arrest. Nobody will say what is inside. The fence runs for miles across the desert. It surrounds nothing you can see. There is a second fence behind it. Cameras sit on tall poles along the wire. The base is smaller than its fence. No aircraft may fly overhead. Red dashed line drawn across the sky. Pilots noticed the rule before it was admitted. Pilots reported lights over the dry lake. In 1955, the reports started. Roswell was already three years old. The desert kept the story all the same. Pilots named the place Hangar 18. Empty hangar door, number painted on the wall. Officially, that hangar is not there. Nellis Air Force Base runs the site. The budget for the site is not public. In 1989, a man named Bob Lazar spoke. He claimed he had worked there. He described what was parked inside. No employment record of his exists. In 2020, the FBI released its files. One page stamped with the lake's name. The fence is still standing there. Nobody has ever looked inside."""
+
+# One dict per intended beat, in order. The cutter assigns narration spans.
+BEATS = [
+    {"beat": "HOOK", "visual": "wide flat pale desert, one long fence cutting across the frame, nothing behind it; hand-lettered label 'NOTHING OUT HERE'"},
+    {"beat": "HOOK", "visual": "close on a blank fence panel, no words on it, empty ground through every gap"},
+    {"beat": "TITLE", "visual": "hand-lettered 'AREA 51' stamped huge over the fence line; character small at the base, deadpan"},
+    {"beat": "REVEAL", "visual": "character close-up, flat mouth; speech bubble 'no name'"},
+    {"beat": "ESTABLISH", "visual": "pale cracked dry-lake flat stretching to the horizon, mountains as a thin dark strip; label 'DRY LAKE BED'"},
+    {"beat": "ESTABLISH", "visual": "hand-drawn map of Nevada, a small dot in the north-east; label 'NEVADA'"},
+    {"beat": "FACT", "visual": "weathered sign on a leaning post reading 'GROOM LAKE', sun-bleached"},
+    {"beat": "FACT", "visual": "second sign nailed below it, one word in red: 'ARRESTED'"},
+    {"beat": "PIVOT", "visual": "character shrugging at the fence; speech bubble 'no answer'"},
+    {"beat": "IMAGE", "visual": "the fence line running edge to edge and off both sides of the frame, desert on both faces"},
+    {"beat": "IMAGE", "visual": "same fence from behind, still nothing inside it; character standing small with his back to us"},
+    {"beat": "FACT", "visual": "second fence line visible just behind the first, two parallel wires receding"},
+    {"beat": "FACT", "visual": "camera on a tall pole above the wire, lens angled down at the dirt road"},
+    {"beat": "COMPARISON", "visual": "the whole base drawn small, with the fence drawn huge around it; labels 'SMALL' and 'HUGE'"},
+    {"beat": "FACT", "visual": "small jet passing high over the base, seen from below; label 'NO AIRCRAFT OVERHEAD'"},
+    {"beat": "ESCALATE", "visual": "red dashed ceiling line drawn across the sky above the base"},
+    {"beat": "REVEAL", "visual": "small plane pushed back from the red line, a red cross on it; character pointing up"},
+    {"beat": "FACT", "visual": "pilot silhouette in a dark cockpit at night, a light blinking below"},
+    {"beat": "ESTABLISH", "visual": "old calendar page, the year 1955 circled in red pencil"},
+    {"beat": "PIVOT", "visual": "another calendar page beside it, 1947 circled, a line drawn between the two dates"},
+    {"beat": "ESCALATE", "visual": "one balloon drifting low over the fence line, half deflated, small in a wide desert frame; hand-lettered '1947' faded in the corner"},
+    {"beat": "PIVOT", "visual": "hangar wall seen head-on, big painted number 18; character small in front of it, shrugging"},
+    {"beat": "IMAGE", "visual": "hangar door slid half open, dark inside, the painted 18 at the edge of the frame"},
+    {"beat": "ESCALATE", "visual": "the same hangar drawn as an empty bay; a red stamp across it reading 'DOES NOT EXIST'"},
+    {"beat": "FACT", "visual": "two airfield hangars a short drive away, label 'NELLIS AFB'"},
+    {"beat": "FACT", "visual": "a paper budget sheet with one line blacked out in thick marker"},
+    {"beat": "ESCALATE", "visual": "television set in a living room, a man's face on it; label '1989'; character watching, leaned in"},
+    {"beat": "FACT", "visual": "a man at a microphone, flat expression, crowd silhouettes behind him"},
+    {"beat": "IMAGE", "visual": "his hands sketching a shape in the air: a disc with a dome on top"},
+    {"beat": "PIVOT", "visual": "an employment file drawer open, one folder missing, empty slot; character deadpan"},
+    {"beat": "REVEAL", "visual": "stack of declassified pages on a desk, the top one stamped 'RELEASED 2020'"},
+    {"beat": "IMAGE", "visual": "close on one page, a line of typed text with 'GROOM LAKE' visible; a finger under the words"},
+    {"beat": "FINALE", "visual": "the fence again in the same framing as the opening, still nothing behind it"},
+    {"beat": "FINALE", "visual": "night, the fence almost black, one red light blinking; character small, awed, speech bubble 'never'"},
+]

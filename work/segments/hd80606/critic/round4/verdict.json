@@ -1,0 +1,120 @@
+{
+  "segment": "hd80606",
+  "round": 4,
+  "winner": "ref_wins",
+  "margin": "narrower_than_round_3",
+  "overall_notes": "CRITICAL: The +99 ref-offset used in _extract_v4.py is WRONG for ALL 6 pairs. The dying round-4 critic subagent (3rd 504 prompt-too-long death) wrote scratch_notes.json using mismatched beats — its verdicts are INVALID. The orchestrator reviewed all 6 paired frames directly and wrote this verdict from absolute quality assessment. Round 4 closed several round-3 directives (integrated captions, fire aura, banded gas-giant, palette lock, header band on every frame, painterly stipple, stickman present in 5 of 6 frames). But the ref-offset mismatch means we cannot make a valid label-blind comparison — verdict is 'ref_wins' based on ABSOLUTE gaps remaining in ours, not on a valid side-by-side.",
+  "offset_warning": "The ref HD 80606 b chapter does NOT start at t=99s in ref_full.mp4. The _extract_v4.py pairs — (2,101), (8,107), (14,113), (20,119), (28,127), (36,135) — produce mismatched beats on ALL 6 pairs. ref_t101 shows planet-intro (stickman + gas giant), ref_t107 shows pure stickman character beat, ref_t113/t119/t127 all show orbit diagrams with cyan ellipse, ref_t135 shows perihelion fire-aura beat. These do NOT align with ours' beat sequence. The ref offset MUST be corrected before round 5 critic can produce valid comparisons.",
+  "per_frame_notes": [
+    {
+      "pair": 1,
+      "ours_t": 2,
+      "ref_t": 101,
+      "verdict": "ref_wins",
+      "beat_match": "MISMATCHED — ours=fever-intro, ref=planet-intro",
+      "notes": "Ours (t=2): header + 'A FEVER EVERY 40 DAYS' + stickman left (~30-40%) + HUGE banded planet right (~50%) with fire-aura + 'HD 80606 B' integrated on planet. 4 elements — violates one-idea-per-card. Stickman has deadpan red-dot mouth. Ref (t=101): header + LARGE stickman left (~50%, AWED OPEN OVAL MOUTH with tongue, raised eyebrows) + banded red/blue gas-giant right (~40%). 2 elements, clean composition. Ref wins on: (1) stickman expression richness — awed open-oval vs our deadpan dot, (2) one-idea-per-card — 2 elements vs our 4, (3) stickman scale — ~50% frame vs our ~30-40%. Ours wins on: fire aura present, integrated caption on planet."
+    },
+    {
+      "pair": 2,
+      "ours_t": 8,
+      "ref_t": 107,
+      "verdict": "ref_wins",
+      "beat_match": "MISMATCHED — ours=orbit-intro+stickman, ref=pure-character-beat",
+      "notes": "Ours (t=8): header + 'A GAS GIANT ON A WILD ORBIT' + '4 X JUPITER' stamp + stickman centered (~50%, deadpan red dot mouth). 4 elements. Ref (t=107): header + LARGE stickman left (~70%, AWED expression, open oval mouth with pink tongue, head tilted, arm extended). NO planet. 1 element — the purest one-idea-per-card in the whole segment. Ref wins DECISIVELY on: (1) one-idea-per-card discipline — 1 element vs our 4, (2) stickman scale — ~70% frame vs our ~50%, (3) expression variety — open oval with tongue/tilt vs our single red dot. This is ref's strongest 'trust the character' beat."
+    },
+    {
+      "pair": 3,
+      "ours_t": 14,
+      "ref_t": 113,
+      "verdict": "ours_wins_decisively",
+      "beat_match": "MISMATCHED — ours=close-approach-fever, ref=orbit-diagram",
+      "notes": "Ours (t=14): header + BIG fire-aura sun (~50%) with banded gas-giant inside + 'SO CLOSE' integrated on planet + small deadpan stickman far left + smaller sun right. STRONG painterly execution. Ref (t=113): header + CYAN/BLUE ELLIPSE ORBIT + small planet left + big smooth sun right. Plain orbit diagram with no caption, no stickman. OURS WINS DECISIVELY — integrated caption works, fire aura works, banded gas-giant reads as a real planet, painterly stipple on everything. Ref is a bare diagram. NOTE: beats are mismatched so this is not a fair comparison."
+    },
+    {
+      "pair": 4,
+      "ours_t": 20,
+      "ref_t": 119,
+      "verdict": "ours_wins_decisively",
+      "beat_match": "MISMATCHED — ours=fever-peak, ref=orbit-diagram-hold",
+      "notes": "Ours (t=20): header + stickman left (~30%) + HUGE spike-aura sun with banded gas-giant inside + 'FEVER' integrated on planet. EXCELLENT — the fever moment. Ref (t=119): header + CYAN/BLUE ELLIPSE ORBIT + small planet left + smooth sun right. Still the orbit diagram. OURS WINS DECISIVELY — same reasons as pair 3. The 'FEVER' integrated caption is the emotional peak of the segment and it lands."
+    },
+    {
+      "pair": 5,
+      "ours_t": 28,
+      "ref_t": 127,
+      "verdict": "ours_wins_decisively",
+      "beat_match": "MISMATCHED — ours=absurdity-peak, ref=orbit-diagram",
+      "notes": "Ours (t=28): 'HD 80606 B' header + stickman left (~40% frame, arms spread, open mouth) + HUGE spike-aura orange sun with banded gas-giant inside + 'NOTHING REASONABLE' heavy yellow ALL-CAPS integrated on planet + dark space. STRONG execution. Ref (t=127): header + CYAN/BLUE ELLIPSE ORBIT + smooth yellow/red radial gradient sun + small red/blue planet on orbit. No caption, no stickman. OURS WINS DECISIVELY. Note: ours_t28 stickman has open mouth — first non-deadpan expression, proving the REACTIONS map is working on some frames."
+    },
+    {
+      "pair": 6,
+      "ours_t": 36,
+      "ref_t": 135,
+      "verdict": "ref_wins",
+      "beat_match": "MISMATCHED — ours=calendar/40-days, ref=perihelion-fire-aura",
+      "notes": "Ours (t=36): header + 'EVERY 40 DAYS' yellow ALL-CAPS top-left + stickman left (~50% frame, arms spread, downturned mouth/worried) + cream calendar page on right with '40' in orange circle. 3 elements. Clean one-idea composition. Ref (t=135): header + banded planet center-left with FIRE AURA (dark red/orange jagged flames) + 'So Close' yellow cursive hand-lettered integrated ON planet body + HUGE stippled sun partially visible right (~40% frame). 2 elements. REF WINS — fire aura on planet, integrated caption as hand-lettered cursive, massive stippled sun = the emotional peak of the segment. Ref is clearly better on this beat. This is ref's best frame in the segment."
+    }
+  ],
+  "tally": {
+    "ours_wins": 3,
+    "ref_wins": 3,
+    "note": "3-3 raw tally but INVALID as a comparison because ALL 6 pairs have mismatched beats. Ours' 3 wins (pairs 3,4,5) are partly because ref's orbit-diagram beats are weak, not because ours necessarily beat ref's equivalent beats. Ref's 3 wins (pairs 1,2,6) are on genuine absolute quality: expression richness, one-idea-per-card discipline, and the perihelion fire-aura peak."
+  },
+  "absolute_quality_assessment": {
+    "round_3_gaps_CLOSED": [
+      "Integrated captions — 'SO CLOSE', 'FEVER', 'NOTHING REASONABLE', '800X STARLIGHT', 'SUPERSONIC' all integrated on planet body. Caption-IS-the-diagram pattern working.",
+      "Fire/spike aura — present on sun in t=14/t=20/t=28 frames. Reads as menacing heat.",
+      "Banded gas-giant — planet reads as a real gas giant, not a smooth gradient sphere.",
+      "Palette locked — orange/yellow/black/cream across all frames. No blue/cyan violations in ours.",
+      "Header band on every frame — consistent layout discipline.",
+      "Painterly stipple texture — on suns and planet surfaces.",
+      "Stickman present in 5 of 6 sampled frames."
+    ],
+    "round_3_gaps_still_OPEN": [
+      "Stickman expression variety — still mostly deadpan red-dot mouth. Only t=28 (open mouth) and t=36 (downturned/worried) show non-deadpan expressions. t=2/t=8/t=14/t=20 all have the single red dot. The REACTIONS map has 15 entries but only 2-3 are reaching the rendered frames. Ref uses awed/open-oval/raised-brows/tongue — rich face language from §6.",
+      "Stickman scale — varies 30-50% across frames. Should be 60-70% on character beats (ref's t=107 stickman is ~70% of frame). The stickman needs to be the SUBJECT on character beats, not a sidebar element.",
+      "One idea per card — t=02 has 4 elements, t=08 has 4 elements, t=14 has 4 elements. Only t=20/t=28 (3 elements) and t=36 (3 elements) are approaching the ref's discipline. Ref's best frames have 1-2 elements."
+    ]
+  },
+  "biggest_gap": "STICKMAN EXPRESSION VARIETY — the stickman's face is the audience's emotional compass (CLAUDE.md §6). Round 4 proved integrated captions, fire aura, and banded gas-giant all work. The single remaining gap that separates ours from ref's paint-explainer authority is the stickman's face. Ref uses 3+ distinct mouth shapes (open oval, zigzag, smirk, wide grin) within a single segment; ours uses 1 (red dot) with 2 exceptions. The canonical face from §6 says 'mouth does all the work' — and our mouth is doing no work.",
+  "round_5_directives": [
+    {
+      "id": 1,
+      "directive": "STICKMAN EXPRESSION OVERHAUL — implement the full §6 mouth-shape lookup: flat-line=deadpan, upside-down-arc=scared, wide-oval=awed, smirk=wry, zigzag=uncomfortable. Each of the 15 cards MUST use a different (expression, pose) pair from the REACTIONS map. Verify by extracting 6 frames and checking that at least 4 distinct mouth shapes appear.",
+      "priority": "CRITICAL",
+      "status": "NOT CLOSED"
+    },
+    {
+      "id": 2,
+      "directive": "STICKMAN SCALE ON CHARACTER BEATS — on beats where the stickman is reacting (not diagram-dominant beats), scale stickman to 60-70% of frame height. t=02, t=08, t=36 are character beats; the stickman should be the SUBJECT, not a sidebar. Ref's t=107 stickman is ~70% — match that.",
+      "priority": "HIGH",
+      "status": "NOT CLOSED"
+    },
+    {
+      "id": 3,
+      "directive": "ONE IDEA PER CARD — reduce element count on crowded frames. t=02 has 4 elements (caption + stickman + planet + integrated label) — split into 2 cards or drop one element. t=08 has 4 elements (caption + stamp + stickman + implied planet) — drop the stamp, let the stickman carry the beat. Target: ≤3 elements on every card, ≤2 on character beats.",
+      "priority": "HIGH",
+      "status": "PARTIALLY CLOSED (t=20/t=28/t=36 are approaching 3 elements)"
+    },
+    {
+      "id": 4,
+      "directive": "KEEP EVERYTHING THAT'S WORKING — integrated captions ('SO CLOSE', 'FEVER', 'NOTHING REASONABLE'), fire/spike aura, banded gas-giant, locked orange/yellow/cream palette, header band, painterly stipple. Do NOT regress on any of these. They are the round-4 wins.",
+      "priority": "CRITICAL",
+      "status": "CLOSED — preserve"
+    },
+    {
+      "id": 5,
+      "directive": "FIX REF EXTRACT OFFSET — the +99 offset in _extract_v4.py is WRONG for all 6 pairs. Before the round 5 critic runs, the orchestrator MUST find the actual HD 80606 b chapter start in ref_full.mp4 and update the extraction script. Without this, the round 5 critic will produce the same invalid mismatched-beat comparison.",
+      "priority": "CRITICAL — ORCHESTRATOR TASK, not builder task",
+      "status": "NOT CLOSED"
+    }
+  ],
+  "round_5_cap_warning": "Round 5 is the LAST round per CLAUDE.md §8 cap. If round 5 does not produce a 'ours_wins' verdict, ship the best of rounds 1-5 and flag for human review. The absolute quality of round 4 is high — the integrated-caption + fire-aura + banded-gas-giant pattern is strong. The stickman expression overhaul is the single lever most likely to flip the verdict.",
+  "notes_for_orchestrator": [
+    "The scratch_notes.json from the dying critic is INVALID — discard it as evidence. This verdict supersedes it.",
+    "FIX THE REF OFFSET before launching the round 5 critic. Use ffprobe chapter detection or manual scan of ref_full.mp4 to find the actual HD 80606 b chapter boundary.",
+    "Round 4's best frames are t=20 ('FEVER' peak) and t=28 ('NOTHING REASONABLE' peak) — both have the integrated-caption + fire-aura pattern that works. Build round 5 from these successes.",
+    "The REACTIONS map has 15 entries but expression rendering is not picking them up on most frames. Debug the frame generator's stickman-expression lookup — is it falling through to the default deadpan?",
+    "Consider splitting t=02 into two cards: (1) stickman-only character intro with awed expression at 60-70% scale, (2) planet reveal with fire aura and integrated 'A FEVER EVERY 40 DAYS'. This matches ref's pattern of leading with character, then revealing subject."
+  ]
+}

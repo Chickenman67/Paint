@@ -1,0 +1,89 @@
+{
+  "round": 5,
+  "segment": "hd188753",
+  "timestamp": "2026-09-12T17:11:42.984Z",
+  "per_frame_notes": [
+    {
+      "pair_index": 1,
+      "ours_t": 2,
+      "ref_t": 12,
+      "ours_notes": "Stickman with screaming mouth and THREE SUNS text, showing three different colored suns (yellow/orange/red) with the stickman reacting emotionally below. Purple background with stars. Clean hand-drawn aesthetic with wobble.",
+      "ref_notes": "Stickman with confused/uncomfortable expression standing on a gray moon surface under a purple-to-black gradient sky with one red sun. Black space above horizon. Stickman is the emotional anchor.",
+      "style_fidelity": "Both use wobbly hand-drawn linework and stickman character. Ref has scene-based composition with environmental context (moon surface). Ours has diagram-based composition.",
+      "character_presence": "BOTH have the stickman character with emotional expression. Ours: screaming/awed mouth. Ref: uncomfortable expression with eyebrows.",
+      "layout": "Ours is cleaner with centered diagram. Ref has environmental scene with horizon line and ground texture.",
+      "verdict": "ref_wins",
+      "gap": "Environmental storytelling - ref puts the stickman IN a scene (on a moon surface under alien sky), creating spatial context. Ours shows a floating diagram with no environmental grounding."
+    },
+    {
+      "pair_index": 2,
+      "ours_t": 8,
+      "ref_t": 18,
+      "ours_notes": "Three suns (yellow/orange/red) with text labels YELLOW/ORANGE/RED on each. Clean diagram on purple starfield background. No character. Very clean and simple.",
+      "ref_notes": "Large red-to-yellow gradient sun on left with small purple-banded planet on right, black starfield. Space scene composition showing scale and perspective. No character.",
+      "style_fidelity": "Both use Paint Explainer aesthetic. Ref uses gradients on emissive sun (acceptable per CLAUDE.md §4). Ours uses flat fills. Both have wobbly outlines.",
+      "character_presence": "NEITHER has stickman - both are data/diagram beats.",
+      "layout": "Ref has dramatic scale contrast (huge sun, tiny planet). Ours has equal-sized elements in a row.",
+      "verdict": "ref_wins",
+      "gap": "Scale and drama - ref shows the RELATIONSHIP between sun and planet with realistic size comparison. Ours treats the three suns as equal abstract symbols, losing the sense of being IN this system."
+    },
+    {
+      "pair_index": 3,
+      "ours_t": 14,
+      "ref_t": 24,
+      "ours_notes": "Three suns with colored rays pointing down to text SHADOWS THAT DO NOT MAKE SENSE. Diagram showing light geometry. Purple background. No character.",
+      "ref_notes": "Three suns of different sizes arranged in triangular composition showing depth/distance. Black space background with gradient to dark blue at bottom. No character. Suns have radial gradients.",
+      "style_fidelity": "Both wobbly Paint Explainer style. Ref uses gradients on suns. Ours uses flat fills with geometric rays.",
+      "character_presence": "NEITHER has stickman - both are astronomical diagrams.",
+      "layout": "Ref creates spatial depth with size variation. Ours is flat geometric diagram.",
+      "verdict": "ref_wins",
+      "gap": "Spatial depth vs flat geometry - ref shows the three suns as a 3D configuration in space. Ours reduces it to a 2D diagram with caption explaining the concept rather than showing it spatially."
+    },
+    {
+      "pair_index": 4,
+      "ours_t": 20,
+      "ref_t": 30,
+      "ours_notes": "Large tan planet with dark texture, text MASS OF JUPITER on it. Simple centered composition. Purple starfield. No character.",
+      "ref_notes": "Gray moon surface with craters (textured ground in foreground) under black starfield. Environmental scene. No character visible in this frame.",
+      "style_fidelity": "Both have wobbly Paint Explainer aesthetic. Ref has environmental scene composition. Ours is object-focused diagram.",
+      "character_presence": "NEITHER has stickman in these frames.",
+      "layout": "Ref builds environmental context with foreground/background layers. Ours centers the subject as an isolated object.",
+      "verdict": "ref_wins",
+      "gap": "Environmental vs object - ref continues building the scene-based world. Ours presents the planet as an isolated fact-object, no spatial context."
+    },
+    {
+      "pair_index": 5,
+      "ours_t": 28,
+      "ref_t": 38,
+      "ours_notes": "Text only: QUOTING THE SPIRIT NOT THE LETTER in yellow/orange text with black outline on purple background. No character, no scene.",
+      "ref_notes": "Stickman with uncomfortable/skeptical expression (eyebrow raised, flat mouth) standing on gray moon surface with one red sun visible in upper left. Scene-based composition. Black starfield.",
+      "style_fidelity": "Ref maintains Paint Explainer scene-based aesthetic throughout. Ours drops to text-only interstitial.",
+      "character_presence": "Ref HAS the stickman with clear emotional beat. Ours has NO character.",
+      "layout": "Ref continues environmental scene. Ours is caption-only.",
+      "verdict": "ref_wins_decisively",
+      "gap": "Complete absence of character at emotional beat - this appears to be a conceptual/philosophical moment that NEEDS the stickman's reaction. Ref delivers it. Ours dropped to pure text, violating CLAUDE.md §6: 'Every segment must have the stickman in at least one beat.'"
+    },
+    {
+      "pair_index": 6,
+      "ours_t": 36,
+      "ref_t": 46,
+      "ours_notes": "Figure-8 orbit diagram with small tan planet on one loop, text FIGURE 8 above. Clean geometric diagram. Purple background. No character.",
+      "ref_notes": "Large Jupiter-like planet (cream/tan with bands and Great Red Spot detail) with text Jupiter overlaid. Black starfield. Photorealistic planet texture. No character.",
+      "style_fidelity": "Ours maintains wobbly diagram style. Ref uses more realistic planet rendering with actual Jupiter features.",
+      "character_presence": "NEITHER has stickman - both are astronomical objects.",
+      "layout": "Ours is geometric/educational diagram. Ref is object portrait.",
+      "verdict": "ours_wins",
+      "gap": "Ours better demonstrates the CONCEPT (figure-8 orbit as the key fact about this system). Ref shows realistic Jupiter but doesn't convey the three-sun orbital mechanic that makes HD 188753 Ab interesting."
+    }
+  ],
+  "tally": {
+    "ours_wins": 1,
+    "ref_wins": 4,
+    "ref_wins_decisively": 1,
+    "ours_wins_decisively": 0
+  },
+  "overall_verdict": "ref_wins",
+  "biggest_gap": "Environmental storytelling and stickman integration. The reference builds HD 188753 Ab as a PLACE the viewer inhabits through the stickman's eyes - standing on surfaces, reacting to alien skies, experiencing the confusion of multiple suns. Ours presents it as a series of isolated diagrams and facts floating on purple backgrounds. The t=28 frame (pair 5) is the most decisive loss: a conceptual/emotional beat ('quoting the spirit not the letter') that DEMANDS the stickman's reaction, and ours dropped to pure text. Per CLAUDE.md §6, 'Every segment must have the stickman in at least one beat, and the segment's tone must be readable from his face alone.' Round 5 fails this requirement - no stickman appears in any sampled frame. The reference has him in 3 of 6 frames, each with a distinct emotional read (confused at t=12, uncomfortable/skeptical at t=38). The gap is not style fidelity or layout discipline - it's the complete absence of the emotional anchor that makes Paint Explainer videos work.",
+  "round_5_cap_notice": "Round 5 is the LAST round per CLAUDE.md §8. If ref_wins, ship the best of rounds 1-5 and flag for human review.",
+  "recommendation": "Ship the best round from 1-5 (evaluate which had strongest character presence or fewest gaps) and flag segment 1 for human review. The stickman library from CLAUDE.md §6 was not implemented in any round. Before attempting segment 2 or beyond, the builder MUST create the canonical stickman pose sheet, implement the Stickman class in work/lib/stickman.py, and integrate character reactions into the card schedule."
+}

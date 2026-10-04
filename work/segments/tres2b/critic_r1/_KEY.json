@@ -1,0 +1,58 @@
+{
+ "seg": "tres2b",
+ "our_duration_s": 64.72,
+ "ref_window": [
+  267,
+  321
+ ],
+ "key": {
+  "p00": {
+   "A": "ours",
+   "B": "ref"
+  },
+  "p01": {
+   "A": "ref",
+   "B": "ours"
+  },
+  "p02": {
+   "A": "ours",
+   "B": "ref"
+  },
+  "p03": {
+   "A": "ref",
+   "B": "ours"
+  },
+  "p04": {
+   "A": "ours",
+   "B": "ref"
+  },
+  "p05": {
+   "A": "ref",
+   "B": "ours"
+  },
+  "p06": {
+   "A": "ours",
+   "B": "ref"
+  },
+  "p07": {
+   "A": "ref",
+   "B": "ours"
+  },
+  "p08": {
+   "A": "ours",
+   "B": "ref"
+  },
+  "p09": {
+   "A": "ref",
+   "B": "ours"
+  },
+  "p10": {
+   "A": "ref",
+   "B": "ours"
+  },
+  "p11": {
+   "A": "ours",
+   "B": "ref"
+  }
+ }
+}

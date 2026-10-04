@@ -1,0 +1,38 @@
+{
+  "segment": "hd80606",
+  "round": 2,
+  "winner": "ref_wins",
+  "criteria": {
+    "style_fidelity": {"ours": 3, "ref": 4, "notes": "Ours has the painterly stipple, banded planet, spiky corona, hand-drawn lines. Ref has the same plus a softer, more refined stipple signature that reads as more painterly. Both nail the genre."},
+    "layout": {"ours": 2, "ref": 4, "notes": "Ours crams 4-5 elements per card (caption, stickman, stamps, planet, orbit line, secondary suns). Ref goes MINIMAL on most beats — 2-3 elements. Ref's 'less is more' reads as confident. Ours reads as crowded."},
+    "type": {"ours": 3, "ref": 4, "notes": "Ours' ALL CAPS captions are good, white header band is good. Ref's integrated hand-lettered labels ('So Close') are stronger than our separate corner stamps. Ref's stamps read at a glance; ours' stamps are faint and hard to read."},
+    "palette": {"ours": 3, "ref": 4, "notes": "Ours' yellow/orange/red palette is correct but the same composition repeats across 3-4 timestamps. Ref varies the palette moment to moment (orange-only on sun-only beats, red-blue planet on orbit beats). Ref's palette discipline is tighter."},
+    "audio_alignment": {"ours": 3, "ref": 4, "notes": "Both align narration beats to visual cards. Ours' alignment is derived from forced-alignment (per CLAUDE.md §5). Ref's alignment is hand-crafted. Both land on the beats."},
+    "character": {"ours": 2, "ref": 4, "notes": "Ours' stickman is 25-30% frame on most beats, always hands-up pose, no facial expression except t36. Ref's stickman is 50-70% frame on emotional beats with REAL expressions (scream/awed mouth oval, raised eyebrow arcs, slight head tilt). Ref's stickman carries the segment emotionally; ours is a corner stamp."}
+  },
+  "biggest_gap": "Stickman scale + lack of varied facial expression + cluttered single-card compositions. Specifically: (1) ours' stickman is 25-30% of frame on most beats; ref's is 50-70% and central; (2) ours' stickman is in the same hands-up pose with no expression on every beat except one (t36); ref's stickman has screaming mouths, awed expressions, and pose changes per beat; (3) ours crams caption + stickman + stamps + planet + secondary suns onto every card; ref lets some beats be 'diagram-only' (no caption, no stickman) and other beats be 'character-only' (stickman screaming, no planet). Ref's discipline of 'one idea per card' reads as confident. Ours reads as anxious to show everything at once.",
+  "sub_gaps": [
+    "Integrated hand-lettered labels (ref's 'So Close' yellow text on the planet) are stronger than ours' separate stamps in corners. Ref puts the label ON the subject; ours puts stamps IN THE MARGINS.",
+    "Ref varies composition across timestamps (orbit-only beat, planet-only beat, stickman-only beat, sun-only beat). Ours repeats the same 'two suns + banded planet + small stickman' composition across 3-4 timestamps.",
+    "Ref's stamps read at a glance (heavy weight, strong color). Ours' '200X STARLIGHT' and 'VERY CLOSE ORBIT' stamps are faint, low-contrast, and easy to miss.",
+    "Ref's stickman has subtle head tilts and pose variations. Ours' stickman is rigidly upright with arms in hands-up position on every beat."
+  ],
+  "per_frame_notes": [
+    {"pair": 1, "ours_t": 2, "ref_t": 101, "verdict": "ref_wins", "notes": "Ref's stickman dominates frame at 60-70% with screaming mouth, awed expression, head tilt. Ours' stickman is ~30% on left with hands-up pose and no expression. Ref's painterly red/blue planet reads instantly; ours' banded yellow/orange planet is correct but less striking."},
+    {"pair": 2, "ours_t": 8, "ref_t": 107, "verdict": "ref_wins", "notes": "Ref: massive stickman (~70%) with screaming/awed expression on left, NO planet. Ours: smaller stickman (~25%) with hands-up, plus painterly sun, plus banded planet, plus 'VERY CLOSE ORBIT' stamp, plus '4 X JUPITER' label, plus 'A GAS GIANT...' caption. Six elements vs two. Ref's bold 'no planet' choice is stronger."},
+    {"pair": 3, "ours_t": 14, "ref_t": 113, "verdict": "ref_wins", "notes": "Ours: SO CLOSE card with two suns, banded planet with integrated 'SO CLOSE' label, stickman, '+500C' stamp, '800 X STARLIGHT' stamp, caption. Six elements. Ref: big star + small planet + wobbly blue orbit ellipse. Three elements. Ref's 'diagram-only' choice is confident. Ours' integrated SO CLOSE label is the closest ours gets to ref's discipline, but it's competing with everything else."},
+    {"pair": 4, "ours_t": 20, "ref_t": 119, "verdict": "ref_wins", "notes": "Ref's orbit geometry: tiny red planet, big star, wobbly blue orbit ellipse, no text, no stickman. Reads as confident diagram-only beat. Ours: stickman (~25%), faint '200X STARLIGHT' stamp, 'FASTER. HARDER. AT CLOSEST PASS.' caption, planet, star. Five elements. Ref's three reads instantly."},
+    {"pair": 5, "ours_t": 28, "ref_t": 127, "verdict": "ref_wins", "notes": "Ours' BEST frame: integrated 'WINDS AT KM/S. SUPERSONIC SHOCK WAVES.' upper left, small stickman left, painterly corona+banded planet center-right. Composition resembles ref's structure. Ref: same 'diagram-only' minimalism — star, planet, orbit line, no text, no stickman. Ours has more elements but stickman still too small (~25%)."},
+    {"pair": 6, "ours_t": 36, "ref_t": 135, "verdict": "ref_wins_close", "notes": "Closest contest. Ours: calendar '40' stamp (integrated diagram, good), three-sun knot (tells the story, painterly), stickman ~50% frame with sad expression (first real expression in ours), caption 'EVERY 40 DAYS. COOKED. FROZEN. COOKED.' Ref: 'So Close' integrated label on fire-ringed planet (best integrated label of any frame), big star. Ref's two-element composition reads instantly. Ours has 5 elements but the stickman scale and calendar stamp show the right direction."}
+  ],
+  "round_3_directives": [
+    "SCALE THE STICKMAN: render at 50-60% of frame height (current 25-30%). Anchor center-frame on emotional beats, not corner.",
+    "VARY FACIAL EXPRESSIONS PER BEAT: each beat gets a unique (mouth shape, eye shape) pair. Use scream/awed/worried/sad/frown from stickman library. Match the emotion of the audio at that beat.",
+    "USE INTEGRATED HAND-LETTERED LABELS: put text ON the subject (planet, sun, orbit), not in corner stamps. Reference 'So Close' style: yellow text with black outline, hand-lettered, integrated into the diagram.",
+    "EMBRACE 'ONE IDEA PER CARD': some beats should be diagram-only (no caption, no stickman). Other beats should be character-only (stickman reacting, no planet). Don't cram 5 elements per card.",
+    "VARY COMPOSITION ACROSS TIMESTAMPS: don't repeat the same 'two suns + banded planet + small stickman' across consecutive cards. Rotate: orbit-only, planet-only, sun-only, stickman-only, integrated-diagram.",
+    "STRENGTHEN STAMP READABILITY: corner stamps should be heavy weight, strong color, single-word where possible. Faint stamps are invisible.",
+    "ADD POSE VARIATIONS: not just hands-up. Mix in: pointing, shrugging, cowering, shielding-eyes. The stickman should look like he's actively reacting, not posing for a class photo.",
+    "HAND-LETTER THE KEY LABEL PER BEAT: every important beat gets a 'So Close'-style integrated label. 'EVERY 40 DAYS', '+500C', 'WILD ORBIT' — all hand-lettered ON the diagram, not in a caption band."
+  ]
+}

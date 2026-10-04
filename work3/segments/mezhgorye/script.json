@@ -1,0 +1,254 @@
+{
+ "title": "Mezhgorye - The Secret City Under The Mountain",
+ "wrote_to": "segments/mezhgorye/script.json",
+ "target": {
+  "wpm": 165,
+  "max_sentence_words": 10,
+  "note": "short declaratives, one idea per beat. Little to no pause between sentences."
+ },
+ "narration": "Beneath this mountain lies a secret city.\nNo outsider has ever reached the tunnels.\nThis is Mezhgorye, in Russia's Far East.\nIt sits above Magadan, in frozen hills.\nThe winters here are brutal, and long.\nStalin ordered it built in the 1930s.\nThe design came from Soviet engineers.\nGulag prisoners did most of the digging.\nNorth Korean workers were brought in too.\nThey cut the rock with hand drills.\nMany of the workers never left the mountain.\nThe dead were buried inside the rock.\nThe tunnels run for a hundred kilometres.\nSome accounts say a hundred and twenty.\nWide chambers branch off on both sides.\nPower, water, and housing were all underground.\nAbove ground, they raised a stone fortress.\nThick walls, narrow slits, no doors out.\nThe only way in was by rail.\nA narrow gauge line ran deep inward.\nNo road ever reached the front gate.\nThen the country decided to forget it.\nThe site was formally closed, on paper.\nRumours spread of a nuclear bunker down there.\nOthers say a refuge for the leadership.\nNo document has ever confirmed any of it.\nThe stone fortress still stands above it.\nSnow buries that gate for months.\nThe tunnels are still down there, unchanged.\nAnd no outsider has ever gone in.",
+ "word_count": 211,
+ "est_wpm": 165,
+ "beats": [
+  {
+   "n": 1,
+   "id": "b01",
+   "beat": "HOOK",
+   "line": "Beneath this mountain lies a secret city.",
+   "visual": "black mountain filling the frame, snow on the rock, one sealed archway at its base; character small at the bottom edge, awed, looking up",
+   "register": "paint"
+  },
+  {
+   "n": 2,
+   "id": "b02",
+   "beat": "HOOK",
+   "line": "No outsider has ever reached the tunnels.",
+   "visual": "close on the archway, a solid steel door, no handle on this side; character flat-mouthed, hand on the rock",
+   "register": "paint"
+  },
+  {
+   "n": 3,
+   "id": "b03",
+   "beat": "TITLE",
+   "line": "This is Mezhgorye, in Russia's Far East.",
+   "visual": "hand-lettered 'MEZHGORYE' stamped across the sky over the ridgeline",
+   "register": "paint"
+  },
+  {
+   "n": 4,
+   "id": "b04",
+   "beat": "ESTABLISH",
+   "line": "It sits above Magadan, in frozen hills.",
+   "visual": "wide frozen valley, low hills, a thin river; label 'MAGADAN REGION'",
+   "register": "paint"
+  },
+  {
+   "n": 5,
+   "id": "b05",
+   "beat": "ESTABLISH",
+   "line": "The winters here are brutal, and long.",
+   "visual": "the same valley under deep snow, wind lines across it, character small and hunched, shivering",
+   "register": "paint"
+  },
+  {
+   "n": 6,
+   "id": "b06",
+   "beat": "FACT",
+   "line": "Stalin ordered it built in the 1930s.",
+   "visual": "flat grey blueprint sheet on a table, a mountain drawn in section, label '1930s'",
+   "register": "paint"
+  },
+  {
+   "n": 7,
+   "id": "b07",
+   "beat": "FACT",
+   "line": "The design came from Soviet engineers.",
+   "visual": "the blueprint filling the frame, tunnels sketched in thin pencil, a small stamped signature block",
+   "register": "paint"
+  },
+  {
+   "n": 8,
+   "id": "b08",
+   "beat": "ESCALATE",
+   "line": "Gulag prisoners did most of the digging.",
+   "visual": "line of prisoner figures in caps, hunched, carrying a drill, filling the width of the frame",
+   "register": "paint"
+  },
+  {
+   "n": 9,
+   "id": "b09",
+   "beat": "ESCALATE",
+   "line": "North Korean workers were brought in too.",
+   "visual": "a second line of figures, different coats, standing behind the first; character watching from the side, uneasy",
+   "register": "paint"
+  },
+  {
+   "n": 10,
+   "id": "b10",
+   "beat": "IMAGE",
+   "line": "They cut the rock with hand drills.",
+   "visual": "close on hands and a hand drill against a rock face, dust falling",
+   "register": "paint"
+  },
+  {
+   "n": 11,
+   "id": "b11",
+   "beat": "ESCALATE",
+   "line": "Many of the workers never left the mountain.",
+   "visual": "empty snowdrift where figures stood, a single coat on a stake, no footprints leading away",
+   "register": "paint"
+  },
+  {
+   "n": 12,
+   "id": "b12",
+   "beat": "FACT",
+   "line": "The dead were buried inside the rock.",
+   "visual": "a plain box in the rock, lids shut, no names on them; character standing small beside it",
+   "register": "paint"
+  },
+  {
+   "n": 13,
+   "id": "b13",
+   "beat": "REVEAL",
+   "line": "The tunnels run for a hundred kilometres.",
+   "visual": "mountain in cutaway, tunnel network bored deep into the rock, filling the frame",
+   "register": "paint"
+  },
+  {
+   "n": 14,
+   "id": "b14",
+   "beat": "REVEAL",
+   "line": "Some accounts say a hundred and twenty.",
+   "visual": "same cutaway, a hand-drawn ruler line along the tunnel labelled '120 km', the number huge",
+   "register": "paint"
+  },
+  {
+   "n": 15,
+   "id": "b15",
+   "beat": "REVEAL",
+   "line": "Wide chambers branch off on both sides.",
+   "visual": "wide chambers branching left and right off the main bore, each with a single door",
+   "register": "paint"
+  },
+  {
+   "n": 16,
+   "id": "b16",
+   "beat": "COMPARISON",
+   "line": "Power, water, and housing were all underground.",
+   "visual": "three small icons side by side under the rock: a coil, a tank, a bunk bed; character pointing at them",
+   "register": "paint"
+  },
+  {
+   "n": 17,
+   "id": "b17",
+   "beat": "REVEAL",
+   "line": "Above ground, they raised a stone fortress.",
+   "visual": "the stone fortress above ground on its ridge, thick walls, tiny slit windows, filling the frame",
+   "register": "paint"
+  },
+  {
+   "n": 18,
+   "id": "b18",
+   "beat": "IMAGE",
+   "line": "Thick walls, narrow slits, no doors out.",
+   "visual": "close on a slit window, arrows of cold wind passing through it; the outer wall has no opening",
+   "register": "paint"
+  },
+  {
+   "n": 19,
+   "id": "b19",
+   "beat": "PIVOT",
+   "line": "The only way in was by rail.",
+   "visual": "narrow gauge rail line running from the bottom of the frame into a tunnel mouth; character riding on it, small",
+   "register": "paint"
+  },
+  {
+   "n": 20,
+   "id": "b20",
+   "beat": "FACT",
+   "line": "A narrow gauge line ran deep inward.",
+   "visual": "the same rail line from the side, rails narrowing into the dark, no other line anywhere",
+   "register": "paint"
+  },
+  {
+   "n": 21,
+   "id": "b21",
+   "beat": "COMPARISON",
+   "line": "No road ever reached the front gate.",
+   "visual": "a road drawn on the surface above, ending abruptly at a cliff edge; label 'NO ROAD'",
+   "register": "paint"
+  },
+  {
+   "n": 22,
+   "id": "b22",
+   "beat": "PIVOT",
+   "line": "Then the country decided to forget it.",
+   "visual": "the drawn road and label fading out to blank paper, character shrugging at the empty page",
+   "register": "paint"
+  },
+  {
+   "n": 23,
+   "id": "b23",
+   "beat": "FACT",
+   "line": "The site was formally closed, on paper.",
+   "visual": "an official stamp slammed onto the page, the word 'CLOSED' under it, red ink",
+   "register": "paint"
+  },
+  {
+   "n": 24,
+   "id": "b24",
+   "beat": "ESCALATE",
+   "line": "Rumours spread of a nuclear bunker down there.",
+   "visual": "rumour scrawled on the wall in the tunnel, a rough mushroom cloud, half crossed out",
+   "register": "paint"
+  },
+  {
+   "n": 25,
+   "id": "b25",
+   "beat": "ESCALATE",
+   "line": "Others say a refuge for the leadership.",
+   "visual": "a row of drawn empty chairs underground around a long table, no one in them; character awed",
+   "register": "paint"
+  },
+  {
+   "n": 26,
+   "id": "b26",
+   "beat": "PIVOT",
+   "line": "No document has ever confirmed any of it.",
+   "visual": "character shrugging, both palms up, flat-mouthed; speech bubble 'nothing on paper'",
+   "register": "paint"
+  },
+  {
+   "n": 27,
+   "id": "b27",
+   "beat": "IMAGE",
+   "line": "The stone fortress still stands above it.",
+   "visual": "the stone fortress on the ridge, seen from far below, small against the rock; label 'STILL STANDING'",
+   "register": "paint"
+  },
+  {
+   "n": 28,
+   "id": "b28",
+   "beat": "IMAGE",
+   "line": "Snow buries that gate for months.",
+   "visual": "the same ridge in deep winter, drifts over the gate, only the top wall showing",
+   "register": "paint"
+  },
+  {
+   "n": 29,
+   "id": "b29",
+   "beat": "FINALE",
+   "line": "The tunnels are still down there, unchanged.",
+   "visual": "cutaway again, the long dark tunnel, unchanged, a lamp far down it; character small at the mouth",
+   "register": "paint"
+  },
+  {
+   "n": 30,
+   "id": "b30",
+   "beat": "FINALE",
+   "line": "And no outsider has ever gone in.",
+   "visual": "the steel door from the opening, filling the frame, shut; character facing it from the snow, still",
+   "register": "paint"
+  }
+ ]
+}

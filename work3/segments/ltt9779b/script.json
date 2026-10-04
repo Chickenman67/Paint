@@ -1,0 +1,121 @@
+{
+ "title": "LTT 9779 b - The Planet That Answers With Light",
+ "wrote_to": "C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/ltt9779b/script.json",
+ "narration": "Some planets swallow the light that reaches them.\nThis one hands it back.\nLTT 9779 b is a super-Earth with a permanent gleam.\nIts star is quiet. Dim. Easy to overlook.\nThe planet is not easy to overlook.\nIt sits close in, and it never gets the chance to cool down.\nHigh above the surface, the sky is made of metal.\nClouds of metal, miles up, doing nothing useful.\nThe dayside is irradiated. Continuously. Without pause.\nYet the surface never cooks.\nAlmost none of that light is absorbed.\nNearly all of it is reflected straight back into space.\nFrom a distance, the planet glows like a coin in the dark.\nNot a coal. A mirror.\nAstronomers measured the brightness and did not believe it.\nA number that high usually means a mistake.\nThey checked. It is one of the most reflective worlds known.\nThe night side stays dark. The day side burns.\nThat is the unsettling part.\nThe hottest worlds should look like ovens.\nThis one looks like it is smiling.\nIt orbits a star so mild it barely deserves the name.\nAnd still the planet comes back brilliant.\nNo surface you could stand on. No sky you could breathe.\nYou would not survive a single breath up there.\nNothing down there generates its own shine.\nIt is the brightest warning light in a quiet system.\nThe gleam is borrowed. And it never stops.",
+ "word_count": 234,
+ "est_wpm": 160,
+ "beats": [
+  {
+   "n": 1,
+   "id": "hook_inverted",
+   "beat": "HOOK",
+   "line": "Some planets swallow the light that reaches them.\nThis one hands it back.",
+   "visual": "A nearly black planet fills the right two thirds of a navy starfield with one hard glint on its limb, the cream stickman at lower left standing flat-line deadpan and holding out a dull pebble.",
+   "register": "void"
+  },
+  {
+   "n": 2,
+   "id": "name_card",
+   "beat": "NAME",
+   "line": "LTT 9779 b is a super-Earth with a permanent gleam.\nIts star is quiet. Dim. Easy to overlook.",
+   "visual": "no character - pure data beat: cream paper card, hand-lettered LTT 9779 b across the title strip, a small dim sun low right with a wide empty orbit ellipse drawn around it.",
+   "register": "cream"
+  },
+  {
+   "n": 3,
+   "id": "planet_is_loud",
+   "beat": "ESCALATE",
+   "line": "The planet is not easy to overlook.\nIt sits close in, and it never gets the chance to cool down.",
+   "visual": "no character - pure data beat: the gleaming planet sliding a tight wobbling elliptical path around a small dull orange star on deep navy, faint motion trail behind it.",
+   "register": "void"
+  },
+  {
+   "n": 4,
+   "id": "metal_sky",
+   "beat": "REVEAL",
+   "line": "High above the surface, the sky is made of metal.\nClouds of metal, miles up, doing nothing useful.",
+   "visual": "Cutaway cross-section of the planet on cream paper with a high-altitude metallic cloud deck drawn as stacked silver bands, the dark stickman at lower left awed with a wide oval mouth, head tipped back and both hands up.",
+   "register": "cream"
+  },
+  {
+   "n": 5,
+   "id": "irradiated_dayside",
+   "beat": "ESCALATE",
+   "line": "The dayside is irradiated. Continuously. Without pause.\nYet the surface never cooks.",
+   "visual": "no character - pure data beat: the dayside hemisphere glowing white-hot with a hard terminator line down its middle and steep star rays striking it on navy.",
+   "register": "void"
+  },
+  {
+   "n": 6,
+   "id": "nothing_absorbed",
+   "beat": "MECHANISM",
+   "line": "Almost none of that light is absorbed.\nNearly all of it is reflected straight back into space.",
+   "visual": "no character - pure data beat: a two-arrow diagram on cream paper, one fat arrow bouncing back out of a grey disc and one hair-thin arrow sinking in.",
+   "register": "cream"
+  },
+  {
+   "n": 7,
+   "id": "coin_in_the_dark",
+   "beat": "PUNCHLINE",
+   "line": "From a distance, the planet glows like a coin in the dark.\nNot a coal. A mirror.",
+   "visual": "A small silver planet centered on a wide dark starfield throwing a bright glare straight toward the camera, the cream stickman at lower right awed with a wide oval mouth and one arm raised toward the glare.",
+   "register": "void"
+  },
+  {
+   "n": 8,
+   "id": "the_bad_number",
+   "beat": "BEAT",
+   "line": "Astronomers measured the brightness and did not believe it.\nA number that high usually means a mistake.",
+   "visual": "no character - pure data beat: a hand-lettered readout panel on cream paper with one number underlined and circled twice in red pen, margin arrows and scribbles crowding it.",
+   "register": "cream"
+  },
+  {
+   "n": 9,
+   "id": "checked_twice",
+   "beat": "BEAT",
+   "line": "They checked. It is one of the most reflective worlds known.\nThe night side stays dark. The day side burns.",
+   "visual": "no character - pure data beat: two plotted curves on navy starfield stock landing on the same peak, the second trace drawn over the first in brighter chalk.",
+   "register": "void"
+  },
+  {
+   "n": 10,
+   "id": "should_be_an_oven",
+   "beat": "BEAT",
+   "line": "That is the unsettling part.\nThe hottest worlds should look like ovens.",
+   "visual": "A calm cream card with a small illustrated oven door glowing orange at left, the dark stickman beside it deadpan with a flat-line mouth and both palms up in a shrug.",
+   "register": "cream"
+  },
+  {
+   "n": 11,
+   "id": "smile_at_mild_star",
+   "beat": "REVEAL",
+   "line": "This one looks like it is smiling.\nIt orbits a star so mild it barely deserves the name.",
+   "visual": "no character - pure data beat: a rendered planet on navy whose only bright feature is a thin luminous crescent along its top edge curving like a grin, with a tiny pale star far off to the side.",
+   "register": "void"
+  },
+  {
+   "n": 12,
+   "id": "brilliant_and_bare",
+   "beat": "BEAT",
+   "line": "And still the planet comes back brilliant.\nNo surface you could stand on. No sky you could breathe.",
+   "visual": "no character - pure data beat: a cream card with a diameter comparison strip, the blazing super-Earth drawn beside a small familiar Earth for scale.",
+   "register": "cream"
+  },
+  {
+   "n": 13,
+   "id": "no_survival",
+   "beat": "DREAD",
+   "line": "You would not survive a single breath up there.\nNothing down there generates its own shine.",
+   "visual": "The blazing planet fills the left of frame with heat shimmer lines rising off its limb, the cream stickman at right scared with a downturned arc mouth, recoiling with both hands up.",
+   "register": "void"
+  },
+  {
+   "n": 14,
+   "id": "borrowed_light",
+   "beat": "CLOSER",
+   "line": "It is the brightest warning light in a quiet system.\nThe gleam is borrowed. And it never stops.",
+   "visual": "Cream card with the planet small and gleaming at center-left and a long arrow arriving from off-frame right to feed it, the dark stickman at lower right uncomfortable with a zigzag mouth, crouched with his arms wrapped around his knees.",
+   "register": "cream"
+  }
+ ]
+}

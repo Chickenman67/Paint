@@ -1,0 +1,140 @@
+{
+ "segment": "gliese436b",
+ "wav_path": "round_1_audio.wav",
+ "duration_s": 68.78,
+ "sample_rate": 24000,
+ "word_count": 237,
+ "speech_s": 63.38,
+ "gap_s": 0.6,
+ "wpm": 206.7,
+ "wpm_in_band": true,
+ "params": {
+  "exaggeration": 0.5,
+  "cfg_weight": 0.5,
+  "temperature": 0.8
+ },
+ "boundary_basis": "exact -- per-beat renders concatenated, not predicted",
+ "beats": [
+  {
+   "n": 1,
+   "id": "hook_burning_ice",
+   "beat": "HOOK",
+   "register": "void",
+   "line": "Here is a planet made of ice.\nAnd it is on fire, and it does not melt.\nThis is Gliese 436 b.",
+   "start": 0.0,
+   "end": 5.68,
+   "dur": 5.68,
+   "words": 22,
+   "wav": "_beats/001.wav"
+  },
+  {
+   "n": 2,
+   "id": "world_size",
+   "beat": "THE WORLD",
+   "register": "void",
+   "line": "It is about the size of Neptune.\nA giant world, made almost entirely of water.",
+   "start": 6.28,
+   "end": 10.05,
+   "dur": 3.77,
+   "words": 15,
+   "wav": "_beats/002.wav"
+  },
+  {
+   "n": 3,
+   "id": "hook_no_sense",
+   "beat": "THE PARADOX",
+   "register": "cream",
+   "line": "Now here is the part that makes no sense.\nIce should melt. That is what ice does.",
+   "start": 10.65,
+   "end": 14.74,
+   "dur": 4.09,
+   "words": 17,
+   "wav": "_beats/003.wav"
+  },
+  {
+   "n": 4,
+   "id": "pressure_and_heat",
+   "beat": "THE CRUSH",
+   "register": "void",
+   "line": "But this ice is under crushing pressure from its own gravity.\nAnd its star keeps cooking it from close range.\nAll of that pressure and heat at once.",
+   "start": 15.34,
+   "end": 22.66,
+   "dur": 7.32,
+   "words": 28,
+   "wav": "_beats/004.wav"
+  },
+  {
+   "n": 5,
+   "id": "no_choice",
+   "beat": "THE TRAP",
+   "register": "cream",
+   "line": "The water never gets to choose.\nIt cannot be solid. It cannot be liquid.\nIt is something in between.",
+   "start": 23.26,
+   "end": 28.19,
+   "dur": 4.93,
+   "words": 19,
+   "wav": "_beats/005.wav"
+  },
+  {
+   "n": 6,
+   "id": "supercritical",
+   "beat": "THE STATE",
+   "register": "void",
+   "line": "Scientists call it supercritical.\nA supercritical fluid. No boundary between ice and steam.",
+   "start": 28.79,
+   "end": 33.97,
+   "dur": 5.18,
+   "words": 13,
+   "wav": "_beats/006.wav"
+  },
+  {
+   "n": 7,
+   "id": "burning_torch",
+   "beat": "THE SURFACE",
+   "register": "cream",
+   "line": "Imagine ice that flows like water and burns like a torch.\nThat is the surface of this world.\nYou could not stand on it. You could not swim in it.\nIt would eat through your ship.",
+   "start": 34.57,
+   "end": 43.1,
+   "dur": 8.53,
+   "words": 36,
+   "wav": "_beats/007.wav"
+  },
+  {
+   "n": 8,
+   "id": "losing_mass",
+   "beat": "THE ESCAPE",
+   "register": "void",
+   "line": "And this world is not alone out here.\nIt has lost a lot of mass over its life.\nHydrogen and helium are escaping from it, right now.",
+   "start": 43.7,
+   "end": 50.19,
+   "dur": 6.49,
+   "words": 27,
+   "wav": "_beats/008.wav"
+  },
+  {
+   "n": 9,
+   "id": "glowing_tail",
+   "beat": "THE TAIL",
+   "register": "void",
+   "line": "They stream away in a long comet-like tail.\nAnd that tail glows. It glows in the dark.",
+   "start": 50.79,
+   "end": 55.85,
+   "dur": 5.06,
+   "words": 17,
+   "wav": "_beats/009.wav"
+  },
+  {
+   "n": 10,
+   "id": "closing_impossible",
+   "beat": "FATE",
+   "register": "void",
+   "line": "So picture a burning-ice planet dragging a glowing tail of gas behind it.\nA hot, dense, impossible world, screaming around its star.\nIt is one of the strangest things in the galaxy.\nAnd it is just sitting there. Burning its ice. Quietly. Forever.",
+   "start": 56.45,
+   "end": 68.78,
+   "dur": 12.33,
+   "words": 43,
+   "wav": "_beats/010.wav"
+  }
+ ],
+ "render_s": 409.8
+}

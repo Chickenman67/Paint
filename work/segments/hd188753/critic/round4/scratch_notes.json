@@ -1,0 +1,25 @@
+{
+  "per_frame_notes": [
+    {
+      "pair": 1,
+      "ours_t": 2,
+      "ref_t": 2,
+      "verdict": "timestamp_mismatch",
+      "notes": "TIMESTAMP PAIRING MISMATCH: ref at t=2 shows a 4-grid lineup of all 12 planet portraits (the START of the reference video previewing the 12 planets), with HD 188753 Ab visible top-left. Ours at t=2 shows the HD 188753 Ab intro card (centered stickman ~80% frame, three painterly suns across top, dark landscape horizon, HD 188753 AB header, 'IMAGINE A SKY WITH THREE SUNS' caption). The other 5 pairs (t=8, t=14, t=20, t=28, t=36) are correctly matched. Treating this as N/A for the verdict and weighting the 5 valid pairs."
+    },
+    {
+      "pair": 2,
+      "ours_t": 8,
+      "ref_t": 8,
+      "verdict": "ref_wins",
+      "notes": "Ours: three painterly suns in a row across top (yellow, orange, red with red corona), centered stickman (~50% frame) with open oval AWED mouth, dark jagged horizon across bottom, 'DRIFTING' yellow-stamp label across stickman's torso, two orange arrows pointing inward on either side. Five elements. Ref: single large stickman (~70% frame) with hand-to-mouth THINKER pose, worried/skeptical expression (one raised brow, small downturned mouth), standing on a barren reddish moon/canyon surface, single yellow-orange sun behind him on the left, deep gradient sky. Three elements. Ref wins decisively on stickman scale (70% vs 50%), pose specificity (hand-to-mouth thinker is emotionally distinct from 'open mouth awe'), and grounded environment (he is ON a surface, not standing on a generic horizon). Ours adds the three-sun diagram and 'DRIFTING' label, but the stickman is the emotional anchor and ours' stickman carries less emotion than ref's. Round 3 had the same gap (ref won 4-3 criteria); round 4 closed the grounding (✓) but stickman expression is STILL less specific (awed oval vs worried-thinker)."
+    },
+    {
+      "pair": 3,
+      "ours_t": 14,
+      "ref_t": 14,
+      "verdict": "ref_wins",
+      "notes": "Planet portrait beat. Ours: brown/pink mottled planet CENTERED (~40% frame) with 'HD 188753 AB' yellow-with-black-outline text stamped across its body, red arrow from header down to planet, stickman on right (~50% frame) with FLAT/DEADPAN expression, scribbly horizon line, light-purple starry sky. FIVE elements. Ref: huge banded purple/yellow gas-giant CENTERED (~70% frame), red arrow from header down to planet, no stickman, black starry space. THREE elements. Ref wins decisively on 'one idea per card' (diagram-only beat), planet scale (70% vs 40% — ours' planet is small and washed-out brown/pink, missing the iconic 'banded gas giant' look), and palette discipline (black space vs light-purple wash). Ours' stickman on the right is clutter competing with the planet for focus, and the planet-body text 'HD 188753 AB' duplicates the header (label-on-subject technique applied wrong — the arrow already does that job). Round 3 had identical gap; round 4 did NOT close 'one idea per card'."
+    }
+  ]
+}

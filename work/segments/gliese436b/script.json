@@ -1,0 +1,89 @@
+{
+ "title": "Gliese 436 b, the burning ice",
+ "wrote_to": "C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/gliese436b/script.json",
+ "narration": "Here is a planet made of ice.\nAnd it is on fire, and it does not melt.\nThis is Gliese 436 b.\nIt is about the size of Neptune.\nA giant world, made almost entirely of water.\nNow here is the part that makes no sense.\nIce should melt. That is what ice does.\nBut this ice is under crushing pressure from its own gravity.\nAnd its star keeps cooking it from close range.\nAll of that pressure and heat at once.\nThe water never gets to choose.\nIt cannot be solid. It cannot be liquid.\nIt is something in between.\nScientists call it supercritical.\nA supercritical fluid. No boundary between ice and steam.\nImagine ice that flows like water and burns like a torch.\nThat is the surface of this world.\nYou could not stand on it. You could not swim in it.\nIt would eat through your ship.\nAnd this world is not alone out here.\nIt has lost a lot of mass over its life.\nHydrogen and helium are escaping from it, right now.\nThey stream away in a long comet-like tail.\nAnd that tail glows. It glows in the dark.\nSo picture a burning-ice planet dragging a glowing tail of gas behind it.\nA hot, dense, impossible world, screaming around its star.\nIt is one of the strangest things in the galaxy.\nAnd it is just sitting there. Burning its ice. Quietly. Forever.",
+ "word_count": 237,
+ "est_wpm": 160,
+ "beats": [
+  {
+   "n": 1,
+   "id": "hook_burning_ice",
+   "beat": "HOOK",
+   "line": "Here is a planet made of ice.\nAnd it is on fire, and it does not melt.\nThis is Gliese 436 b.",
+   "visual": "Void card: a dark starfield with the cream stickman standing beside a pale blue-white ice planet, flat-line mouth, standing deadpan, one hand out toward the glowing world.",
+   "register": "void"
+  },
+  {
+   "n": 2,
+   "id": "world_size",
+   "beat": "THE WORLD",
+   "line": "It is about the size of Neptune.\nA giant world, made almost entirely of water.",
+   "visual": "Void card: the cream stickman stands at left with a wide-oval awed mouth, hands up, facing a large Neptune-blue planet rendered with flat fills.",
+   "register": "void"
+  },
+  {
+   "n": 3,
+   "id": "hook_no_sense",
+   "beat": "THE PARADOX",
+   "line": "Now here is the part that makes no sense.\nIce should melt. That is what ice does.",
+   "visual": "Cream card: the dark stickman shrugs with a zigzag mouth beside a simple hand-drawn cube of ice with a drip.",
+   "register": "cream"
+  },
+  {
+   "n": 4,
+   "id": "pressure_and_heat",
+   "beat": "THE CRUSH",
+   "line": "But this ice is under crushing pressure from its own gravity.\nAnd its star keeps cooking it from close range.\nAll of that pressure and heat at once.",
+   "visual": "Void card: the cream stickman shields his eyes, downturned scared mouth, as arrows crush inward on the ice planet from a nearby glaring star.",
+   "register": "void"
+  },
+  {
+   "n": 5,
+   "id": "no_choice",
+   "beat": "THE TRAP",
+   "line": "The water never gets to choose.\nIt cannot be solid. It cannot be liquid.\nIt is something in between.",
+   "visual": "Cream card: the dark stickman points at a wobbling state diagram where the solid and liquid lines cross and vanish into a blur.",
+   "register": "cream"
+  },
+  {
+   "n": 6,
+   "id": "supercritical",
+   "beat": "THE STATE",
+   "line": "Scientists call it supercritical.\nA supercritical fluid. No boundary between ice and steam.",
+   "visual": "Void card: the ice planet drawn half-melted and half-frozen with no seam, the cream stickman flat-line mouth, standing and pointing at the smeared surface.",
+   "register": "void"
+  },
+  {
+   "n": 7,
+   "id": "burning_torch",
+   "beat": "THE SURFACE",
+   "line": "Imagine ice that flows like water and burns like a torch.\nThat is the surface of this world.\nYou could not stand on it. You could not swim in it.\nIt would eat through your ship.",
+   "visual": "Cream card: the dark stickman head-tipped-back, wide-oval awed mouth, on a rippling half-solid half-liquid surface with a small half-sunk ship.",
+   "register": "cream"
+  },
+  {
+   "n": 8,
+   "id": "losing_mass",
+   "beat": "THE ESCAPE",
+   "line": "And this world is not alone out here.\nIt has lost a lot of mass over its life.\nHydrogen and helium are escaping from it, right now.",
+   "visual": "Void card: the cream stickman shrugging, zigzag mouth, as thin gas streams peel off the planet's limb into the dark.",
+   "register": "void"
+  },
+  {
+   "n": 9,
+   "id": "glowing_tail",
+   "beat": "THE TAIL",
+   "line": "They stream away in a long comet-like tail.\nAnd that tail glows. It glows in the dark.",
+   "visual": "Void card: a long glowing hydrogen-helium tail streams behind the tiny planet, the cream stickman flat-line mouth, standing and watching it drift.",
+   "register": "void"
+  },
+  {
+   "n": 10,
+   "id": "closing_impossible",
+   "beat": "FATE",
+   "line": "So picture a burning-ice planet dragging a glowing tail of gas behind it.\nA hot, dense, impossible world, screaming around its star.\nIt is one of the strangest things in the galaxy.\nAnd it is just sitting there. Burning its ice. Quietly. Forever.",
+   "visual": "Void card: wide shot of the burning-ice planet whipping around its star with its glowing tail, the cream stickman standing small in the corner, flat-line deadpan mouth, hands-down, watching it burn.",
+   "register": "void"
+  }
+ ]
+}

@@ -1,0 +1,109 @@
+{
+  "segment": "HD 188753 Ab",
+  "round": 4,
+  "target_duration_s": 64.63,
+  "winner": "ref_wins",
+  "margin": "narrower_than_round_3",
+  "criteria": {
+    "style_fidelity": {
+      "ours": 3,
+      "ref": 4,
+      "notes": "Round 3 closed the painterly stipple on the banded gas giant (t14 ours looks like a rocky planet; ref t14 is the iconic banded purple/yellow gas giant). Round 4 added painterly stipple to the suns (yellow/orange/red with corona) — much better than round 3's flat radial gradient. Three-sun compositions match ref. The stickman got a worry/thinker upgrade (less deadpan). What's still missing: the stickman's HEAD is too small relative to ref's, the planet portrait at t14 still reads as a generic rock instead of a banded gas giant, and ref's suns have stronger painterly texture than ours' (more visible stipple, more brush-jitter on the corona)."
+    },
+    "layout": {
+      "ours": 2,
+      "ref": 4,
+      "notes": "This is the third round in a row where 'one idea per card' has NOT been closed. ref t08 = one stickman with one sun on a moon (one idea: 'three suns make him think'). ours t08 = three suns + stickman + arrows + horizon + DRIFTING label (five elements). ref t20 = one huge sun centered, nothing else. ours t20 = three suns + stickman + horizon + LOCKED IN A TIGHT ORBIT caption (four elements, ALL the things). ref t28 = three suns at varying sizes, no stickman, no caption, no diagram lines. ours t28 = three suns + connecting orbit lines + arrows pointing to a small planet (clutter, and the header is OBSCURED by the top sun). ref t36 = stickman alone on cratered moon, no caption, no diagram. ours t36 = stickman + 3 suns + planet + connecting lines (a triangle diagram, not a character beat). Every ref frame trusts ONE element to carry the beat. Every ours frame tries to do all the elements at once. The ref discipline is the layout win."
+    },
+    "type": {
+      "ours": 3,
+      "ref": 4,
+      "notes": "The HD 188753 AB header is consistent and wobbly (good). The 'DRIFTING' stamp across the stickman's torso in ours t08 is too small and the wrong style (ref uses big integrated hand-lettered labels, ours uses a small corner stamp). ours t20 'LOCKED IN A TIGHT ORBIT' is a good caption but it's in the lower third where ref would put it integrated on the diagram or stamped on the planet. No integrated hand-lettered labels anywhere — ref overlays 'TRIPLE STAR', 'SUN 1', 'ORBIT' directly on the diagram, ours puts captions in a separate band. Type weight is okay but location/style is wrong."
+    },
+    "palette": {
+      "ours": 3,
+      "ref": 4,
+      "notes": "Round 3 closed palette splintering: ours locked to yellow/orange/red suns + light-purple sky + black + cream. Round 4 holds that discipline. The light-purple sky is a deliberate choice to suggest 'alien' (not pure black), which is fine. ref's palette is similar: red/orange/yellow stars + black space + dark red moon surface + cream paper. The main difference: ref's stars have stronger painterly stipple and the moon surface is a warm dark-red (not the lavender we use). Palette is much closer this round, but the moon surface and the banded gas giant are still missing — ref has a clear 'red moon' anchor we don't have, and our t14 planet is a generic rock instead of the banded gas giant that defines this planet's identity."
+    },
+    "audio_alignment": {
+      "ours": 3,
+      "ref": 3,
+      "notes": "ours t14 and ours t20 are visually identical (3-sun cluster, stickman pointing) — suggests a static hold across 6 seconds of audio. ref t14 and ref t20 are DIFFERENT (huge banded gas giant vs single huge sun) — ref rotates cards at clause breaks, ours does not. ref's t08 and ours t08 are both at '3 suns visible' so they're in phase. ours t36 lands on the character beat as ref does. The audio is matched; the visuals are too static for the audio's clause rhythm."
+    },
+    "character": {
+      "ours": 3,
+      "ref": 3,
+      "notes": "Round 3 closed stickman scale (ours 50-70% on t08/t36 matches ref 70%). Round 4 added the thinker-pose-ish hand gesture on t08 and a small frown on t20 — emotional variety is improved. Round 3 gap 'expression variety' is PARTIALLY closed: ours has flat/deadpan on t02, deadpan-awed on t08, small-frown-worried on t20, flat on t36. Ref has awed-oval on t02, hand-to-mouth thinker on t08, no stickman on t14, no stickman on t20, no stickman on t28, flat-worried on t36. Round 4's character is better than round 3, but the stickman is STILL in too many beats (ours t20/t28/t36 all have him, ref only t08/t36). The 'one idea per card' issue means ours' stickman is competing with the diagram for focus instead of being the punctuation mark ref uses him as."
+    }
+  },
+  "per_frame_notes": [
+    {
+      "pair": 1,
+      "ours_t": 2,
+      "ref_t": 2,
+      "verdict": "timestamp_mismatch",
+      "notes": "TIMESTAMP PAIRING MISMATCH: ref at t=2 shows a 4-grid lineup of all 12 planet portraits (the START of the reference video previewing the 12 planets), with HD 188753 Ab visible top-left. Ours at t=2 shows the HD 188753 Ab intro card (centered stickman ~80% frame, three painterly suns across top, dark landscape horizon, HD 188753 AB header, 'IMAGINE A SKY WITH THREE SUNS' caption). The other 5 pairs (t=8, t=14, t=20, t=28, t=36) are correctly matched. Treating this as N/A for the verdict and weighting the 5 valid pairs."
+    },
+    {
+      "pair": 2,
+      "ours_t": 8,
+      "ref_t": 8,
+      "verdict": "ref_wins",
+      "notes": "Ours: three painterly suns in a row across top (yellow, orange, red with red corona), centered stickman (~50% frame) with open oval AWED mouth, dark jagged horizon across bottom, 'DRIFTING' yellow-stamp label across stickman's torso, two orange arrows pointing inward on either side. Five elements. Ref: single large stickman (~70% frame) with hand-to-mouth THINKER pose, worried/skeptical expression (one raised brow, small downturned mouth), standing on a barren reddish moon/canyon surface, single yellow-orange sun behind him on the left, deep gradient sky. Three elements. Ref wins decisively on stickman scale (70% vs 50%), pose specificity (hand-to-mouth thinker is emotionally distinct from 'open mouth awe'), and grounded environment (he is ON a surface, not standing on a generic horizon). Ours adds the three-sun diagram and 'DRIFTING' label, but the stickman is the emotional anchor and ours' stickman carries less emotion than ref's. Round 3 had the same gap (ref won 4-3 criteria); round 4 closed the grounding (✓) but stickman expression is STILL less specific (awed oval vs worried-thinker)."
+    },
+    {
+      "pair": 3,
+      "ours_t": 14,
+      "ref_t": 14,
+      "verdict": "ref_wins",
+      "notes": "Planet portrait beat. Ours: brown/pink mottled planet CENTERED (~40% frame) with 'HD 188753 AB' yellow-with-black-outline text stamped across its body, red arrow from header down to planet, stickman on right (~50% frame) with FLAT/DEADPAN expression, scribbly horizon line, light-purple starry sky. FIVE elements. Ref: huge banded purple/yellow gas-giant CENTERED (~70% frame), red arrow from header down to planet, no stickman, black starry space. THREE elements. Ref wins decisively on 'one idea per card' (diagram-only beat), planet scale (70% vs 40% — ours' planet is small and washed-out brown/pink, missing the iconic 'banded gas giant' look), and palette discipline (black space vs light-purple wash). Ours' stickman on the right is clutter competing with the planet for focus, and the planet-body text 'HD 188753 AB' duplicates the header (label-on-subject technique applied wrong — the arrow already does that job). Round 3 had identical gap; round 4 did NOT close 'one idea per card'."
+    },
+    {
+      "pair": 4,
+      "ours_t": 20,
+      "ref_t": 20,
+      "verdict": "ref_wins",
+      "notes": "Ours: stickman left with small frown/worried expression, three painterly suns in tight cluster on right (yellow, orange, red with red corona), scribbly horizon line, 'LOCKED IN A TIGHT ORBIT' caption bottom-center. FIVE elements. Ref: single huge painterly sun (red/orange/yellow gradient, ~50% frame), centered, on dark starry space. NO stickman, NO caption, NO horizon. ONE element. Ref wins decisively on 'one idea per card' — ref trusts a single visual (one huge sun) to carry the beat. Ours tries to do everything: stickman + 3 suns + horizon + caption. The viewer has to parse four things at once. Round 3 had the same gap (ref won the layout criterion); round 4 made it WORSE by adding a stickman to a beat ref kept diagram-only. The 'diagram-only' beats are the ref's reset moments; ours is treating every beat as 'must show all the elements'."
+    },
+    {
+      "pair": 5,
+      "ours_t": 28,
+      "ref_t": 28,
+      "verdict": "ref_wins",
+      "notes": "Ours: three painterly suns (yellow upper-left, orange center, red upper-right) with red/orange/yellow arrows pointing inward to a small planet in the center, HD 188753 AB header at top (PARTIALLY OBSCURED by the top sun), no stickman, no caption. FIVE elements. Ref: three painterly suns at varying sizes (big red/orange/yellow center, smaller red upper-right, tiny pink/red right) on dark starry space, HD 188753 AB header at top (CLEAR, not obscured), no stickman, no caption. THREE elements. Ref wins narrowly on composition clarity (varying sizes are cleaner than equal-size cluster), the header is readable in ref (not in ours — the top sun overlaps the '188753' text), and the lack of arrows makes ref's composition calmer. Ours' orbit-line diagram is a creative choice but the arrows make the frame busy, and the obscured header is a layout bug."
+    },
+    {
+      "pair": 6,
+      "ours_t": 36,
+      "ref_t": 36,
+      "verdict": "ref_wins",
+      "notes": "Ours: stickman left with worried expression on a small dark jagged horizon, three painterly suns on right (yellow, orange, red), small planet in center of the triangle, orange/yellow lines connecting all of them — a triangle/constellation pattern. FIVE elements. Ref: stickman (~50% frame) on barren reddish moon surface with dark craters, flat/worried/sad expression, dark starry space above, no caption, no diagram, no second element. ONE element + the moon. Ref wins decisively on 'one idea per card' — this is a character beat (the 'oh no' beat at the end of the segment), and ref treats it as a PURE character moment. Ours treats it as 'must show the stickman AND the three suns AND the orbit AND the planet'. Round 3 had the same gap; round 4 made it WORSE by adding a three-sun triangle diagram to a beat ref kept character-only. Ours' stickman expression is also weaker than ref's (worried-frown vs flat-sad-with-downturned-eyes)."
+    }
+  ],
+  "round_3_progress_check": {
+    "round_3_gap_composition_variety": "PARTIALLY CLOSED — round 4 still has 4+ elements on most cards; 'one idea per card' still the biggest miss. ref rotates between character-only / diagram-only / diagram+character; ours tries to do all three at once.",
+    "round_3_gap_stickman_scale": "PARTIALLY CLOSED — ours_t08 is 50% (ref is 70%), ours_t36 is 50% (ref is 50%, OK), but ours_t20 has a small stickman (~30% frame) competing with the 3-sun cluster.",
+    "round_3_gap_expression_range": "PARTIALLY CLOSED — round 4 added worried-frown on t20 and worried on t36, but ours' expressions are still less specific than ref's (worried vs hand-to-mouth thinker; worried vs downturned-eyes sad).",
+    "round_3_gap_one_idea_per_card": "NOT CLOSED — every ours frame has 4-5 elements; ref frames have 1-3. This is the SINGLE BIGGEST gap and it is now in its 3rd round without closing.",
+    "round_3_gap_integrated_hand_lettered_labels": "NOT VISIBLE — ours_t08 has a 'DRIFTING' stamp (small corner type, not integrated hand-lettered), ours_t14 has 'HD 188753 AB' stamped on the planet (duplicates the header), no integrated hand-lettered labels anywhere on the diagram.",
+    "round_3_gap_ground_stickman_on_surface": "CLOSED — ours_t08 and ours_t36 have stickmen on horizons/surfaces. ✓"
+  },
+  "biggest_gap": "One idea per card (3rd round in a row). Every ours frame in this round tries to be a complete diagram (3 suns + stickman + horizon + caption + connecting lines), while ref trusts one element per beat. ref t20 is a single huge sun — that's the whole beat. ref t28 is three suns at varying sizes, nothing else. ref t36 is a stickman on a moon, nothing else. ours t20 has 5 elements, ours t28 has 5, ours t36 has 5. The reference rotates between character-only, diagram-only, and combined beats; we hold all elements on screen at all times. This is the root cause of the cluttered look. Secondary gap: integrated hand-lettered labels — ref overlays 'TRIPLE STAR', 'SUN 1', 'ORBIT' on the diagram as the visual event itself; ours puts captions in a separate band or as small corner stamps. The integrated labels are part of why ref's cards feel like single ideas: the label IS the diagram, not a tag on it.",
+  "sub_gaps": [
+    "Planet identity: ours_t14 shows a small brown/pink rock; ref_t14 shows the iconic banded purple/yellow gas giant that defines HD 188753 Ab. Without the gas giant, the segment doesn't say 'gas giant in a triple-star system' — it says 'a rock near three suns'. The planet IS the subject.",
+    "Banded gas giant missing from this round entirely. The single defining visual of HD 188753 Ab (a Jupiter-sized gas giant in a tight triple-star orbit) is not on screen in any of the 5 valid pairs.",
+    "Header-band readability: ours_t28 has the top sun overlapping the '188753' text in the header. The header should always be a clean top band; ours breaks that rule on t28.",
+    "Stickman in too many beats: ours has the stickman in t08/t14/t20/t36 (4 of 5 valid pairs). ref has the stickman in t08/t36 only (2 of 5). ref uses the stickman as a punctuation mark; ours uses him as a constant element, which makes every beat feel the same."
+  ],
+  "round_5_directives": [
+    "ONE IDEA PER CARD. THIS IS THE LAST ROUND. ref t20 = one sun. ref t28 = three suns (varying sizes). ref t36 = one stickman on a moon. Pick ONE element and trust it. If the beat is 'the orbit is tight', show ONE big sun centered — not stickman + 3 suns + horizon + caption. If the beat is 'three suns', show 3 suns at varying sizes — no stickman, no horizon, no caption. The reference rotates between character-only / diagram-only / combined beats; ours has to learn that rotation.",
+    "REPLACE ours_t14's rock with a banded gas giant. ref t14's planet is the visual identity of HD 188753 Ab: a Jupiter-sized banded purple/yellow gas giant at 70% frame, painterly stipple, horizontal striations, red arrow from header. Ours has a small brown rock. The planet IS the segment. Use the banded gas giant from seg 1's intro/t02, scaled up.",
+    "INTEGRATE THE CAPTIONS. Stop putting captions in a separate bottom band. ref overlays 'TRIPLE STAR' on the 3-sun composition, 'SUN 1' on a sun, 'ORBIT' on the orbit line. Ours should: stamp 'SUN A' / 'SUN B' / 'SUN C' on the three suns; overlay 'LOCKED IN A TIGHT ORBIT' on the planet; put 'DRIFTING' on the stickman or on a sun as a hand-lettered label, not as a small corner stamp. Integrated labels = single-idea cards.",
+    "DROP THE STICKMAN FROM DIAGRAM-ONLY BEATS. ref t14/t20/t28 are diagram-only (no stickman). Ours has the stickman in 4 of 5 valid pairs. Use the stickman as a punctuation mark: only on the intro (t02), the '3 suns visible' character beat (t08), and the final 'oh no' beat (t36). For t14/t20/t28, NO STICKMAN — let the diagram carry the beat alone.",
+    "MOVE THE STICKMAN UP TO 60-70% FRAME. ref t08 has a 70% stickman. ours t08 is 50%. Scale up the stickman proportions (head +5%, body +10%) on the character beats. Round 3 closed this for t02/t36 but not for t08/t20.",
+    "ANCHOR THE STICKMAN ON A SURFACE WITH GROUNDING DETAIL. Round 4 closed 'ground on surface' but the surfaces are abstract (jagged horizon, scribbly line). ref t08 has a barren reddish moon with craters; ref t36 has the same moon with deeper craters. Use the same moon surface on all character beats: warm dark-red, 3-4 black crater ovals, painterly stipple, anchored horizon line. The 'he is on a moon' detail makes the character beat believable."
+  ],
+  "verdict_confidence": "moderate",
+  "round_5_cap_warning": "Round 5 is the LAST allowed round per CLAUDE.md §8 (5-round cap). If round 5 does not win, the segment must be shipped as the best-of-5 and flagged for human review. The 'one idea per card' gap is now in its 3rd round. If round 5 does not close it, the segment likely cannot close it without a fundamentally different visual design.",
+  "notes_for_orchestrator": "Round 4 made real progress on stickman grounding and palette discipline — those gaps are closed. The remaining gap is no longer 'stickman' or 'palette' but 'one idea per card', and it's the same gap from round 2 and round 3. The reference is ruthless about trusting a single element per beat: ref t20 is one sun, ref t36 is one stickman. Ours holds 4-5 elements on every card. The 6 round_5_directives are aimed at breaking that habit. Specifically: (1) one idea per card is the dominant theme across 4 of the 6 directives; (2) the banded gas giant at t14 is the single most important visual fix; (3) integrated labels let the caption be the diagram. If round 5 hits the rotation between character-only / diagram-only / combined beats, this should be a win. If not, ship and flag for human review."
+}

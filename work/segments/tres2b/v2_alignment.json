@@ -1,0 +1,1292 @@
+{
+ "segment": "tres2b",
+ "wav_path": "v2_audio.wav",
+ "duration_s": 73.5,
+ "beats_json": "v2_beats.json",
+ "word_count": 209,
+ "clamped_words": 2,
+ "beat_boundaries_exact": true,
+ "words": [
+  {
+   "w": "Look",
+   "t": 0.0,
+   "end": 0.24,
+   "beat": 1
+  },
+  {
+   "w": "at",
+   "t": 0.24,
+   "end": 0.38,
+   "beat": 1
+  },
+  {
+   "w": "this",
+   "t": 0.38,
+   "end": 0.6,
+   "beat": 1
+  },
+  {
+   "w": "planet",
+   "t": 0.6,
+   "end": 0.9,
+   "beat": 1
+  },
+  {
+   "w": "You",
+   "t": 1.46,
+   "end": 1.52,
+   "beat": 1
+  },
+  {
+   "w": "will",
+   "t": 1.52,
+   "end": 1.66,
+   "beat": 1
+  },
+  {
+   "w": "never",
+   "t": 1.66,
+   "end": 1.9,
+   "beat": 1
+  },
+  {
+   "w": "see",
+   "t": 1.9,
+   "end": 2.28,
+   "beat": 1
+  },
+  {
+   "w": "it",
+   "t": 2.28,
+   "end": 2.5,
+   "beat": 1
+  },
+  {
+   "w": "Not",
+   "t": 2.86,
+   "end": 2.94,
+   "beat": 1
+  },
+  {
+   "w": "once",
+   "t": 2.94,
+   "end": 3.26,
+   "beat": 1
+  },
+  {
+   "w": "not",
+   "t": 3.62,
+   "end": 3.82,
+   "beat": 1
+  },
+  {
+   "w": "ever",
+   "t": 3.82,
+   "end": 4.2,
+   "beat": 1
+  },
+  {
+   "w": "It",
+   "t": 4.74,
+   "end": 4.78,
+   "beat": 2
+  },
+  {
+   "w": "bounces",
+   "t": 4.78,
+   "end": 5.02,
+   "beat": 2
+  },
+  {
+   "w": "back",
+   "t": 5.02,
+   "end": 5.58,
+   "beat": 2
+  },
+  {
+   "w": "less",
+   "t": 5.58,
+   "end": 5.88,
+   "beat": 2
+  },
+  {
+   "w": "than",
+   "t": 5.88,
+   "end": 6.18,
+   "beat": 2
+  },
+  {
+   "w": "one",
+   "t": 6.18,
+   "end": 6.4,
+   "beat": 2
+  },
+  {
+   "w": "percent",
+   "t": 6.82,
+   "end": 7.08,
+   "beat": 2
+  },
+  {
+   "w": "of",
+   "t": 6.82,
+   "end": 7.08,
+   "beat": 2
+  },
+  {
+   "w": "the",
+   "t": 7.08,
+   "end": 7.22,
+   "beat": 2
+  },
+  {
+   "w": "light",
+   "t": 7.22,
+   "end": 7.6,
+   "beat": 2
+  },
+  {
+   "w": "its",
+   "t": 7.6,
+   "end": 7.88,
+   "beat": 2
+  },
+  {
+   "w": "star",
+   "t": 7.6,
+   "end": 7.88,
+   "beat": 2
+  },
+  {
+   "w": "sends",
+   "t": 7.88,
+   "end": 8.22,
+   "beat": 2
+  },
+  {
+   "w": "down",
+   "t": 8.22,
+   "end": 8.62,
+   "beat": 2
+  },
+  {
+   "w": "That",
+   "t": 9.08,
+   "end": 9.16,
+   "beat": 3
+  },
+  {
+   "w": "is",
+   "t": 9.16,
+   "end": 9.32,
+   "beat": 3
+  },
+  {
+   "w": "darker",
+   "t": 9.32,
+   "end": 9.52,
+   "beat": 3
+  },
+  {
+   "w": "than",
+   "t": 9.52,
+   "end": 9.94,
+   "beat": 3
+  },
+  {
+   "w": "coal",
+   "t": 9.94,
+   "end": 10.14,
+   "beat": 3
+  },
+  {
+   "w": "Darker",
+   "t": 10.48,
+   "end": 10.62,
+   "beat": 3
+  },
+  {
+   "w": "than",
+   "t": 10.62,
+   "end": 10.92,
+   "beat": 3
+  },
+  {
+   "w": "asphalt",
+   "t": 10.92,
+   "end": 11.14,
+   "beat": 3
+  },
+  {
+   "w": "The",
+   "t": 12.0,
+   "end": 12.1,
+   "beat": 3
+  },
+  {
+   "w": "instruments",
+   "t": 12.1,
+   "end": 12.4,
+   "beat": 3
+  },
+  {
+   "w": "checked",
+   "t": 12.4,
+   "end": 12.86,
+   "beat": 3
+  },
+  {
+   "w": "it",
+   "t": 12.86,
+   "end": 13.08,
+   "beat": 3
+  },
+  {
+   "w": "twice",
+   "t": 13.08,
+   "end": 13.34,
+   "beat": 3
+  },
+  {
+   "w": "Both",
+   "t": 14.02,
+   "end": 14.02,
+   "beat": 3
+  },
+  {
+   "w": "times",
+   "t": 14.02,
+   "end": 14.4,
+   "beat": 3
+  },
+  {
+   "w": "they",
+   "t": 14.4,
+   "end": 14.7,
+   "beat": 3
+  },
+  {
+   "w": "agreed",
+   "t": 14.7,
+   "end": 14.98,
+   "beat": 3
+  },
+  {
+   "w": "Here",
+   "t": 15.74,
+   "end": 15.74,
+   "beat": 4
+  },
+  {
+   "w": "is",
+   "t": 15.74,
+   "end": 15.98,
+   "beat": 4
+  },
+  {
+   "w": "the",
+   "t": 15.98,
+   "end": 16.18,
+   "beat": 4
+  },
+  {
+   "w": "part",
+   "t": 16.18,
+   "end": 16.52,
+   "beat": 4
+  },
+  {
+   "w": "that",
+   "t": 16.52,
+   "end": 16.86,
+   "beat": 4
+  },
+  {
+   "w": "makes",
+   "t": 16.86,
+   "end": 17.1,
+   "beat": 4
+  },
+  {
+   "w": "this",
+   "t": 17.1,
+   "end": 17.4,
+   "beat": 4
+  },
+  {
+   "w": "darkness",
+   "t": 17.4,
+   "end": 17.8,
+   "beat": 4
+  },
+  {
+   "w": "obscene",
+   "t": 17.8,
+   "end": 18.24,
+   "beat": 4
+  },
+  {
+   "w": "The",
+   "t": 19.0,
+   "end": 19.0,
+   "beat": 4
+  },
+  {
+   "w": "planet",
+   "t": 19.0,
+   "end": 19.32,
+   "beat": 4
+  },
+  {
+   "w": "is",
+   "t": 19.32,
+   "end": 19.72,
+   "beat": 4
+  },
+  {
+   "w": "tidally",
+   "t": 19.72,
+   "end": 20.24,
+   "beat": 4
+  },
+  {
+   "w": "locked",
+   "t": 20.24,
+   "end": 20.54,
+   "beat": 4
+  },
+  {
+   "w": "One",
+   "t": 21.18,
+   "end": 21.5,
+   "beat": 4
+  },
+  {
+   "w": "side",
+   "t": 21.18,
+   "end": 21.5,
+   "beat": 4
+  },
+  {
+   "w": "never",
+   "t": 21.5,
+   "end": 22.02,
+   "beat": 4
+  },
+  {
+   "w": "moves",
+   "t": 22.02,
+   "end": 22.46,
+   "beat": 4
+  },
+  {
+   "w": "One",
+   "t": 23.28,
+   "end": 23.52,
+   "beat": 5
+  },
+  {
+   "w": "half",
+   "t": 23.28,
+   "end": 23.52,
+   "beat": 5
+  },
+  {
+   "w": "faces",
+   "t": 23.52,
+   "end": 23.88,
+   "beat": 5
+  },
+  {
+   "w": "the",
+   "t": 23.88,
+   "end": 24.22,
+   "beat": 5
+  },
+  {
+   "w": "star",
+   "t": 24.22,
+   "end": 24.46,
+   "beat": 5
+  },
+  {
+   "w": "forever",
+   "t": 24.46,
+   "end": 24.76,
+   "beat": 5
+  },
+  {
+   "w": "The",
+   "t": 25.22,
+   "end": 25.26,
+   "beat": 5
+  },
+  {
+   "w": "other",
+   "t": 25.26,
+   "end": 25.48,
+   "beat": 5
+  },
+  {
+   "w": "half",
+   "t": 25.48,
+   "end": 25.74,
+   "beat": 5
+  },
+  {
+   "w": "never",
+   "t": 25.74,
+   "end": 25.96,
+   "beat": 5
+  },
+  {
+   "w": "sees",
+   "t": 25.96,
+   "end": 26.32,
+   "beat": 5
+  },
+  {
+   "w": "it",
+   "t": 26.32,
+   "end": 26.56,
+   "beat": 5
+  },
+  {
+   "w": "at",
+   "t": 26.56,
+   "end": 26.68,
+   "beat": 5
+  },
+  {
+   "w": "all",
+   "t": 26.68,
+   "end": 26.88,
+   "beat": 5
+  },
+  {
+   "w": "So",
+   "t": 27.64,
+   "end": 27.82,
+   "beat": 6
+  },
+  {
+   "w": "the",
+   "t": 27.64,
+   "end": 27.82,
+   "beat": 6
+  },
+  {
+   "w": "night",
+   "t": 27.64,
+   "end": 27.82,
+   "beat": 6
+  },
+  {
+   "w": "side",
+   "t": 27.82,
+   "end": 28.08,
+   "beat": 6
+  },
+  {
+   "w": "never",
+   "t": 28.08,
+   "end": 28.48,
+   "beat": 6
+  },
+  {
+   "w": "warms",
+   "t": 28.48,
+   "end": 29.0,
+   "beat": 6
+  },
+  {
+   "w": "The",
+   "t": 29.0,
+   "end": 29.22,
+   "beat": 6
+  },
+  {
+   "w": "day",
+   "t": 29.22,
+   "end": 29.4,
+   "beat": 6
+  },
+  {
+   "w": "side",
+   "t": 29.4,
+   "end": 29.7,
+   "beat": 6
+  },
+  {
+   "w": "never",
+   "t": 29.7,
+   "end": 30.02,
+   "beat": 6
+  },
+  {
+   "w": "cools",
+   "t": 30.839,
+   "end": 30.839,
+   "beat": 6
+  },
+  {
+   "w": "That",
+   "t": 30.96,
+   "end": 31.12,
+   "beat": 7
+  },
+  {
+   "w": "day",
+   "t": 31.12,
+   "end": 31.38,
+   "beat": 7
+  },
+  {
+   "w": "side",
+   "t": 31.38,
+   "end": 31.74,
+   "beat": 7
+  },
+  {
+   "w": "is",
+   "t": 31.74,
+   "end": 31.92,
+   "beat": 7
+  },
+  {
+   "w": "a",
+   "t": 31.92,
+   "end": 32.0,
+   "beat": 7
+  },
+  {
+   "w": "furnace",
+   "t": 32.0,
+   "end": 32.28,
+   "beat": 7
+  },
+  {
+   "w": "Thousands",
+   "t": 32.68,
+   "end": 32.96,
+   "beat": 7
+  },
+  {
+   "w": "of",
+   "t": 32.96,
+   "end": 33.28,
+   "beat": 7
+  },
+  {
+   "w": "degrees",
+   "t": 33.28,
+   "end": 33.52,
+   "beat": 7
+  },
+  {
+   "w": "of",
+   "t": 33.52,
+   "end": 33.74,
+   "beat": 7
+  },
+  {
+   "w": "gas",
+   "t": 33.74,
+   "end": 34.02,
+   "beat": 7
+  },
+  {
+   "w": "It",
+   "t": 34.58,
+   "end": 34.66,
+   "beat": 8
+  },
+  {
+   "w": "does",
+   "t": 34.66,
+   "end": 34.88,
+   "beat": 8
+  },
+  {
+   "w": "glow",
+   "t": 34.88,
+   "end": 35.24,
+   "beat": 8
+  },
+  {
+   "w": "faintly",
+   "t": 35.64,
+   "end": 35.86,
+   "beat": 8
+  },
+  {
+   "w": "A",
+   "t": 36.56,
+   "end": 36.72,
+   "beat": 8
+  },
+  {
+   "w": "dull",
+   "t": 36.72,
+   "end": 36.94,
+   "beat": 8
+  },
+  {
+   "w": "red",
+   "t": 36.94,
+   "end": 37.28,
+   "beat": 8
+  },
+  {
+   "w": "About",
+   "t": 37.7,
+   "end": 37.9,
+   "beat": 8
+  },
+  {
+   "w": "two",
+   "t": 37.9,
+   "end": 38.24,
+   "beat": 8
+  },
+  {
+   "w": "thousand",
+   "t": 38.24,
+   "end": 38.88,
+   "beat": 8
+  },
+  {
+   "w": "kelvin",
+   "t": 38.24,
+   "end": 38.88,
+   "beat": 8
+  },
+  {
+   "w": "Like",
+   "t": 39.42,
+   "end": 39.58,
+   "beat": 8
+  },
+  {
+   "w": "coals",
+   "t": 39.58,
+   "end": 40.1,
+   "beat": 8
+  },
+  {
+   "w": "left",
+   "t": 40.1,
+   "end": 40.3,
+   "beat": 8
+  },
+  {
+   "w": "in",
+   "t": 40.3,
+   "end": 40.54,
+   "beat": 8
+  },
+  {
+   "w": "a",
+   "t": 40.54,
+   "end": 40.64,
+   "beat": 8
+  },
+  {
+   "w": "hearth",
+   "t": 40.64,
+   "end": 41.26,
+   "beat": 8
+  },
+  {
+   "w": "Hot",
+   "t": 41.46,
+   "end": 41.64,
+   "beat": 9
+  },
+  {
+   "w": "enough",
+   "t": 41.64,
+   "end": 41.88,
+   "beat": 9
+  },
+  {
+   "w": "to",
+   "t": 41.88,
+   "end": 42.18,
+   "beat": 9
+  },
+  {
+   "w": "strip",
+   "t": 42.18,
+   "end": 42.42,
+   "beat": 9
+  },
+  {
+   "w": "the",
+   "t": 42.42,
+   "end": 42.62,
+   "beat": 9
+  },
+  {
+   "w": "skin",
+   "t": 42.62,
+   "end": 42.88,
+   "beat": 9
+  },
+  {
+   "w": "off",
+   "t": 42.88,
+   "end": 43.12,
+   "beat": 9
+  },
+  {
+   "w": "your",
+   "t": 43.12,
+   "end": 43.3,
+   "beat": 9
+  },
+  {
+   "w": "hand",
+   "t": 43.3,
+   "end": 43.62,
+   "beat": 9
+  },
+  {
+   "w": "Too",
+   "t": 44.06,
+   "end": 44.08,
+   "beat": 9
+  },
+  {
+   "w": "dark",
+   "t": 44.08,
+   "end": 44.36,
+   "beat": 9
+  },
+  {
+   "w": "to",
+   "t": 44.36,
+   "end": 44.58,
+   "beat": 9
+  },
+  {
+   "w": "reflect",
+   "t": 44.58,
+   "end": 44.88,
+   "beat": 9
+  },
+  {
+   "w": "the",
+   "t": 44.88,
+   "end": 45.16,
+   "beat": 9
+  },
+  {
+   "w": "light",
+   "t": 45.16,
+   "end": 45.36,
+   "beat": 9
+  },
+  {
+   "w": "that",
+   "t": 45.36,
+   "end": 45.56,
+   "beat": 9
+  },
+  {
+   "w": "made",
+   "t": 45.56,
+   "end": 45.72,
+   "beat": 9
+  },
+  {
+   "w": "it",
+   "t": 45.72,
+   "end": 45.88,
+   "beat": 9
+  },
+  {
+   "w": "hot",
+   "t": 45.88,
+   "end": 46.12,
+   "beat": 9
+  },
+  {
+   "w": "Now",
+   "t": 46.66,
+   "end": 46.8,
+   "beat": 10
+  },
+  {
+   "w": "watch",
+   "t": 46.8,
+   "end": 47.1,
+   "beat": 10
+  },
+  {
+   "w": "the",
+   "t": 47.1,
+   "end": 47.46,
+   "beat": 10
+  },
+  {
+   "w": "star",
+   "t": 47.46,
+   "end": 47.72,
+   "beat": 10
+  },
+  {
+   "w": "it",
+   "t": 47.96,
+   "end": 48.24,
+   "beat": 10
+  },
+  {
+   "w": "orbits",
+   "t": 47.96,
+   "end": 48.24,
+   "beat": 10
+  },
+  {
+   "w": "The",
+   "t": 48.8,
+   "end": 48.88,
+   "beat": 10
+  },
+  {
+   "w": "star",
+   "t": 48.88,
+   "end": 49.2,
+   "beat": 10
+  },
+  {
+   "w": "is",
+   "t": 49.2,
+   "end": 49.68,
+   "beat": 10
+  },
+  {
+   "w": "what",
+   "t": 49.68,
+   "end": 49.84,
+   "beat": 10
+  },
+  {
+   "w": "finishes",
+   "t": 49.84,
+   "end": 50.22,
+   "beat": 10
+  },
+  {
+   "w": "this",
+   "t": 50.22,
+   "end": 50.66,
+   "beat": 10
+  },
+  {
+   "w": "story",
+   "t": 50.66,
+   "end": 51.04,
+   "beat": 10
+  },
+  {
+   "w": "The",
+   "t": 51.64,
+   "end": 51.74,
+   "beat": 11
+  },
+  {
+   "w": "star",
+   "t": 51.74,
+   "end": 52.04,
+   "beat": 11
+  },
+  {
+   "w": "is",
+   "t": 52.04,
+   "end": 52.42,
+   "beat": 11
+  },
+  {
+   "w": "small",
+   "t": 52.42,
+   "end": 52.7,
+   "beat": 11
+  },
+  {
+   "w": "and",
+   "t": 52.7,
+   "end": 53.08,
+   "beat": 11
+  },
+  {
+   "w": "red",
+   "t": 53.08,
+   "end": 53.34,
+   "beat": 11
+  },
+  {
+   "w": "It",
+   "t": 53.72,
+   "end": 53.78,
+   "beat": 11
+  },
+  {
+   "w": "is",
+   "t": 53.78,
+   "end": 53.92,
+   "beat": 11
+  },
+  {
+   "w": "running",
+   "t": 53.92,
+   "end": 54.14,
+   "beat": 11
+  },
+  {
+   "w": "low",
+   "t": 54.14,
+   "end": 54.54,
+   "beat": 11
+  },
+  {
+   "w": "on",
+   "t": 54.54,
+   "end": 54.86,
+   "beat": 11
+  },
+  {
+   "w": "the",
+   "t": 54.86,
+   "end": 55.0,
+   "beat": 11
+  },
+  {
+   "w": "fuel",
+   "t": 55.0,
+   "end": 55.22,
+   "beat": 11
+  },
+  {
+   "w": "that",
+   "t": 55.22,
+   "end": 55.58,
+   "beat": 11
+  },
+  {
+   "w": "keeps",
+   "t": 55.58,
+   "end": 55.82,
+   "beat": 11
+  },
+  {
+   "w": "it",
+   "t": 55.82,
+   "end": 56.1,
+   "beat": 11
+  },
+  {
+   "w": "alive",
+   "t": 56.1,
+   "end": 56.4,
+   "beat": 11
+  },
+  {
+   "w": "So",
+   "t": 56.942,
+   "end": 57.1,
+   "beat": 12
+  },
+  {
+   "w": "it",
+   "t": 57.42,
+   "end": 57.56,
+   "beat": 12
+  },
+  {
+   "w": "is",
+   "t": 57.56,
+   "end": 57.72,
+   "beat": 12
+  },
+  {
+   "w": "swelling",
+   "t": 57.72,
+   "end": 57.98,
+   "beat": 12
+  },
+  {
+   "w": "It",
+   "t": 58.62,
+   "end": 58.62,
+   "beat": 12
+  },
+  {
+   "w": "is",
+   "t": 58.62,
+   "end": 58.82,
+   "beat": 12
+  },
+  {
+   "w": "creeping",
+   "t": 58.82,
+   "end": 59.28,
+   "beat": 12
+  },
+  {
+   "w": "closer",
+   "t": 59.28,
+   "end": 59.68,
+   "beat": 12
+  },
+  {
+   "w": "It",
+   "t": 60.6,
+   "end": 60.66,
+   "beat": 12
+  },
+  {
+   "w": "is",
+   "t": 60.66,
+   "end": 60.88,
+   "beat": 12
+  },
+  {
+   "w": "pulling",
+   "t": 60.88,
+   "end": 61.32,
+   "beat": 12
+  },
+  {
+   "w": "the",
+   "t": 61.32,
+   "end": 61.58,
+   "beat": 12
+  },
+  {
+   "w": "air",
+   "t": 61.58,
+   "end": 61.78,
+   "beat": 12
+  },
+  {
+   "w": "off",
+   "t": 61.78,
+   "end": 62.08,
+   "beat": 12
+  },
+  {
+   "w": "the",
+   "t": 62.08,
+   "end": 62.22,
+   "beat": 12
+  },
+  {
+   "w": "planet",
+   "t": 62.22,
+   "end": 62.58,
+   "beat": 12
+  },
+  {
+   "w": "The",
+   "t": 63.08,
+   "end": 63.12,
+   "beat": 13
+  },
+  {
+   "w": "whole",
+   "t": 63.12,
+   "end": 63.28,
+   "beat": 13
+  },
+  {
+   "w": "atmosphere",
+   "t": 63.28,
+   "end": 63.78,
+   "beat": 13
+  },
+  {
+   "w": "comes",
+   "t": 63.78,
+   "end": 64.32,
+   "beat": 13
+  },
+  {
+   "w": "off",
+   "t": 64.32,
+   "end": 64.6,
+   "beat": 13
+  },
+  {
+   "w": "in",
+   "t": 64.6,
+   "end": 64.8,
+   "beat": 13
+  },
+  {
+   "w": "sheets",
+   "t": 64.8,
+   "end": 65.1,
+   "beat": 13
+  },
+  {
+   "w": "trailing",
+   "t": 65.5,
+   "end": 65.66,
+   "beat": 13
+  },
+  {
+   "w": "away",
+   "t": 65.66,
+   "end": 66.12,
+   "beat": 13
+  },
+  {
+   "w": "as",
+   "t": 66.12,
+   "end": 66.44,
+   "beat": 13
+  },
+  {
+   "w": "a",
+   "t": 66.44,
+   "end": 66.54,
+   "beat": 13
+  },
+  {
+   "w": "long",
+   "t": 66.54,
+   "end": 66.84,
+   "beat": 13
+  },
+  {
+   "w": "glowing",
+   "t": 66.84,
+   "end": 67.32,
+   "beat": 13
+  },
+  {
+   "w": "tail",
+   "t": 67.32,
+   "end": 67.84,
+   "beat": 13
+  },
+  {
+   "w": "And",
+   "t": 68.36,
+   "end": 68.42,
+   "beat": 14
+  },
+  {
+   "w": "the",
+   "t": 68.42,
+   "end": 68.52,
+   "beat": 14
+  },
+  {
+   "w": "darkest",
+   "t": 68.52,
+   "end": 68.76,
+   "beat": 14
+  },
+  {
+   "w": "planet",
+   "t": 68.76,
+   "end": 69.24,
+   "beat": 14
+  },
+  {
+   "w": "anyone",
+   "t": 69.24,
+   "end": 69.72,
+   "beat": 14
+  },
+  {
+   "w": "has",
+   "t": 69.72,
+   "end": 70.06,
+   "beat": 14
+  },
+  {
+   "w": "ever",
+   "t": 70.06,
+   "end": 70.34,
+   "beat": 14
+  },
+  {
+   "w": "found",
+   "t": 70.34,
+   "end": 70.84,
+   "beat": 14
+  },
+  {
+   "w": "is",
+   "t": 70.84,
+   "end": 71.1,
+   "beat": 14
+  },
+  {
+   "w": "being",
+   "t": 71.1,
+   "end": 71.34,
+   "beat": 14
+  },
+  {
+   "w": "unmade",
+   "t": 71.34,
+   "end": 71.88,
+   "beat": 14
+  },
+  {
+   "w": "by",
+   "t": 71.88,
+   "end": 72.24,
+   "beat": 14
+  },
+  {
+   "w": "its",
+   "t": 72.24,
+   "end": 72.42,
+   "beat": 14
+  },
+  {
+   "w": "own",
+   "t": 72.42,
+   "end": 72.64,
+   "beat": 14
+  },
+  {
+   "w": "sun",
+   "t": 72.42,
+   "end": 72.64,
+   "beat": 14
+  }
+ ],
+ "notes": [
+  "  UNPLACED script[19]='percent' (prev whisper idx 18, next 20)",
+  "  UNPLACED script[23]='its' (prev whisper idx 22, next 23)",
+  "  UNPLACED script[53]='The' (prev whisper idx 52, next 55)",
+  "  UNPLACED script[58]='One' (prev whisper idx 58, next 60)",
+  "  UNPLACED script[62]='One' (prev whisper idx 62, next 64)",
+  "  UNPLACED script[76]='So' (prev whisper idx 76, next 78)",
+  "  UNPLACED script[77]='the' (prev whisper idx 76, next 78)",
+  "  UNPLACED script[86]='cools' (prev whisper idx 85, next 87)",
+  "  UNPLACED script[106]='two' (prev whisper idx 105, next 107)",
+  "  UNPLACED script[107]='thousand' (prev whisper idx 105, next 107)",
+  "  UNPLACED script[138]='it' (prev whisper idx 136, next 138)",
+  "  UNPLACED script[208]='sun' (prev whisper idx 206, next None)",
+  "  near-miss script[22]='light' -> whisper[22]='lighted'",
+  "  MERGED script[19]='percent' -> merged into following token whisper[20]='of'",
+  "  MERGED script[23]='its' -> merged into following token whisper[23]='star'",
+  "  SPAN script[53]='The' -> whisper[54]='engineeredThe' (sim 0.45)",
+  "  MERGED script[58]='One' -> merged into following token whisper[60]='side'",
+  "  MERGED script[62]='One' -> merged into following token whisper[64]='half'",
+  "  MERGED script[76]='So' -> merged into following token whisper[78]='night'",
+  "  MERGED script[77]='the' -> merged into following token whisper[78]='night'",
+  "  MERGED script[86]='cools' -> merged into following token whisper[87]='That'",
+  "  SPAN script[106]='two' -> whisper[106]='2000' (sim 0.45)",
+  "  MERGED script[107]='thousand' -> merged into following token whisper[107]='Kelvin,'",
+  "  MERGED script[138]='it' -> merged into following token whisper[138]='orbits.'",
+  "  UNRESOLVED script[208]='sun' (window whisper 207..207)"
+ ]
+}

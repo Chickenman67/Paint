@@ -1,0 +1,318 @@
+{
+ "title": "The Cheyenne Mountain Complex",
+ "wrote_to": "segments/cheyenne/script.json",
+ "target": {
+  "wpm": 165,
+  "max_sentence_words": 10,
+  "note": "short declaratives, one idea per beat. Little to no pause between sentences."
+ },
+ "narration": "Look at this mountain.\nIt is not a mountain at all.\nIt is a very large hiding place.\nThis is the Cheyenne Mountain Complex.\nWork began there in the early sixties.\nThe Cold War set the whole schedule.\nGranite sat under the entire site.\nCrews drilled out fifteen long tunnels.\nFifteen separate buildings went in there.\nEach building rests on steel springs.\nThe springs swallow the shock themselves.\nThen the mountain above does the rest.\nThe entrance has one very large door.\nIt weighs roughly seven hundred tons.\nIt was built to seal completely.\nThat door is the whole point of it.\nInside the mountain, the air stays cold.\nThe cold keeps the machines stable.\nRoughly two hundred people work down there.\nThe complex runs on its own power.\nDiesel generators sit far below ground.\nNo power line ever reaches the mountain.\nWater rises from springs in the rock.\nThe tanks hold thousands of gallons daily.\nNothing from outside reaches this place.\nThis was the space defence centre.\nSatellites passed directly over the roof.\nSensors in here watched for launches.\nThe warning clocks started in this room.\nOutside, the mountain wears a painted forest.\nThe trees are painted concrete slabs.\nThey hide the ventilation towers behind them.\nFrom the air, nothing stands out at all.\nNow for the part nobody confirms.\nPeople say it still stays staffed.\nPeople say the government still goes down.\nThey quote one number about survival.\nNinety percent, though nobody has confirmed it.",
+ "word_count": 247,
+ "est_wpm": 165,
+ "beats": [
+  {
+   "n": 1,
+   "id": "b01",
+   "beat": "HOOK",
+   "line": "Look at this mountain.",
+   "visual": "one grey granite mountain filling the whole frame, hand-drawn flat painterly fills, washed-out sky; no buildings, no trees",
+   "register": "paint"
+  },
+  {
+   "n": 2,
+   "id": "b02",
+   "beat": "PIVOT",
+   "line": "It is not a mountain at all.",
+   "visual": "same mountain, held still; a single faint scratch line appears across the rock face",
+   "register": "paint"
+  },
+  {
+   "n": 3,
+   "id": "b03",
+   "beat": "REVEAL",
+   "line": "It is a very large hiding place.",
+   "visual": "rock face cut open in a wedge; character close-up, deadpan; speech bubble 'not a mountain'",
+   "register": "paint"
+  },
+  {
+   "n": 4,
+   "id": "b04",
+   "beat": "TITLE",
+   "line": "This is the Cheyenne Mountain Complex.",
+   "visual": "title 'CHEYENNE MOUNTAIN COMPLEX' stamped across the rock; small label 'COLORADO SPRINGS' with a state outline",
+   "register": "paint"
+  },
+  {
+   "n": 5,
+   "id": "b05",
+   "beat": "ESTABLISH",
+   "line": "Work began there in the early sixties.",
+   "visual": "period construction site on the hillside; stamp 'EARLY 1960s'; flat grey palette, cold light",
+   "register": "paint"
+  },
+  {
+   "n": 6,
+   "id": "b06",
+   "beat": "FACT",
+   "line": "The Cold War set the whole schedule.",
+   "visual": "simple hand-drawn globe with two superpowers facing off; a thin red line under the mountain",
+   "register": "paint"
+  },
+  {
+   "n": 7,
+   "id": "b07",
+   "beat": "IMAGE",
+   "line": "Granite sat under the entire site.",
+   "visual": "close cross-section of mottled pink granite; label 'SOLID GRANITE'; a drill silhouette boring into it",
+   "register": "paint"
+  },
+  {
+   "n": 8,
+   "id": "b08",
+   "beat": "FACT",
+   "line": "Crews drilled out fifteen long tunnels.",
+   "visual": "cutaway mountain with fifteen tunnel lines bored through it; big number '15'; character tiny beside them",
+   "register": "paint"
+  },
+  {
+   "n": 9,
+   "id": "b09",
+   "beat": "FACT",
+   "line": "Fifteen separate buildings went in there.",
+   "visual": "fifteen blocky buildings stacked inside the cutaway; count ticking up",
+   "register": "paint"
+  },
+  {
+   "n": 10,
+   "id": "b10",
+   "beat": "FACT",
+   "line": "Each building rests on steel springs.",
+   "visual": "close on a building floor resting on a coiled steel spring",
+   "register": "paint"
+  },
+  {
+   "n": 11,
+   "id": "b11",
+   "beat": "FACT",
+   "line": "The springs swallow the shock themselves.",
+   "visual": "the spring squashing flat under a wide red shock arrow; label 'SWALLOWS THE SHOCK'",
+   "register": "paint"
+  },
+  {
+   "n": 12,
+   "id": "b12",
+   "beat": "PIVOT",
+   "line": "Then the mountain above does the rest.",
+   "visual": "character shrugging under a heavy overhanging rock ceiling; speech bubble 'then what stops the rest?'",
+   "register": "paint"
+  },
+  {
+   "n": 13,
+   "id": "b13",
+   "beat": "ESCALATE",
+   "line": "The entrance has one very large door.",
+   "visual": "steep mountain entrance, one small dark doorway; character tiny at the base, dwarfed",
+   "register": "paint"
+  },
+  {
+   "n": 14,
+   "id": "b14",
+   "beat": "FACT",
+   "line": "It weighs roughly seven hundred tons.",
+   "visual": "massive steel blast door in cross-section; big number '700 TONS'",
+   "register": "paint"
+  },
+  {
+   "n": 15,
+   "id": "b15",
+   "beat": "FACT",
+   "line": "It was built to seal completely.",
+   "visual": "the door swinging shut; seal lines closing around the frame; label 'SEALS COMPLETELY'",
+   "register": "paint"
+  },
+  {
+   "n": 16,
+   "id": "b16",
+   "beat": "REVEAL",
+   "line": "That door is the whole point of it.",
+   "visual": "close on the sealed door, small in a huge dark frame; character awed, looking up",
+   "register": "paint"
+  },
+  {
+   "n": 17,
+   "id": "b17",
+   "beat": "ESTABLISH",
+   "line": "Inside the mountain, the air stays cold.",
+   "visual": "cutaway of the interior: a narrow chamber, a thermometer, breath in the air; label 'COLD'",
+   "register": "paint"
+  },
+  {
+   "n": 18,
+   "id": "b18",
+   "beat": "FACT",
+   "line": "The cold keeps the machines stable.",
+   "visual": "bank of grey machines in the cold chamber, indicator lights steady",
+   "register": "paint"
+  },
+  {
+   "n": 19,
+   "id": "b19",
+   "beat": "FACT",
+   "line": "Roughly two hundred people work down there.",
+   "visual": "wide interior corridor with rows of coat hooks; small figures in coats; label 'ABOUT 200 STAFF'",
+   "register": "paint"
+  },
+  {
+   "n": 20,
+   "id": "b20",
+   "beat": "COMPARISON",
+   "line": "The complex runs on its own power.",
+   "visual": "split frame: surface city skyline at left, diesel generators underground at right; a severed cable between them",
+   "register": "paint"
+  },
+  {
+   "n": 21,
+   "id": "b21",
+   "beat": "FACT",
+   "line": "Diesel generators sit far below ground.",
+   "visual": "diesel generator set deep underground, hand-drawn, with fuel drums stacked beside it",
+   "register": "paint"
+  },
+  {
+   "n": 22,
+   "id": "b22",
+   "beat": "PIVOT",
+   "line": "No power line ever reaches the mountain.",
+   "visual": "power line on the surface pylon row stopping dead in mid-air; character pointing at the break; speech bubble 'no line in'",
+   "register": "paint"
+  },
+  {
+   "n": 23,
+   "id": "b23",
+   "beat": "FACT",
+   "line": "Water rises from springs in the rock.",
+   "visual": "water dripping from a granite crack into a pool underground",
+   "register": "paint"
+  },
+  {
+   "n": 24,
+   "id": "b24",
+   "beat": "FACT",
+   "line": "The tanks hold thousands of gallons daily.",
+   "visual": "rows of water tanks under low ceiling light; label 'THOUSANDS OF GALLONS'",
+   "register": "paint"
+  },
+  {
+   "n": 25,
+   "id": "b25",
+   "beat": "PIVOT",
+   "line": "Nothing from outside reaches this place.",
+   "visual": "sealed interior, character alone, small; speech bubble 'nothing gets in'",
+   "register": "paint"
+  },
+  {
+   "n": 26,
+   "id": "b26",
+   "beat": "ESTABLISH",
+   "line": "This was the space defence centre.",
+   "visual": "Cold War era command room, long desks, warm lamp glow; title card 'SPACE DEFENCE CENTRE'",
+   "register": "paint"
+  },
+  {
+   "n": 27,
+   "id": "b27",
+   "beat": "FACT",
+   "line": "Satellites passed directly over the roof.",
+   "visual": "satellites arcing overhead above the mountain, beams crossing it",
+   "register": "paint"
+  },
+  {
+   "n": 28,
+   "id": "b28",
+   "beat": "FACT",
+   "line": "Sensors in here watched for launches.",
+   "visual": "radar screen with a sweeping green line and blips; characters watching it",
+   "register": "paint"
+  },
+  {
+   "n": 29,
+   "id": "b29",
+   "beat": "ESCALATE",
+   "line": "The warning clocks started in this room.",
+   "visual": "a red arc climbing on the radar screen; room lights shift; the clock hand jumps",
+   "register": "paint"
+  },
+  {
+   "n": 30,
+   "id": "b30",
+   "beat": "REVEAL",
+   "line": "Outside, the mountain wears a painted forest.",
+   "visual": "surface of the mountain from a low aircraft angle: a slope painted with flat concrete-grey tree shapes",
+   "register": "paint"
+  },
+  {
+   "n": 31,
+   "id": "b31",
+   "beat": "FACT",
+   "line": "The trees are painted concrete slabs.",
+   "visual": "close on a painted concrete tree shape, brush texture and drip marks; character awed, touching it",
+   "register": "paint"
+  },
+  {
+   "n": 32,
+   "id": "b32",
+   "beat": "IMAGE",
+   "line": "They hide the ventilation towers behind them.",
+   "visual": "ventilation towers behind the fake trees, half-hidden, flat grey on grey",
+   "register": "paint"
+  },
+  {
+   "n": 33,
+   "id": "b33",
+   "beat": "FACT",
+   "line": "From the air, nothing stands out at all.",
+   "visual": "aerial view of the whole mountain, uniform and blank; character tiny on the crest",
+   "register": "paint"
+  },
+  {
+   "n": 34,
+   "id": "b34",
+   "beat": "PIVOT",
+   "line": "Now for the part nobody confirms.",
+   "visual": "character hands-up, deadpan; speech bubble 'nobody confirms this part'",
+   "register": "paint"
+  },
+  {
+   "n": 35,
+   "id": "b35",
+   "beat": "FACT",
+   "line": "People say it still stays staffed.",
+   "visual": "modern-day staff walking the corridor, coats, cold light; the room still in use",
+   "register": "paint"
+  },
+  {
+   "n": 36,
+   "id": "b36",
+   "beat": "FACT",
+   "line": "People say the government still goes down.",
+   "visual": "a line of plain cars on a highway; small black limousine at the end, no flags",
+   "register": "paint"
+  },
+  {
+   "n": 37,
+   "id": "b37",
+   "beat": "ESCALATE",
+   "line": "They quote one number about survival.",
+   "visual": "a hand-drawn number on a chalkboard: '90%'; a large question mark drawn beside it; a chalk line half-erased",
+   "register": "paint"
+  },
+  {
+   "n": 38,
+   "id": "b38",
+   "beat": "FINALE",
+   "line": "Ninety percent, though nobody has confirmed it.",
+   "visual": "the sealed blast door closed, unlit frame, one cold light; nothing happens; held still to black",
+   "register": "paint"
+  }
+ ]
+}

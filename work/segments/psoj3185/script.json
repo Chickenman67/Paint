@@ -1,0 +1,113 @@
+{
+ "title": "PSO J318.5-22 - The Loneliest Planet",
+ "wrote_to": "C:/VIBE_CODE_CENTRAL/Gauntlet3/work/segments/psoj3185/script.json",
+ "narration": "Every planet you have met so far had a sun.\nA star to rise into, and set behind.\nThis one lost all of that.\nSomething kicked it out of its system.\nA neighbor, moving too close, too fast.\nThrown loose into the dark between the stars.\nIt has been falling ever since.\nIt drifts through interstellar space, and nothing slows it.\nNo star to orbit.\nNo sunrise. No sunset. Nothing to rise or set.\nNo light of its own.\nIt is only ever lit by what other stars leak.\nA thin drizzle of scattered light, from impossibly far away.\nBarely enough to see by.\nBarely enough for anyone to be seen.\nThis is what it means to be a rogue planet.\nNo parent star. No system. No address at all.\nAmong the coldest objects we have ever measured.\nAmong the very darkest we know of.\nNothing about this world is friendly.\nImagine standing there, and seeing nothing at all.\nNot darkness. Less than darkness.\nYou would never find the edge of the ground.\nA small ring of dust still orbits it.\nLeftovers from a system that no longer exists.\nA whole sun's worth of wreckage, in one thin circle.\nIt circles nothing at all.\nThe dust keeps its shape out of pure habit.\nYou are watching it pass, and it will never know you.\nAnd you will never get there.\nIt is the loneliest thing we have ever found.",
+ "word_count": 239,
+ "est_wpm": 160,
+ "beats": [
+  {
+   "n": 1,
+   "id": "hook_a_sun_you_know",
+   "beat": "HOOK",
+   "register": "void",
+   "line": "Every planet you have met so far had a sun.\nA star to rise into, and set behind.",
+   "visual": "Deep navy starfield with one small yellow sun at upper right; the cream stickman stands at lower left, flat-line mouth, shading his eyes."
+  },
+  {
+   "n": 2,
+   "id": "ejection_neighbor_comes_too_close",
+   "beat": "SETUP",
+   "register": "cream",
+   "line": "This one lost all of that.\nSomething kicked it out of its system.\nA neighbor, moving too close, too fast.",
+   "visual": "Cream paper card with two wobble-outlined planets crossing at center and a dashed escape arc flying off the right edge; the dark stickman stands at left with both hands up, wide oval mouth."
+  },
+  {
+   "n": 3,
+   "id": "thrown_into_the_between",
+   "beat": "ESCAPE",
+   "register": "void",
+   "line": "Thrown loose into the dark between the stars.\nIt has been falling ever since.",
+   "visual": "Void starfield with the rogue planet small and dead center trailing one long thin motion streak to the left edge; no character - pure data beat."
+  },
+  {
+   "n": 4,
+   "id": "no_star_to_orbit",
+   "beat": "SETUP",
+   "register": "cream",
+   "line": "It drifts through interstellar space, and nothing slows it.\nNo star to orbit.\nNo sunrise. No sunset. Nothing to rise or set.",
+   "visual": "Cream paper card showing the rogue planet alone at the center of an empty dashed orbital grid with no star anywhere in it; no character - pure data beat."
+  },
+  {
+   "n": 5,
+   "id": "no_light_of_its_own",
+   "beat": "REVEAL",
+   "register": "void",
+   "line": "No light of its own.\nIt is only ever lit by what other stars leak.",
+   "visual": "Void starfield with the planet drawn as a black disk rimmed by the faintest gray wash thrown from four tiny far-off stars; no character - pure data beat."
+  },
+  {
+   "n": 6,
+   "id": "barely_enough_to_see",
+   "beat": "PAYOFF",
+   "register": "cream",
+   "line": "A thin drizzle of scattered light, from impossibly far away.\nBarely enough to see by.\nBarely enough for anyone to be seen.",
+   "visual": "Cream paper card where the planet is a flat gray smudge barely darker than the page; the dark stickman at right leans forward to shield his eyes, downturned arc mouth."
+  },
+  {
+   "n": 7,
+   "id": "what_rogue_means",
+   "beat": "CONTEXT",
+   "register": "void",
+   "line": "This is what it means to be a rogue planet.\nNo parent star. No system. No address at all.",
+   "visual": "Void card with a hand-lettered list of a star, a system, and an address, each item crossed out in red; the cream stickman at left shrugs with a flat-line mouth."
+  },
+  {
+   "n": 8,
+   "id": "coldest_and_darkest",
+   "beat": "ESCALATE",
+   "register": "cream",
+   "line": "Among the coldest objects we have ever measured.\nAmong the very darkest we know of.\nNothing about this world is friendly.",
+   "visual": "Cream paper card with a hand-drawn thermometer and a darkness gauge side by side, both needles pegged at the far end of their scales; no character - pure data beat."
+  },
+  {
+   "n": 9,
+   "id": "less_than_darkness",
+   "beat": "PAYOFF",
+   "register": "void",
+   "line": "Imagine standing there, and seeing nothing at all.\nNot darkness. Less than darkness.\nYou would never find the edge of the ground.",
+   "visual": "Void card with the planet's curved black limb sweeping across the bottom under one enormous empty starfield; the cream stickman stands tiny on the limb, both hands up, wide oval mouth."
+  },
+  {
+   "n": 10,
+   "id": "the_dust_ring",
+   "beat": "REVEAL",
+   "register": "cream",
+   "line": "A small ring of dust still orbits it.\nLeftovers from a system that no longer exists.",
+   "visual": "Cream paper card with a thin wobbly ellipse of dust specks drawn around a plain dark circle; no character - pure data beat."
+  },
+  {
+   "n": 11,
+   "id": "a_suns_worth_of_wreckage",
+   "beat": "ESCALATE",
+   "register": "void",
+   "line": "A whole sun's worth of wreckage, in one thin circle.\nIt circles nothing at all.\nThe dust keeps its shape out of pure habit.",
+   "visual": "Void card where the dust ring glows faint amber against the black while the planet inside it is completely unlit; no character - pure data beat."
+  },
+  {
+   "n": 12,
+   "id": "it_passes_you",
+   "beat": "PAYOFF",
+   "register": "cream",
+   "line": "You are watching it pass, and it will never know you.\nAnd you will never get there.",
+   "visual": "Cream paper card with a small dark dot sliding left to right across the middle trailing a dotted line; the dark stickman at right watches it go, flat-line mouth, one hand shading his eyes."
+  },
+  {
+   "n": 13,
+   "id": "the_loneliest_thing_found",
+   "beat": "FINALE",
+   "register": "void",
+   "line": "It is the loneliest thing we have ever found.",
+   "visual": "Void starfield, nearly empty, with the rogue planet a single dark speck at center; the cream stickman stands at lower right, head tipped back, wide oval mouth, utterly still."
+  }
+ ]
+}
