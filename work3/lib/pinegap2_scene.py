@@ -120,18 +120,34 @@ def build():
     # ===================================================================== #
     # STAGE A  b01-b03  "Look at this place. There is nothing here.         #
     #                 That is the point."                                   #
-    # One empty desert held across three beats. b02 is deliberately bare --  #
-    # the emptiness IS the narration -- and the presenter arrives on b03 so  #
-    # the "nothing here" beat lands before anything occupies the frame.     #
+    # One empty desert held across three beats. The emptiness IS the        #
+    # narration, so the desert dominates -- but the presenter stands in it   #
+    # from b01 and changes expression at b03, because four seconds of bare   #
+    # backdrop reads as "nothing is happening" (the coverage gate called it #
+    # NO ART on b01-b02, which was correct).                                 #
     # ===================================================================== #
     def a_desert(tile, fw, fh):
         _desert(tile, 5)
     els.append(SC.stage(clock, 1, a_desert, j=4))
 
+    # The presenter arrives on b01, not b03. He stands in the empty desert and
+    # LOOKS at nothing while the narrator says "Look at this place. There is
+    # nothing here." -- the emptiness is still the subject (he is a small
+    # closeup at the left, the desert fills the rest of the frame), but the
+    # opening now has an anchor instead of four seconds of bare backdrop. At
+    # b03 he changes expression on "That is the point.": two elements at the
+    # same position, the first ending where the second starts.
     def a_presenter(tile, fw, fh):
         SC.closeup(ImageDraw.Draw(tile), 300, 360, 210, 'deadpan', 3)
-    els.append(SC.accrue(clock, 3, 4, a_presenter, kind='character',
-                         motion=SC.enter(clock, 3, dx=-150, dy=40, dur=0.55)))
+    _bu, _aa, _au = SC.expr_swap(clock, 3, 'deadpan', 'skeptic', until_j=4)
+    els.append(E3.E('a_presenter_a', 'character', a_presenter,
+                    at=clock.at('b01', 0), until=_bu,
+                    motion=SC.enter(clock, 1, dx=-150, dy=40, dur=0.55)))
+
+    def a_presenter_b(tile, fw, fh):
+        SC.closeup(ImageDraw.Draw(tile), 300, 360, 210, 'skeptic', 3)
+    els.append(E3.E('a_presenter_b', 'character', a_presenter_b,
+                    at=_aa, until=_au))
     els.append(cap(1, 760, 300, size=40))
     els.append(cap(3, 940, 610, size=32, fill=RED))
 
@@ -286,7 +302,10 @@ def build():
         _ghost_cover(ImageDraw.Draw(tile), 640, 410, 300, 84)
     els.append(SC.accrue(clock, 18, 22, d_ghost, kind='shape',
                          motion=SC.enter(clock, 18, dx=0, dy=-42, dur=0.55)))
-    els.append(cap(18, 1076, 660, size=26))
+    # NO caption at b18. "A radome is a protective cover" is definition glue --
+    # and it collided with the lifting cover's own arrival at bottom-right.
+    # The moving cover SHOWS the protective cover; the b17 "They are radomes."
+    # reveal is the beat that needs the words.
 
     def d_dish(tile, fw, fh):
         _dish(ImageDraw.Draw(tile), 640, 470, 250, 86, tilt=0.30)
@@ -408,7 +427,8 @@ def build():
             d.ellipse([x + 2, 276, x + 26, 300], fill=INK)
         D.draw_label(tile, 'FIVE EYES', center=(640, 520), color=INK, size=54)
     els.append(SC.accrue(clock, 23, 25, e_eyes, kind='shape'))
-    els.append(cap(23, 640, 636, size=28))
+    # NO caption at b23. The drawn "FIVE EYES" label IS the words -- a caption
+    # under it repeated the label and stacked text on text.
 
     def e_sat(tile, fw, fh):
         PG._satellite(ImageDraw.Draw(tile), 640, 168, 96, 112)
@@ -492,7 +512,10 @@ def build():
         SC.fullbody(ImageDraw.Draw(tile), 218, 700, 500, pose='handsup',
                     expression='worried', seed=148)
     els.append(SC.accrue(clock, 30, 31, f_recoil, kind='character'))
-    els.append(cap(30, 900, 620, size=28, fill=RED))
+    # NO caption at b30. "Getting close is nearly impossible" is carried by the
+    # hands-up worried presenter -- it is the character's whole job to be the
+    # audience's reaction. b29 keeps its caption because the missile falls on
+    # "missile launch data" and the viewer needs that word with the arrival.
 
     # ===================================================================== #
     # STAGE G  b31-b34  "Airspace is locked to eighteen thousand feet.       #
@@ -518,7 +541,9 @@ def build():
         D.draw_number(tile, '18,000', center=(620, 274), color=RED, size=96)
         D.draw_label(tile, 'FEET', center=(620, 366), color=RED, size=44)
     els.append(SC.layer(clock, 31, g_column, j=32))
-    els.append(cap(31, 640, 500, size=26, fill=RED))
+    # NO caption at b31. The column DRAWS "18,000 FEET" in a 96px red numeral --
+    # that numeral is the spoken phrase, shown. The caption at cy=500 also sat
+    # directly on top of the column it was describing.
 
     def g_guards(tile, fw, fh):
         d = ImageDraw.Draw(tile)

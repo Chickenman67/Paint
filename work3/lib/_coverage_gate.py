@@ -72,11 +72,41 @@ CHAPTERS = ['pinegap', 'area51', 'tomb', 'room39', 'mezhgorye', 'cheyenne',
 # changes its visual every 1.0-1.67s, so 3 in a row is already behind it.
 STALL_MAX = 2
 
+# TEXT DENSITY BAND. This gate used to require a caption on EVERY beat
+# (`not r['nocap']`), which directly contradicts the readability rule: a
+# text-free beat is the common case and text should land on roughly every
+# second or third beat. The real defect the old check was reaching for is
+# "this chapter is wall-to-wall text", so that is what we test now.
+#
+# The band is deliberately a little wider than the plan's 30-50% so normal
+# per-chapter variation does not fail the build, while BOTH tails are
+# caught: a chapter with no captions at all, and one with text on nearly
+# every beat.
+TEXT_FRAC_MIN = 0.25
+TEXT_FRAC_MAX = 0.55
+
+# Longest run of CONSECUTIVE captioned beats before it counts as wall-to-wall
+# text. Two in a row is a legitimate emphasis ("They are radomes. / A radome
+# is a protective cover."), three is the rhythm the viewer complained about.
+TEXT_RUN_MAX = 2
+
+# Scene module override. Normally a chapter's scene is `<chapter>_scene`. The
+# pinegap pilot lives in `pinegap2_scene` (it is the persistent-stage rebuild,
+# kept as a separate module so v1 stays as the baseline for comparison), so the
+# gate is pointed at it explicitly. Every import site goes through `scene_mod`
+# so a chapter only has to be redirected in ONE place.
+SCENE_MODULE = {'pinegap': 'pinegap2_scene'}
+
+
+def scene_mod(chapter):
+    """The importable scene module name for a chapter."""
+    return SCENE_MODULE.get(chapter, '%s_scene' % chapter)
+
 
 def cover(chapter):
     """Rebuild the scene and classify each beat as painted / held / missing."""
     importlib.invalidate_caches()
-    mod = importlib.import_module('%s_scene' % chapter)
+    mod = importlib.import_module(scene_mod(chapter))
     scene = mod.build()
     meta = json.load(open(os.path.join(ROOT, 'segments', chapter,
                                        'beats.json')))
@@ -127,9 +157,25 @@ def cover(chapter):
         else:
             run = 0
 
+    # longest run of CONSECUTIVE captioned beats (the wall-to-wall text). The
+    # complement of the freeze check: that one punishes art that never changes,
+    # this one punishes text that never stops.
+    noca = set(nocap)
+    trun = tbest = 0
+    trat = 0
+    for i in range(1, n + 1):
+        if i not in noca:
+            trun += 1
+            if trun > tbest:
+                tbest, trat = trun, i
+        else:
+            trun = 0
+
     return dict(chapter=chapter, beats=n, painted=len(painted),
                 held=len(held), captioned=len(beats) - len(nocap),
                 missing=missing, nocap=nocap,
+                text_frac=(len(beats) - len(nocap)) / float(n) if n else 0.0,
+                text_run=tbest, text_run_end=trat,
                 stall=best, stall_end=run_at,
                 duration=round(float(meta.get('duration_s') or scene.duration), 1))
 
@@ -148,7 +194,7 @@ def render_beats(chapter):
     """
     importlib.invalidate_caches()
     import engine3 as E3
-    mod = importlib.import_module('%s_scene' % chapter)
+    mod = importlib.import_module(scene_mod(chapter))
     scene = mod.build()
     meta = json.load(open(os.path.join(ROOT, 'segments', chapter,
                                        'beats.json')))
@@ -233,7 +279,7 @@ def band_intrusions(chapter):
     import numpy as np
 
     importlib.invalidate_caches()
-    mod = importlib.import_module('%s_scene' % chapter)
+    mod = importlib.import_module(scene_mod(chapter))
     scene = mod.build()
     meta = json.load(open(os.path.join(ROOT, 'segments', chapter,
                                        'beats.json')))
@@ -399,7 +445,7 @@ def title_contrast(chapter):
     import numpy as np
 
     importlib.invalidate_caches()
-    mod = importlib.import_module('%s_scene' % chapter)
+    mod = importlib.import_module(scene_mod(chapter))
     scene = mod.build()
     meta = json.load(open(os.path.join(ROOT, 'segments', chapter,
                                        'beats.json')))
@@ -468,7 +514,7 @@ def title_collisions(chapter):
 
     Returns a list of (line_no, 'kind: detail') strings.
     """
-    src_path = os.path.join(HERE, '%s_scene.py' % chapter)
+    src_path = os.path.join(HERE, scene_mod(chapter) + '.py')
     src = open(src_path, encoding='utf-8').read().splitlines()
     hits = []
     for i, line in enumerate(src, 1):
@@ -512,7 +558,7 @@ def main(argv):
                                            'beats.json')):
             print('%-11s no beats.json -- skip' % ch)
             continue
-        if not os.path.exists(os.path.join(HERE, '%s_scene.py' % ch)):
+        if not os.path.exists(os.path.join(HERE, scene_mod(ch) + '.py')):
             print('%-11s no scene -- skip' % ch)
             continue
         try:
@@ -555,7 +601,12 @@ def main(argv):
         except Exception as exc:
             chits = [(0, 'CONTRAST HARNESS FAILED: %s: %s'
                       % (type(exc).__name__, exc))]
-        ok = (not r['missing'] and not r['nocap'] and not stalls
+        # Text density is a BAND, not a per-beat requirement: see TEXT_FRAC_MIN.
+        # `missing` already guarantees every beat has live ART.
+        text_bad = (r.get('text_frac', 0.0) < TEXT_FRAC_MIN
+                    or r.get('text_frac', 0.0) > TEXT_FRAC_MAX
+                    or r.get('text_run', 0) > TEXT_RUN_MAX)
+        ok = (not r['missing'] and not stalls and not text_bad
               and not rfail and not tbhits and not real_bhits and not chits)
         flag = 'OK  ' if ok else 'GAP '
         if not ok:
@@ -583,13 +634,22 @@ def main(argv):
                 ('HARNESS' if b == 0 else 'b%02d' % b) for b, d in chits[:6])
             if len(chits) > 6:
                 tb += ',+%d' % (len(chits) - 6)
-        print('%s %-11s %2d new  %2d held  %2d/%-2d captioned  %5.1fs%s%s%s%s%s'
+        print('%s %-11s %2d new  %2d held  %2d/%-2d cap %3.0f%%  %5.1fs%s%s%s%s%s%s%s'
               % (flag, r['chapter'], r['painted'], r['held'],
-                 r['captioned'], r['beats'], r['duration'],
+                 r['captioned'], r['beats'], 100.0 * r.get('text_frac', 0.0),
+                 r['duration'],
                  ('  STALL %d beats ->b%02d' % (r['stall'], r['stall_end']))
                  if stalls else '',
+                 ('  TEXT RUN %d ->b%02d' % (r.get('text_run', 0),
+                                             r.get('text_run_end', 0)))
+                 if text_bad and r.get('text_run', 0) > TEXT_RUN_MAX else '',
+                 ('  TEXT %.0f%% OUT OF BAND' % (100.0 * r['text_frac']))
+                 if text_bad and (r.get('text_frac', 0) < TEXT_FRAC_MIN
+                                  or r.get('text_frac', 0) > TEXT_FRAC_MAX) else '',
                  ('  NO ART: ' + _fmt(r['missing'])) if r['missing'] else '',
-                 ('  NO CAP: ' + _fmt(r['nocap'])) if r['nocap'] else '',
+                 # uncaptioned beats are now EXPECTED (text-free beats are the common case),
+                 # so report only the count, not a long beat list.
+                 ('  text-free %d beats' % len(r['nocap'])) if r['nocap'] else '',
                  rend, tb))
     print('\n%d chapter(s) with gaps' % bad)
     return 0
