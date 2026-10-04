@@ -95,7 +95,12 @@ TEXT_RUN_MAX = 2
 # kept as a separate module so v1 stays as the baseline for comparison), so the
 # gate is pointed at it explicitly. Every import site goes through `scene_mod`
 # so a chapter only has to be redirected in ONE place.
-SCENE_MODULE = {'pinegap': 'pinegap2_scene'}
+SCENE_MODULE = {'pinegap': 'pinegap2_scene',
+                'room39': 'room39_2_scene',
+                'cheyenne': 'cheyenne2_scene',
+                'svalbard': 'svalbard2_scene',
+                'vatican': 'vatican2_scene',
+                'fortknox': 'fortknox2_scene'}
 
 
 def scene_mod(chapter):
