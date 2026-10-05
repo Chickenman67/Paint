@@ -322,15 +322,22 @@ def closeup(draw, hx, hy, hr, expression, seed, shoulder=1.0):
 
 
 def fullbody(draw, x, feet_y, height, pose='standing', expression='neutral',
-             seed=0):
+             seed=0, **kw):
     """A full-body character standing on `feet_y`, centred at x.
 
     character3's primitives take an Image (they open their own ImageDraw),
     while hand_stroke takes a Draw -- so this recovers the image rather than
     forwarding the draw the caller has.
+
+    `**kw` forwards to character3.draw_character, which is how a caller puts the
+    figure in the right REGISTER: character3 draws him near-black (BODY
+    26,26,30) by default, which is correct on the paper cards and disappears
+    against the dark exteriors and interiors. Pass `ink=(238,236,228)` there --
+    the style canon's cream-on-dark rule. Added after b30 and b04 both rendered
+    a black stickman on a night mountain and a black tunnel.
     """
     C3.draw_character(PA.img_of(draw), x, feet_y, height, pose=pose,
-                      expression=expression, seed=seed)
+                      expression=expression, seed=seed, **kw)
 
 
 # ---------------------------------------------------------------------------

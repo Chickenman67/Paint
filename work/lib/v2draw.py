@@ -175,19 +175,27 @@ def draw_bubble(img, text, xy, tail_to=None, font_size=None, max_w=None):
     """
     font = T.load_font(font_size or T.BUBBLE_PX, bold=True)
     probe = ImageDraw.Draw(Image.new("RGB", (1, 1)))
-    tw, th = _text_size(probe, text, font)
-    if max_w and tw > max_w:                     # wrap on spaces
-        words = text.split()
-        lines, cur = [], ""
-        for w in words:
-            t = (cur + " " + w).strip()
-            if _text_size(probe, t, font)[0] <= max_w or not cur:
-                cur = t
-            else:
-                lines.append(cur); cur = w
-        lines.append(cur)
-    else:
-        lines = [text]
+    # Honour explicit newlines BEFORE width-wrapping. v1 collapsed the whole
+    # string to one `lines` entry when its measured width fit max_w, but
+    # d.text() still renders the embedded \n as two lines, so the second line
+    # fell outside the bubble's computed height and its border cut straight
+    # through the text. Split on \n first, then wrap each segment.
+    lines = []
+    for para in text.split('\n'):
+        tw, th = _text_size(probe, para, font)
+        if max_w and tw > max_w:                 # wrap on spaces
+            words = para.split()
+            cur = ""
+            for w in words:
+                t = (cur + " " + w).strip()
+                if _text_size(probe, t, font)[0] <= max_w or not cur:
+                    cur = t
+                else:
+                    lines.append(cur); cur = w
+            lines.append(cur)
+        else:
+            lines.append(para)
+    th = max(_text_size(probe, l, font)[1] for l in lines)
 
     lh = th + 8
     bw = max(_text_size(probe, l, font)[0] for l in lines) + T.BUBBLE_PAD * 2
