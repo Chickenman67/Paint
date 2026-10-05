@@ -350,6 +350,26 @@ def _blank_page():
     return Image.new("RGB", (W, H), PAPER)
 
 
+# A title-layer cache was TRIED here and REVERTED, and the reason is worth
+# keeping because the saving looked obvious and the pixels said otherwise.
+#
+# _draw_title costs 8.13ms of a 22.60ms frame (36%) to repaint a strip that is
+# byte-identical every frame -- v2draw seeds its per-letter wobble from
+# (text, seed). So: render the glyphs once onto a transparent RGBA layer and
+# paste it each frame. Measured, that is NOT equivalent -- 2460 pixels differ by
+# up to 62 levels, at every sampled t. _wobble_glyph blends the glyph against
+# PAPER when it cuts the tile, so a glyph drawn onto transparent and alpha-
+# pasted over the page composites differently from one cut against paper.
+#
+# Caching it correctly would need the tile cut against paper and the delta
+# extracted per pixel, which is most of the cost it was meant to remove. Not
+# worth it: the title gates (band_intrusions, title_contrast) are calibrated on
+# the exact pixels this path produces, and shipping a renderer that quietly
+# shifts them to save 8ms is a bad trade for a project whose gates have already
+# been burned by a change that "looked equivalent".
+_TITLE_CACHE = {}
+
+
 def render_frame(scene, t):
     """Render `scene` at absolute time t -> a fresh 1280x720 RGB PIL Image.
 
