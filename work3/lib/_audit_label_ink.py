@@ -52,6 +52,27 @@ def lum(c):
 
 
 def audit(chapter):
+    """KNOWN LIMITATION, recorded after the 2026-10-05 pass.
+
+    This gate is reliable at label sizes in the canon band (28-48px) and
+    UNRELIABLE above ~70px, where it still produces false positives. The ring
+    sampler dilates the glyph mask by KEYLINE_PAD=8 to keep the keyline out of
+    the background sample, but at beat type the drawn keyline extends well past
+    that (it was size*0.13 = 16px at 120pt before keyline_w() fixed it), so
+    the ring lands on keyline black and the median reads dark for a label that
+    is plainly legible on light.
+
+    Eye-checked false positives on 2026-10-05: area51 'AREA 51' (bglum 28.5,
+    light sky), fortknox 'A FEW HUNDRED' (44.7, legible on its dark panel),
+    mezhgorye 'MEZHGORYE' (57.2, legible on light), room39 '1950s' (91.0,
+    legible). Do NOT batch-fix this list. Render each hit at 1280x720 and look
+    at it first -- that is `judge-art-at-full-res`, and it is the only step in
+    this file that has never been wrong.
+
+    The gate earns its place on the small-type population, where it correctly
+    found the eight real fixes now in the film. Treat anything it reports
+    above 70px as a pointer to a frame worth looking at, never as a verdict.
+    """
     modname = SC.scene_mod(chapter)
     scene = __import__(modname)
     SCN = scene.build()
