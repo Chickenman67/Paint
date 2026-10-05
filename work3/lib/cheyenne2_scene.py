@@ -511,14 +511,36 @@ def build():
         # frame, which is what a persistent stage is for.
         d = ImageDraw.Draw(tile)
         _rock_bg(tile, 401, rock=(158, 156, 156), deep=(90, 88, 90))
-        _blast_door(d, 470, 380, 1000, 680, 402, closed=False)
-        D.draw_label(tile, 'SEALS COMPLETELY', center=(1010, 620), color=RED,
+        # cx=520 w=1240, not cx=470 w=1000. The narrower door left its right
+        # jamb at x=1090 -- a hard 8px black vertical line with 190px of dead
+        # rock to its right, so the door read as a small object parked in a big
+        # empty field instead of a thing that fills the frame. Widening pushes
+        # the jamb to 1289 (off-frame) and the dark void out to -50..1090, so
+        # the opening IS the frame and both jambs exit the edges.
+        _blast_door(d, 520, 380, 1240, 680, 402, closed=False)
+        # The label moved UP onto the void. It used to sit at (1010, 620) --
+        # down where the b16 caption also lives (that caption spans y 655-687),
+        # so the two ran together as one text block. Up here it reads as printed
+        # across the door and leaves the bottom band to the caption alone.
+        # cy=200, not 240: the top shove-arrow sits at y=271 and at cy=240 the
+        # label's descenders ran straight through it.
+        D.draw_label(tile, 'SEALS COMPLETELY', center=(620, 200), color=RED,
                      size=50)
-        SC.fullbody(d, 1180, 780, 520, pose='pointing', expression='awed',
+        # POINTING LEFT. He used to be at x=1180 in the stock 'pointing' pose,
+        # which raises the RIGHT arm -- so he pointed away from the door, and
+        # that arm ran 155px off the right edge (measured bbox 1042..1435 on a
+        # 1280 frame) leaving a cut stub. 'pointingL' is the same arm on the
+        # left, which aims at the door. x=1140 puts his rightmost ink at 1273,
+        # 7px clear: at x=1150 it was 1283 and his dangling right arm was
+        # guillotined by the edge, which reads as a bug rather than as a figure
+        # cropped into the shot.
+        SC.fullbody(d, 1140, 690, 500, pose='pointingL', expression='awed',
                     seed=403)
     els.append(SC.layer(clock, 15, c_seal, j=17, kind='subject', eid='c_seal'))
     # NO caption at b15. SEALS COMPLETELY is printed on the door.
-    els.append(cap(16, 880, 664, size=32))
+    # cx=520, not 880: at 880 the caption spanned x 644-1115 and ran under the
+    # figure (who occupies 905-1283), striking through his legs.
+    els.append(cap(16, 520, 664, size=32))
 # ===================================================================== #
     # STAGE D  b17-b21  "Inside the mountain, the air stays cold. The cold  #
     #                 keeps the machines stable. Roughly two hundred people #
@@ -1021,33 +1043,46 @@ def build():
 
     def g_slab(tile, fw, fh):
         # ONE SLAB, huge, cropped by both side edges -- it IS the frame. The
-        # concrete-tone band across the head is laid AFTER the slab so its
-        # stepped silhouette cannot strike through the title strip.
+        # close-up conceit: the painted tree is now a dark CONCRETE_D mass
+        # filling most of the frame, so its stepped conifer silhouette and the
+        # drip marks are unmistakable. It used to be light CONCRETE on a light
+        # grey fill -- barely 50 levels apart -- so the "tree" vanished into the
+        # background and the nine white brush strokes over it became the most
+        # prominent thing in frame, reading as random scratches. Now the slab
+        # is the darkest mass on screen and the strokes are gone.
+        # h=660, not 880: _painted_tree's silhouette runs to base_y - h*0.98,
+        # so at h=880 the top two of its three conifer tiers sat at NEGATIVE y
+        # and the "tree" cropped to a single wide trapezoid with no apex. At
+        # h=660 the apex lands at y=123, just under the title band, so all
+        # three tiers and the drip marks are on screen.
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [0, 0, W, H], (156, 158, 162), seed=891, value=0.09)
+        PA.fill_rect(tile, [0, 0, W, H], (168, 170, 174), seed=891, value=0.09)
         PA.paper_overlay(tile, seed=892)
-        _painted_tree(d, 620, 780, 900, 893, w=620, col=CONCRETE, drips=True)
+        # A dark backdrop behind the slab silhouette so the light drips and
+        # outline read against it.
+        PA.fill_rect(tile, [0, 0, W, H], (128, 130, 134), seed=895, value=0.10)
+        _painted_tree(d, 640, 770, 660, 893, w=560, col=(96, 98, 102), drips=True)
         SC.title_backdrop(tile, 894, col=(168, 170, 174))
-        # brush texture on the slab: broad flat strokes, not hatching
-        for k in range(9):
-            yy = 200 + k * 52
-            PA.hand_stroke(d, [(200, yy), (560 + (k * 37) % 200, yy - 14)],
-                           (222, 220, 212), 12, closed=False, seed=900 + k,
-                           wavelength=140.0, vary=0.22)
-        D.draw_label(tile, 'PAINTED CONCRETE', center=(300, 140), color=INK,
+        # Label across the top of the slab. Light (SNOW), not INK -- the user
+        # rule is text is never gray or black, and this slab is a dark mass.
+        D.draw_label(tile, 'PAINTED CONCRETE', center=(560, 130), color=SNOW,
                      size=44)
     els.append(SC.layer(clock, 31, g_slab, j=32, kind='shape', eid='g_slab'))
     # NO caption at b31. PAINTED CONCRETE is printed across the slab.
 
     def g_pointer(tile, fw, fh):
-        # MOVING, small: the presenter steps in from the right and points at
-        # the slab he is standing next to. Cut against the right edge so he
-        # reads as cropped INTO the shot rather than parked on it.
+        # MOVING, small: the presenter steps in and points at the slab he is
+        # standing next to. He used to stand at x=1090 in the stock 'pointing'
+        # pose (right arm raised) with enter(dx=+110) -- so he pointed AWAY from
+        # the slab, the entry motion shoved him 110px further right on arrival,
+        # and the already-long right arm ran off the frame edge entirely.
+        # 'pointingL' aims him at the slab (which is centre-left); the arrival
+        # is now a short vertical drop so nothing is pushed off the right edge.
         d = ImageDraw.Draw(tile)
-        SC.fullbody(d, 1090, 780, 430, pose='pointing', expression='awed',
+        SC.fullbody(d, 1010, 700, 430, pose='pointingL', expression='awed',
                     seed=910)
     els.append(SC.layer(clock, 31, g_pointer, j=32, kind='character',
-                        motion=SC.enter(clock, 31, dx=110, dur=ARRIVE),
+                        motion=SC.enter(clock, 31, dx=0, dy=40, dur=ARRIVE),
                         eid='g_pointer'))
     # NO caption at b31 -- the label on the slab says it.
 

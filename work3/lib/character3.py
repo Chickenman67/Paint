@@ -969,6 +969,15 @@ POSES = {
     'pointing': dict(
         la=(16, 24), ra=(78, 12),          # right arm raised, pointing out
         ll=(-12, 0), rl=(11, 0), lean=-3),
+    # Pointing the OTHER way. draw_character negates the LEFT arm's angle
+    # (`_limb(cx - head_r*0.5, sh_y, -p['la'][0], -p['la'][1], ...)`), so a
+    # positive la swings that arm toward image-LEFT. 'pointing' raises ra; this
+    # is the same arm angles on la, so the figure points left with no mirroring
+    # code. Needed wherever the thing being indicated sits to the figure's left
+    # and the stock 'pointing' would send the arm off the opposite frame edge.
+    'pointingL': dict(
+        la=(78, 12), ra=(16, 24),          # left arm raised, pointing out (left)
+        ll=(-11, 0), rl=(12, 0), lean=3),
     'handsup': dict(
         # a2 is the FOREARM OFFSET ADDED to the upper-arm angle, so the
         # forearm's absolute angle is a1 + a2; positive swings it further
