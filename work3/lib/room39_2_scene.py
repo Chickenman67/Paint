@@ -780,7 +780,16 @@ def build():
         for i in range(7):
             SC.fullbody(ImageDraw.Draw(tile), 200 + i * 150, 556,
                         335 - (i % 3) * 40, 'standing', 'neutral', 820 + i)
-        D.draw_label(tile, 'open to visitors', center=(640, 604), color=INK,
+        # SNOW, not INK, despite this being the daylight stage. The label sits on
+        # the dark road band at line 768 -- fill_rect(tile, [0, 560, W, H],
+        # (86, 86, 88)) -- whose measured ring median luminance is 83.9, so
+        # INK (24, 24, 28) gave a 3.52:1 label that reads as a smudge: 2074
+        # pure-black keyline px + 1864 near-ink fill px and not one light pixel
+        # in the letterforms. Room39's INK is not T.INK, so draw_label already
+        # takes this as non-INK and supplies a 4px keyline; SNOW keeps that
+        # keyline and makes the FILL carry the contrast, which is what the
+        # in-art SNOW labels above (NO RECORD, and 'surface only' below) do.
+        D.draw_label(tile, 'open to visitors', center=(640, 604), color=SNOW,
                      size=28)
     els.append(SC.layer(clock, 22, e_queue, j=23,
                         motion=SC.enter(clock, 22, dx=120, dur=0.50)))

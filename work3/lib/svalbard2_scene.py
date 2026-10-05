@@ -436,7 +436,12 @@ def build():
             PA.hand_stroke(d, [(880 + k * 42, 452 + k * 10), (930 + k * 42, 546)],
                            (232, 202, 172), 30, closed=False,
                            seed=66 + k, wavelength=50.0)
-        D.draw_label(tile, 'one sample', center=(640, 640), color=INK, size=34)
+        # LABEL_YELLOW, not INK. At the very bottom of the amber pool (bg_lum 89.8)
+        # with no keyline, the counters in o, a, e and p filled in and the lower
+        # half of the glyphs ran into the brown shadow edge with no separation
+        # from the ground. The light fill carries the contrast and takes the keyline.
+        D.draw_label(tile, 'one sample', center=(640, 640),
+                     color=VT.LABEL_YELLOW, size=34)
     els.append(SC.layer(clock, 9, b_packet, j=11,
                         motion=SC.enter(clock, 9, dx=0, dy=-70, dur=ARRIVE)))
     # NO caption at b09. "one sample" is DRAWN on the packet's own shadow.
@@ -548,7 +553,13 @@ def build():
                 PA.hand_stroke(d, [(x + 4, top + 40 + j * 38),
                                    (x + 44, top + 22 + j * 38)], LEAF, 5,
                                closed=False, seed=110 + k * 3 + j, wavelength=40.0)
-        D.draw_label(tile, 'ORIGINAL', center=(960, 262), color=INK, size=46)
+        # LABEL_YELLOW, not INK. draw_label only keys a NON-INK label, so an INK
+        # one gets no keyline and the black glyph has to carry the contrast
+        # itself. It does not: the dark slate wall measures bg_lum 83.7 here,
+        # the counters in O/R/I/G/A fill in, and ORIGINAL read as a dark smudge
+        # directly beside its sibling COPY on the identical wall, which pops.
+        D.draw_label(tile, 'ORIGINAL', center=(960, 262), color=VT.LABEL_YELLOW,
+                     size=46)
         _packet(d, 800, 600, 130, 180, 120, band=AMBER, stamp='wheat')
     els.append(SC.accrue(clock, 12, 13, c_copy, kind='shape'))
     els.append(cap(12, 640, 700, size=30))
@@ -626,7 +637,12 @@ def build():
     def c_thermo(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         S.thermometer(d, 420, 690, 620, 0.22, seed=142, hot=False)
-        D.draw_label(tile, '0', center=(520, 200), color=INK, size=34)
+        # LABEL_YELLOW, not INK: the zero tick sits on the warm=(96,84,56) interior
+        # pool at bg_lum 87.8 with no keyline, so the counter inside the glyph
+        # filled in and it read as a solid dark ring -- the darkest text on the
+        # card, on the one numeral the viewer is meant to read as the 0 mark.
+        D.draw_label(tile, '0', center=(520, 200), color=VT.LABEL_YELLOW,
+                     size=34)
         D.draw_arrow(tile, (880, 480), (700, 560), color=VT.LABEL_RED, width=10,
                      head=46)
         # The -18 numeral is in the SAME layer as the thermometer it belongs to.
@@ -652,8 +668,11 @@ def build():
         PA.hand_stroke(d, chest, INK, 7, closed=True, seed=147, wavelength=150.0)
         PA.hand_stroke(d, [(120, 380), (520, 380)], INK, 5, closed=False,
                        seed=148, wavelength=110.0)
-        D.draw_label(tile, 'FARM FREEZER', center=(320, 250), color=INK,
-                     size=32)
+        # LABEL_YELLOW, not INK: black with no keyline across the brown mountain at
+        # bg_lum 85.5 flattened the counters in A, R and E into the ground and
+        # left a soft dark smudge, while the red VAULT beside it read cleanly.
+        D.draw_label(tile, 'FARM FREEZER', center=(320, 250),
+                     color=VT.LABEL_YELLOW, size=32)
         D.draw_label(tile, '-18', center=(320, 500), color=INK, size=52)
         # right: the vault's inner door, three times the size, running off the
         # right edge -- so the scale comparison is the composition, not a caption
@@ -706,10 +725,16 @@ def build():
                 if abs(x - cx) < 88 and abs(y - (430 - hgt * 0.18)) < hgt * 0.38:
                     d.ellipse([x - 3, y - 3, x + 3, y + 3],
                               fill=(232, 244, 251))
-        # The label sits on a light keyline patch, because CENTURIES in ink
-        # landed on the dark floor in v1 and was the least legible text in the
-        # chapter. The user rule is explicit: never grey or black text.
-        D.draw_label(tile, 'CENTURIES', center=(640, 140), color=INK, size=44)
+        # LABEL_YELLOW, not INK. The previous comment here claimed the label "sits on
+        # a light keyline patch" -- there is no patch in this code, so the fix it
+        # described was never in the build and a prior pass believed it was done.
+        # Measured bg_lum under the text is 88.1 (the tan/brown slope, which
+        # holds for the element's whole 3.5s window and never lightens), and the
+        # counters in E, N, U, R, I, E, S filled in: CENTURIES was the least
+        # legible text in the chapter. The light fill is the fix, and it also
+        # earns the automatic black keyline that an INK label never gets.
+        D.draw_label(tile, 'CENTURIES', center=(640, 140),
+                     color=VT.LABEL_YELLOW, size=44)
     els.append(SC.accrue(clock, 17, 18, c_frost, kind='shape'))
     # NO caption at b17. CENTURIES is drawn above the frost-covered packets and
     # the frost itself is the sleeping; the words added nothing the frame lacked.

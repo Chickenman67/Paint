@@ -109,6 +109,33 @@ def _text_size(draw, text, font):
     return x1 - x0, y1 - y0
 
 
+# Label type stops growing at about 48px -- the style canon's band is 28-48 --
+# but the BEAT type goes far past it: 'AREA 51' at 120, 'CLOSED' at 120,
+# 'KENTUCKY' at 118, 'PINE GAP' at 104, 'TONNES' at 104. There are 33 such
+# calls in the nine bunker scenes.
+#
+# The keyline used to be size*0.13 at every size, which is right in the canon
+# band (38 -> 5px, 48 -> 6px) and wrong well above it. PIL's stroke_width
+# expands the glyph BOTH ways, so a 15.6px stroke on a 120pt word (stems only
+# ~15px wide) eats the counters: 'AREA 51' rendered as one solid black slab with
+# a few holes in it, which is the exact failure the user reported -- "text
+# should never be gray or black because its hard to see". A keyline is meant to
+# outline a letter, and at that ratio it IS the letter.
+#
+# So hold the canon band's arithmetic exactly, then make the weight SUBLINEAR
+# above it: continuous at 48, growing as size**0.45 instead of size. 120pt gets
+# a 9px keyline rather than 16. Nothing at 28-56px changes by a single pixel,
+# which is what keeps this from regressing the other ~300 labels in the film.
+KEYLINE_BAND = 48
+KEYLINE_BAND_W = 6.24          # 48 * 0.13, so the curve is continuous
+
+
+def keyline_w(size):
+    if size <= KEYLINE_BAND:
+        return max(2, int(round(size * 0.13)))
+    return max(2, int(round(KEYLINE_BAND_W * ((float(size) / KEYLINE_BAND) ** 0.45))))
+
+
 def draw_label(img, text, xy=None, color=None, size=None, center=None, bold=True,
                outline=None, outline_w=None):
     """Draw a short label. xy is top-left; center=(x,y) centres it on that point.
@@ -132,7 +159,7 @@ def draw_label(img, text, xy=None, color=None, size=None, center=None, bold=True
     # forms side by side. Default outline_w stays as the marker-pen weight for
     # COLOURED labels, which is what the bar actually does.
     if outline is not None and outline_w is None:
-        outline_w = max(2, int(round((size or T.LABEL_PX) * 0.13)))
+        outline_w = keyline_w(size or T.LABEL_PX)
     font = T.load_font(size or T.LABEL_PX, bold=bold)
     d = ImageDraw.Draw(img)
     tw, th = _text_size(d, text, font)

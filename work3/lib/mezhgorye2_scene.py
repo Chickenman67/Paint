@@ -707,7 +707,14 @@ def build():
         d = ImageDraw.Draw(tile)
         _bore(d, -40, 400, 900, 380, 300, 210, 290, lamps=2)
         _rail(d, 60, 560, 220, 900, 380, 54, 291, ties=10)
-        D.draw_label(tile, 'the only line', center=(1050, 610), color=INK,
+        # SNOW, not INK: this is the b20 bore, the one dark register in the
+        # chapter, and the rock behind this label measures a median luminance of
+        # ~40 -- INK (24,24,28) sits at essentially the same value, so the glyphs
+        # read as an unreadable smudge with no lift from the outline either.
+        # SNOW (238,241,244) measures 6.0:1 against that rock on the real render,
+        # and because it is not INK, draw_label gives it the default black
+        # keyline, which is what keeps it off the lighter rock further left.
+        D.draw_label(tile, 'the only line', center=(1050, 610), color=SNOW,
                      size=36)
     els.append(SC.accrue(clock, 20, 21, e_bore_detail, kind='shape', eid='e_bore'))
     # MOVING, and small: the presenter sitting on the sleepers, sliding in and

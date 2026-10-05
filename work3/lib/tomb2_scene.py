@@ -325,10 +325,18 @@ def build():
     els.append(SC.accrue(clock, 8, 11, b_front, kind='shape', eid='b_front'))
 
     def b_guard(tile, fw, fh):
-        # MOVING. The one living figure among the clay, cropped by the bottom
-        # edge, standing in the aisle he is being guarded for.
-        SC.fullbody(ImageDraw.Draw(tile), 470, 812, 380, pose='shrug',
-                    expression='awed', seed=250)
+        # MOVING. The one living figure among the clay, standing in the aisle he
+        # is being guarded for.
+        # y_feet 700, not 812: at 812 his shins ran 92px off the bottom of a 720
+        # frame with no ground contact, which reads as him sinking into the floor
+        # rather than standing in it. b_front draws its ground line at y=690 and
+        # the ranks' feet at y=745, so 700 puts him on that same floor plane --
+        # and 700 is the value the two other presenters in this chapter already
+        # use (b_emperor, e_script). The comment here used to say "cropped by
+        # the bottom edge"; that crop only works on a figure that FILLS the
+        # frame, and at h=380 he does not.
+        SC.fullbody(ImageDraw.Draw(tile), 470, 700, 380, pose='shrug',
+                    expression='awed', seed=250, ink=PALE)
     els.append(SC.accrue(clock, 9, 11, b_guard, kind='character',
                          eid='b_guard',
                          motion=SC.enter(clock, 9, dx=0, dy=48, dur=ARRIVE)))
@@ -535,7 +543,7 @@ def build():
                      (122, 92, 62), seed=311, value=0.09)
         d.ellipse([686, 186, 734, 240], fill=(176, 142, 106))
         SC.fullbody(d, 190, 742, 380, pose='recoil', expression='worried',
-                    seed=312)
+                    seed=312, ink=PALE)
     els.append(SC.accrue(clock, 18, 21, d_scholars, kind='character',
                          eid='d_scholars',
                          motion=SC.enter(clock, 18, dx=-140, dy=0,
@@ -1045,7 +1053,7 @@ def build():
                  has_armour=False)
         PA.paper_overlay(tile, 822, bbox=[560, 300, 860, 560])
         SC.fullbody(d, 210, 740, 380, pose='shrug', expression='disgust',
-                    seed=823)
+                    seed=823, ink=PALE)
         # Lifted 150 -> 118. At y=150 the label's baseline ran into the top of
         # the greyed soldier's head (head crown at ~y=180), so the word sat on
         # his outline. At 118 it clears the head with the title band above.
@@ -1121,9 +1129,19 @@ def build():
         # 'IT DOES NOT LET GO' -- two labels for two different beats in one
         # frame. This layer ends at b42 so the dome beat has a single label.
         d = ImageDraw.Draw(tile)
-        PA.fill_poly(tile, PA.ellipse_pts(900, 250, 46, 46, n=24), GOLD,
+        # Disc + label moved 900 -> 560. f_droplet's presenter is at cx=940 and
+        # his 'armscrossed' pose is the WIDEST in the library after 'recoil' --
+        # measured ink bbox at h=400 is x:[cx-157, cx+157], against 'standing'
+        # at cx+-107. 'ENOUGH FOR A POOL' at size 34 measures x:[596,925], so
+        # clearing it needs cx >= 925+157+30 = 1112, and clearing the RIGHT
+        # frame edge needs cx <= 1280-157-30 = 1093. Those two ranges do not
+        # overlap: there is no cx that fits this figure beside this label. The
+        # label moves instead, into the dark band above the scroll's top edge
+        # (y=470), which is the one genuinely empty region left in this beat.
+        # Disc and label move together so the disc still hangs over the words.
+        PA.fill_poly(tile, PA.ellipse_pts(560, 250, 46, 46, n=24), GOLD,
                      seed=899, value=0.05)
-        D.draw_label(tile, 'ENOUGH FOR A POOL', center=(900, 430),
+        D.draw_label(tile, 'ENOUGH FOR A POOL', center=(560, 430),
                      color=SILVER, size=34)
     els.append(SC.layer(clock, 39, h_pool_label, j=42, kind='shape',
                          eid='h_pool_label'))
@@ -1157,7 +1175,13 @@ def build():
     def h_records_name(tile, fw, fh):
         # The scroll persists to the end of the stage; its title does not. At
         # b42 IT DOES NOT LET GO arrives at almost the same spot.
-        D.draw_label(tile, 'THE OLD RECORDS', center=(640, 140), color=INK,
+        # SILVER, not INK: this lands on the dark tunnel ceiling, measured at
+        # bg luminance 32.1. INK fill (24,24,28) + the standard black keyline +
+        # a 32.1 ceiling put all three within a few values of each other, so the
+        # stage title read as a black embossed ghost rather than solid text.
+        # SILVER is the sibling label on this exact backdrop -- ENOUGH FOR A
+        # POOL below, same tunnel, and it reads cleanly.
+        D.draw_label(tile, 'THE OLD RECORDS', center=(640, 140), color=SILVER,
                      size=38)
     els.append(SC.layer(clock, 40, h_records_name, j=42, kind='shape',
                         eid='h_records_name'))
@@ -1168,13 +1192,35 @@ def build():
         d = ImageDraw.Draw(tile)
         PA.fill_poly(tile, PA.ellipse_pts(-20, 520, 190, 250, n=44),
                      (238, 226, 206), seed=920, value=0.06)
-        PA.fill_poly(tile, PA.ellipse_pts(1090, 420, 34, 34, n=28), SILVER,
+        # Droplet and its POISON tag moved to 990 and up to 285/200. The presenter is
+        # at cx=1120 and his head tops out near y=312 at h=360, so a droplet at
+        # the old (1090, 420) sat on his shoulder and (1090, 250) sat on his
+        # head. 990 puts the pair up and to his left, clear of the skull and of
+        # both hands, in the same dark ceiling band as 'THE OLD RECORDS'.
+        PA.fill_poly(tile, PA.ellipse_pts(990, 285, 34, 34, n=28), SILVER,
                      seed=921, value=0.05)
-        SC.fullbody(d, 1120, 820, 400, pose='armscrossed',
-                    expression='worried', seed=922)
+        # cx 1120 and h 360, not cx 940 / h 400. Two competing defects, and 940/400
+        # loses to both of them:
+        #   (a) At cx=1120 h=400 the 'armscrossed' reach (+-157 at h=400) put
+        #       his right hand at x=1277 on a 1280-wide frame -- 3px off the
+        #       edge, on a figure too small for that crop to read as intent.
+        #   (b) Moving in to cx=940 to solve (a) put his feet on the scroll,
+        #       whose trapezoid spans x 308-1012 along the y=700 floor line.
+        #       Scroll is (246,240,224) and PALE is (238,226,206) -- eleven
+        #       apart on blue, i.e. nothing at 720p -- so his legs dissolved
+        #       into the document below the waist. A contact shadow at the feet
+        #       restored the ground line but the ellipse clipped the bottom edge
+        #       and read as a smudge, because feet at y=700 leave 13px of frame
+        #       and the foot blobs overshoot to 707.
+        # h=360 scales the reach to +-141, so 1120+141 = 1261: 19px clear of
+        # the edge, and 1120-141 = 979 sits just inside the scroll's right edge
+        # at 1012 without his legs going under it. Standing clear of the
+        # document is worth more than 19px of hand margin.
+        SC.fullbody(d, 1120, 700, 360, pose='armscrossed',
+                    expression='worried', seed=922, ink=PALE)
         # PALE, not INK: this lands on the dark tunnel, where v1's INK word
         # would have been invisible.
-        D.draw_label(tile, 'POISON', center=(1090, 250), color=PALE, size=48)
+        D.draw_label(tile, 'POISON', center=(990, 200), color=PALE, size=48)
     els.append(SC.layer(clock, 41, f_droplet, j=42, kind='character',
                         eid='f_droplet'))
     els.append(cap(41, 300, 664, size=32))
@@ -1265,16 +1311,22 @@ def build():
                         eid='i_never'))
 
     def i_shut(tile, fw, fh):
-        # MOVING. The presenter, awed, cropped by the bottom edge, arriving at
-        # the last thing in the chapter. One entrance, one expression, no
-        # swap: the awe is the arrival.
-        SC.fullbody(ImageDraw.Draw(tile), 700, 830, 400, pose='peeking',
-                    expression='awed', seed=1010)
+        # MOVING. The presenter, awed, arriving at the last thing in the
+        # chapter. One entrance, one expression, no swap: the awe is the
+        # arrival.
+        # y_feet 610, not 830: at 830 his shins ran 110px off the bottom edge of
+        # a 720 frame with no ground contact. The binding constraint now is the
+        # bottom caption (b43 and b45 both print at cy=676, spanning ~657-695):
+        # his feet must clear 657 even at the LOWEST point of the enter() dip.
+        # With dy=20 that floor is 610+20=630, 27px clear. His head (top ~y=210
+        # at h=400) stays well below the THE DOOR STAYS SHUT label at cy=112.
+        SC.fullbody(ImageDraw.Draw(tile), 700, 610, 400, pose='peeking',
+                    expression='awed', seed=1010, ink=PALE)
         D.draw_label(tile, 'THE DOOR STAYS SHUT', center=(400, 112),
                      color=INK, size=44)
     els.append(SC.accrue(clock, 45, 46, i_shut, kind='character',
                          eid='i_shut',
-                         motion=SC.enter(clock, 45, dx=0, dy=44,
+                         motion=SC.enter(clock, 45, dx=0, dy=20,
                                          dur=ARRIVE)))
     els.append(cap(43, 640, 676, size=32, fill=PALE))
     els.append(cap(45, 640, 676, size=32, fill=PALE))
