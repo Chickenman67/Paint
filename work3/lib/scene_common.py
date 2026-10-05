@@ -62,6 +62,36 @@ W, H = E3.W, E3.H
 INK = (24, 24, 28)
 PAGE = (252, 252, 251)
 
+# ---------------------------------------------------------------------------
+# chapter -> scene module
+# ---------------------------------------------------------------------------
+# The persistent-stage rebuilds live in separate modules (`cheyenne2_scene`,
+# `area51_2_scene`, ...) so the v1 card-per-beat scenes stay readable as the
+# baseline. EVERY importer -- the shipper and both gates -- resolves a chapter
+# through this map, so a chapter is redirected in exactly ONE place.
+#
+# This map was duplicated in the two gates and left out of _build_segments.py
+# once. The gates tested v2 while the shipper imported v1 by name, so the
+# entire stage rebuild, plus every art fix made against it, rendered nowhere
+# and the film shipped the old one-card-per-beat cut machine. The shipped
+# pixels matched v1 within h264 noise (0.8-1.7%) and were 70-89% off v2 at
+# any beat where the two builds differ -- which is how the miss was caught.
+# If you add an importer, call scene_mod(); never spell '%s_scene' yourself.
+SCENE_MODULE = {'pinegap': 'pinegap2_scene',
+                'room39': 'room39_2_scene',
+                'cheyenne': 'cheyenne2_scene',
+                'svalbard': 'svalbard2_scene',
+                'vatican': 'vatican2_scene',
+                'fortknox': 'fortknox2_scene',
+                'tomb': 'tomb2_scene',
+                'mezhgorye': 'mezhgorye2_scene',
+                'area51': 'area51_2_scene'}
+
+
+def scene_mod(chapter):
+    """The importable scene module name for a chapter."""
+    return SCENE_MODULE.get(chapter, '%s_scene' % chapter)
+
 
 # ---------------------------------------------------------------------------
 # caption

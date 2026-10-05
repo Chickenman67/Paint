@@ -49,7 +49,10 @@ def stream_duration(path, stream):
 def build(chapter, fps):
     seg_dir = os.path.join(ROOT, 'segments', chapter)
     importlib.invalidate_caches()
-    mod = importlib.import_module('%s_scene' % chapter)
+    # scene_mod, NOT '%s_scene' % chapter: the persistent-stage rebuild lives
+    # in <chapter>2_scene and that is what ships. Spelling the module name
+    # here is how the stage rebuild rendered nowhere while the gates tested it.
+    mod = importlib.import_module(SC.scene_mod(chapter))
     scene = mod.build()
     silent = os.path.join(seg_dir, '_silent.mp4')
     SC.render_video(scene, silent, fps=fps)

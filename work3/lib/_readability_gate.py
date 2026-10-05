@@ -67,18 +67,10 @@ W, H = 1280, 720
 CHAPTERS = ['pinegap', 'area51', 'tomb', 'room39', 'mezhgorye', 'cheyenne',
             'svalbard', 'fortknox', 'vatican']
 
-# Kept in sync with _coverage_gate.SCENE_MODULE: every chapter here is the
-# persistent-stage rebuild, so the v1 scene module is the baseline, not the
-# thing under test.
-SCENE_MODULE = {'pinegap': 'pinegap2_scene',
-                'room39': 'room39_2_scene',
-                'cheyenne': 'cheyenne2_scene',
-                'svalbard': 'svalbard2_scene',
-                'vatican': 'vatican2_scene',
-                'fortknox': 'fortknox2_scene',
-                'tomb': 'tomb2_scene',
-                'mezhgorye': 'mezhgorye2_scene',
-                'area51': 'area51_2_scene'}
+# The map lives in scene_common (the ONE place a chapter is redirected), so
+# the gate and the shipper can never again disagree about which module ships.
+# Path setup above is complete at this point, so the import is safe here.
+from scene_common import SCENE_MODULE  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Thresholds. Every one of these is a BAND, and every band has two
@@ -322,6 +314,83 @@ def check_fit(scene, beats, per_beat=3):
             if clear < EDGE_CLEAR_PX:
                 hits.append((i, round(t, 2), clear))
     return hits
+
+
+# ---------------------------------------------------------------------------
+# (a2) ARRIVAL FIT -- motion must not push ink off the frame
+# ---------------------------------------------------------------------------
+# WHY THIS IS SEPARATE FROM check_fit. check_fit isolates `kind='text'`
+# elements by rendering the frame twice (with and without text) and diffing, so
+# it is blind to text an author painted INSIDE a shape/bg/subject draw call --
+# which is where every label in these chapters actually lives (draw_label,
+# draw_number, draw_bubble). Worse, it samples per beat and would miss the
+# brief window at an element's reveal. Two real defects slipped through it:
+# tomb's "OUTSIDE" label and its "ACID" label, both carried on an element with
+# SC.enter(dx=+90/+140), so at the arrival frame the label's ink ran 66px and
+# 55px past the right edge (a half-word hanging at the border) and a full-frame
+# replace exposed the previous beat down the left. Both looked correct at rest,
+# which is exactly why sampling rest frames cannot find this class.
+#
+# The fix is deterministic and needs no render: an element's tile is cached
+# cropped to its ink with a known origin, and transform_at(t) gives the (dx,dy)
+# offset at each keyframe. Rest ink box + arrival offset = where the ink lands.
+#
+# SCOPE -- WHY THIS GATES ONLY ONE NARROW CASE. The obvious version of this
+# check ("flag any motion keyframe that pushes ink off-frame") fires 40 times
+# across the nine chapters, because SC.enter(dx=-150) on a CHARACTER is the
+# intended entrance -- the figure starts off-frame and eases in. That is
+# correct behaviour, so a blanket rule here is noise, and a gate that cries
+# wolf on every entrance is worse than no gate.
+#
+# The one case that is a defect and not an entrance: a FULL-FRAME replace tile
+# (one whose rest ink spans effectively the whole width, kind 'bg'/'shape')
+# that slides horizontally. A full-frame tile covers the frame precisely so
+# that nothing shows through; sliding it exposes whatever is beneath down the
+# opposite side for the length of the move. tomb's g_acid did exactly this --
+# enter(dx=+140) on a tile that filled [0,0,W,H] left a 140px strip of the
+# previous beat's crane scene visible on the left, and pushed its "ACID" label
+# to a half-word "ACI" at the right edge. So this gates that, and only that.
+
+
+def check_motion_fit(scene, frac=0.9, opacity=0.9, clearance=None):
+    """Opaque full-frame replace tiles that slide horizontally.
+
+    A full-frame replace paints an opaque fill over [0,0,W,H] precisely so
+    nothing shows through. Sliding one exposes whatever is beneath down the
+    opposite side for the length of the move. tomb's g_acid did exactly this.
+
+    Two tests keep this from crying wolf. The tile must be full-BLEED (wide AND
+    tall, both >= frac) so a wide-but-short band is ignored. And it must be
+    OPAQUE (>= opacity of its pixels solid): that is what separates a true
+    replace from a wide, mostly-transparent element -- vatican's acc09_shape is
+    a full-width, full-height shelf WALL but only 7% opaque, so sliding it just
+    reveals more of the same shelves and there is nothing to fix. svalbard's
+    lay29_shape is 100% opaque and full-bleed, so it is a real hit like g_acid.
+
+    Returns a list of (element_id, keyframe_t, dx, uncovered_px).
+    """
+    import numpy as np
+    clr = EDGE_CLEAR_PX if clearance is None else clearance
+    out = []
+    for el in scene.elements:
+        if not getattr(el, 'motion', None):
+            continue
+        if getattr(el, 'kind', '') not in ('bg', 'shape'):
+            continue
+        tile, origin = el.tile_and_origin()
+        if tile is None:
+            continue
+        tw, th = tile.size
+        if tw < W * frac or th < H * frac:   # not full-bleed
+            continue
+        if float((np.asarray(tile)[..., 3] > 200).mean()) < opacity:
+            continue                        # see-through: nothing to expose
+        for k in el.motion:
+            t, dx, dy = k[0], k[1], k[2]
+            if abs(dx) <= clr:               # vertical-only cannot expose a side
+                continue
+            out.append((el.id, round(t, 3), int(dx), int(abs(dx))))
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -667,6 +736,7 @@ def run(chapter, per_beat=3, fps=6):
     res = {'chapter': chapter, 'beats': len(beats)}
 
     res['fit'] = check_fit(scene, beats, per_beat)
+    res['motion_fit'] = check_motion_fit(scene)
     res['contrast'] = check_contrast(scene, beats, per_beat)
     frac, trun, trat, nocap = check_density(scene, beats)
     res['text_frac'] = frac
@@ -681,6 +751,8 @@ def run(chapter, per_beat=3, fps=6):
     res['bad'] = []
     if res['fit']:
         res['bad'].append('FIT %d' % len(res['fit']))
+    if res['motion_fit']:
+        res['bad'].append('MOTION-FIT %d' % len(res['motion_fit']))
     if res['contrast']:
         res['bad'].append('CONTRAST %d' % len(res['contrast']))
     if frac < TEXT_FRAC_MIN:

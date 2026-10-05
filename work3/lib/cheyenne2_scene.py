@@ -810,12 +810,15 @@ def build():
         D.draw_label(tile, 'THOUSANDS OF GALLONS', center=(640, 664),
                      color=SNOW, size=42)
     els.append(SC.layer(clock, 24, e_tanks, j=25, kind='shape', eid='e_tanks'))
-    els.append(cap(24, 640, 224, size=32))
-    # b24 IS captioned, and v1's THOUSANDS OF GALLONS label is dropped: the
-    # caption is that sentence, so printing both put the same words twice in
-    # one frame. The caption sits at y=224 on the lit rock between the strip
-    # lights and the tank tops, because y=664 -- where v1 put it -- lands on
-    # the dark floor band where ink measures about 1.4:1.
+    # NO caption at b24, and this is the correction. A previous pass added
+    # cap(24, 640, 224) on the reasoning that the caption was the sentence and
+    # the drawn label should go -- but it left BOTH in place, and the comment
+    # below claimed the label had been dropped. Rendered, the frame carried the
+    # same line twice, once as a caption straddling four tank arches where it
+    # was unreadable and once as a label on the floor. Saying a thing twice in
+    # one frame is the telling-AND-showing redundancy, not emphasis.
+    # The drawn label wins: it is legible, it sits in clear floor, and it is
+    # the sentence. The caption is dropped.
 
     def e_sealed(tile, fw, fh):
         # THE SEALED ROOM: a wall of concrete with ONE sealed hatch, the

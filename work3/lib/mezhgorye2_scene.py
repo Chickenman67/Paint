@@ -875,7 +875,11 @@ def build():
                        wavelength=150.0)
         SC.fullbody(d, 420, 770, 600, pose='shrug', expression='deadpan',
                     seed=395)
-        D.draw_bubble(tile, 'nothing on paper', xy=(980, 300),
+        # xy=(925,...), not 980: the bubble is max text width + 2*BUBBLE_PAD
+        # wide (273+44=317), so at 980 its right edge landed at 1297 -- 17px
+        # past the frame, and "paper" sat 5px off the right edge. draw_bubble
+        # has no frame clamp (unlike SC.caption). 925 leaves a 38px gap.
+        D.draw_bubble(tile, 'nothing on paper', xy=(925, 300),
                       tail_to=(620, 430), font_size=36, max_w=520)
     els.append(SC.accrue(clock, 26, 27, f_wash, kind='character'))
     # NO caption at b26, and this one is forced as well as chosen: b27 is the

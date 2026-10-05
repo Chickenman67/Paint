@@ -91,19 +91,10 @@ TEXT_FRAC_MAX = 0.55
 TEXT_RUN_MAX = 2
 
 # Scene module override. Normally a chapter's scene is `<chapter>_scene`. The
-# pinegap pilot lives in `pinegap2_scene` (it is the persistent-stage rebuild,
-# kept as a separate module so v1 stays as the baseline for comparison), so the
-# gate is pointed at it explicitly. Every import site goes through `scene_mod`
-# so a chapter only has to be redirected in ONE place.
-SCENE_MODULE = {'pinegap': 'pinegap2_scene',
-                'room39': 'room39_2_scene',
-                'cheyenne': 'cheyenne2_scene',
-                'svalbard': 'svalbard2_scene',
-                'vatican': 'vatican2_scene',
-                'fortknox': 'fortknox2_scene',
-                'tomb': 'tomb2_scene',
-                'mezhgorye': 'mezhgorye2_scene',
-                'area51': 'area51_2_scene'}
+# stage rebuilds live in `<chapter>2_scene` (v1 stays as the baseline for
+# comparison), so the gate is pointed at them explicitly. The map itself is
+# shared: scene_common.SCENE_MODULE is the ONE place a chapter is redirected.
+SCENE_MODULE = SC.SCENE_MODULE
 
 
 def scene_mod(chapter):

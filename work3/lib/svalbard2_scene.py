@@ -1059,12 +1059,23 @@ def build():
         PA.fill_poly(tile, raw, CONCRETE, seed=261, value=0.07)
         PA.hand_stroke(d, raw, INK, 7, closed=True, seed=262, wavelength=150.0)
         _doorway(d, 920, 530, 263, w=100, h=125, colour=(52, 58, 70))
-        # MOVING. The excavator's bucket arriving is "is being built" -- the
-        # present continuous made visible by the one machine that does it.
-        _excavator(d, 690, 620, 90, 264)
         D.draw_label(tile, 'NEW TUNNEL', center=(920, 360), color=VT.LABEL_RED,
                      size=34)
-    els.append(SC.layer(clock, 29, f_newtunnel, j=30, kind='shape',
+    els.append(SC.layer(clock, 29, f_newtunnel, j=30, kind='shape'))
+    # NO motion on the full-frame layer. It arrived with enter(dx=-70) so that
+    # "the excavator's bucket arriving" would read as building-in-progress, but
+    # the motion was on the WHOLE tile, and _day_arctic fills [0,0,W,H]: a
+    # 70px band of the previous beat's paler scene showed down the right edge
+    # for the length of the move. The machine now carries the motion (below),
+    # which is what the comment meant anyway.
+
+    def f_bucket(tile, fw, fh):
+        # The excavator, arriving. Small and drawn on its own so it can move
+        # without dragging the opaque background across the shot.
+        d = ImageDraw.Draw(tile)
+        _excavator(d, 690, 620, 90, 264)
+    els.append(SC.layer(clock, 29, f_bucket, j=30, kind='character',
+                        eid='f_bucket',
                         motion=SC.enter(clock, 29, dx=-70, dy=0, dur=ARRIVE)))
     els.append(cap(29, 640, 700, size=30))
     # KEPT. "A new access tunnel is being built" is future work in progress; the

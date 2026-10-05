@@ -667,7 +667,16 @@ def build():
         D.draw_label(tile, "XI'AN", center=(900, 588), color=INK, size=26)
         D.draw_label(tile, 'OUTSIDE', center=(1205, 588), color=INK, size=24)
     els.append(SC.accrue(clock, 23, 26, e_xian, kind='shape', eid='e_xian',
-                         motion=SC.enter(clock, 23, dx=90, dy=0,
+                         # DROPPED IN, not slid in from the right. dx=+90 put
+                         # the whole inset 90px right at arrival: the panel's
+                         # right border and the "OUTSIDE" label (home ink ends
+                         # x=1259) both ran off the frame, and the first ~0.1s
+                         # showed a half-word "OU" hanging at the edge. A
+                         # vertical arrival is what "dropped onto the night"
+                         # actually looks like, and it leaves the horizontal
+                         # extent untouched -- panel 760..1260 and both labels
+                         # stay inside at every frame of the move.
+                         motion=SC.enter(clock, 23, dx=0, dy=40,
                                          dur=ARRIVE)))
 
     def e_heights(tile, fw, fh):
@@ -993,19 +1002,37 @@ def build():
                        closed=False, seed=817, wavelength=60.0)
         PA.hand_stroke(d, [(1060, 190), (1210, 190), (1180, 400), (1080, 400)],
                        INK, 6, closed=True, seed=818, wavelength=90.0)
+        # The acid stream itself lives in g_pour below, so it can move on its
+        # own without dragging this full-frame tile across the shot. This
+        # element holds the frame, the soldier, the jar, and the label only.
+        D.draw_label(tile, 'ACID', center=(1130, 520), color=ACID, size=48)
+    els.append(SC.layer(clock, 36, g_acid, j=37, kind='bg', eid='g_acid'))
+    # NO motion on the full-frame tile. It used to arrive with enter(dx=+140),
+    # which was wrong twice over: a 140px strip down the LEFT exposed the
+    # previous beat's crane scene mid-transition, and at arrival the "ACID"
+    # label (home ink ends x=1195) ran to 1335, so the first ~0.1s showed a
+    # half-word "ACI" hanging at the frame edge. A full-frame replace cannot
+    # slide horizontally without exposing what is underneath it.
+    els.append(cap(36, 640, 676, size=32, fill=PALE))
+
+    def g_pour(tile, fw, fh):
+        # THE POUR, and it is the motion this beat is actually about. The acid
+        # is drawn as its own small element rather than riding in on the frame,
+        # so it can move without dragging the frame -- and because enter()
+        # eases an offset to zero, starting at dx=-90 means the stream begins
+        # short, near the jar, and EXTENDS leftward onto the figure. That is
+        # "poured acid on figures" happening, not a card sliding across.
+        d = ImageDraw.Draw(tile)
         for k, (ax, ay, bx, by, wd) in enumerate((
                 (1130, 404, 700, 500, 34), (1120, 410, 520, 560, 20))):
             PA.hand_stroke(d, [(ax, ay), (bx, by)], ACID, wd, closed=False,
-                           seed=815 + k, wavelength=140.0)
+                           seed=1855 + k, wavelength=140.0)
         for k in range(6):
             PA.fill_poly(tile, PA.ellipse_pts(500 + k * 150, 520 + k * 34,
                                               17, 12, n=16), ACID,
-                         seed=830 + k, value=0.05)
-        D.draw_label(tile, 'ACID', center=(1130, 520), color=ACID, size=48)
-    els.append(SC.layer(clock, 36, g_acid, j=37, kind='bg', eid='g_acid',
-                        motion=SC.enter(clock, 36, dx=140, dy=0,
-                                        dur=0.55)))
-    els.append(cap(36, 640, 676, size=32, fill=PALE))
+                         seed=1870 + k, value=0.05)
+    els.append(SC.layer(clock, 36, g_pour, j=37, kind='shape', eid='g_pour',
+                        motion=SC.enter(clock, 36, dx=-90, dy=0, dur=0.62)))
 
     def g_gone(tile, fw, fh):
         # Full-frame REPLACE to flat grey. The figure has become the grey it
