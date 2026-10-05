@@ -529,6 +529,52 @@ def check_cadence(scene, beats, fps=6):
 
 REFRAME_MAX = 0.30
 
+# A static, render-free HINT -- not a check, and deliberately not authoritative.
+# SC.accrue keeps an element until its stage turns over; SC.layer(clock, i, draw)
+# is live for beats i..i-1 only, so a scene wired beat-to-layer churns its
+# composition every beat no matter how many stages wrap it.
+#
+# It is tempting to read the ratio as the defect. It is not. Checked against the
+# rendered onsets:
+#
+#   pinegap  3/24 ->  2 swaps     room39  12/21 ->  2      tomb    36/19 ->  3
+#   mezhgorye 0/39 -> 14 swaps   fortknox 20/24 -> 22
+#   vatican  29/10 -> 20         svalbard 28/4  -> 26
+#
+# fortknox has a healthy ratio and 22 defects and mezhgorye has a perfect one and
+# 14, because each of their `accrue` calls paints a whole composition
+# (b_castle, g_buses, g_children) rather than one detail onto a held scene. The
+# ratio says which helper was called, not how much of the frame the art covers.
+#
+# So this is printed for triage and NEVER adds to `bad`. The rendered
+# check_reframe() is the only authority. See [[stage-wrapper-is-not-stage-conversion]]
+# and [[gates-must-render-not-just-inspect]].
+LAYER_RATIO_HINT_ONLY = True
+
+
+def check_layer_ratio(mod):
+    """accrue:layer ratio in a scene module's source. Returns (n_layer, n_accrue,
+    n_own_card, ratio), or None when the source cannot be read -- which the
+    caller must treat as a gap, never as a pass.
+
+    Counted from source rather than from the built scene because the two helpers
+    produce identical Elements; only the call site says whether an element is
+    wired to one beat or to the end of its stage.
+    """
+    import inspect
+    try:
+        src = inspect.getsource(mod)
+    except Exception:
+        return None
+    nl = src.count('SC.layer(clock')
+    na = src.count('SC.accrue(clock')
+    ncard = src.count('def card(')
+    if nl + na + ncard == 0:
+        return None
+    return (nl, na, ncard, float(nl) / max(1.0, float(na)))
+
+
+
 
 def check_reframe(scene, beats):
     """Return the list of full-frame subject swaps inside a persistent stage.
@@ -630,6 +676,7 @@ def run(chapter, per_beat=3, fps=6):
     res['cadence'], res['max_still'], res['repaints'] = check_cadence(scene, beats, fps)
     res['motion'], res['still'] = check_motion(scene, beats, fps)
     res['reframe'] = check_reframe(scene, beats)
+    res['ratio'] = check_layer_ratio(mod)
 
     res['bad'] = []
     if res['fit']:
@@ -652,6 +699,10 @@ def run(chapter, per_beat=3, fps=6):
     if res['reframe']:
         res['bad'].append('REFRAME %d full-frame swaps inside a stage'
                           % len(res['reframe']))
+    # check_layer_ratio is printed but NEVER gates. It did not survive checking
+    # against the rendered onsets -- fortknox has a healthy ratio and 22 defects,
+    # mezhgorye a perfect one and 14 -- so it is triage information, not a
+    # verdict. See the comment above check_layer_ratio.
     return res
 
 
@@ -675,11 +726,12 @@ def main(argv):
         if not ok:
             bad += 1
         print('%s %-11s %2d beats  text %3.0f%% (run %d)  cut %4.1fs/%-2d  '
-              'still-gap %4.0fs  motion %2.0f%%  %s'
+              'still-gap %4.0fs  motion %2.0f%%  L/A %s  %s'
               % ('OK  ' if ok else 'GAP ', r['chapter'], r['beats'],
                  100 * r['text_frac'], r['text_run'], r['cadence'],
                  r['repaints'], r['max_still'],
                  100 * r['motion'],
+                 ('%d/%d' % (r['ratio'][0], r['ratio'][1])) if r['ratio'] else '?',
                  ('  ' + '  '.join(r['bad'])) if r['bad'] else ''))
         for label, key in (('fit', 'fit'), ('contrast', 'contrast')):
             if r[key]:
@@ -844,6 +896,55 @@ def selftest_main():
     print('%-9s control (nothing moves)          -> %.0f%% motion, %d cuts, '
           'still-gap %.1fs'
           % ('MOTION', 100 * mot, ncut, still_gap))
+
+    # (d2) REFRAME. This one gets TWO controls, because the check has a negative
+    # case that is easy to get wrong: a scene whose stages change the backdrop is
+    # SUPPOSED to cut, and flagging it would train us to ignore the output.
+    #
+    # Control A -- the defect. One bg element that never changes, plus a subject
+    # that repaints the whole frame mid-stage. This is mezhgorye's old stage E.
+    # The two subjects MUST paint different colours: an earlier version of this
+    # control drew both the same red, the frame genuinely did not change at the
+    # handoff, and the check correctly reported nothing. A control that does not
+    # actually contain the defect it is testing is worse than no control.
+    def _swap_scene():
+        els = [E3.E('bg', 'bg', lambda tile, fw, fh: ImageDraw.Draw(tile)
+                    .rectangle([0, 0, fw, fh], fill=(232, 228, 216)),
+                    at=0.0, until=8.0)]
+        els.append(E3.E('subj', 'subject',
+                        lambda tile, fw, fh: ImageDraw.Draw(tile)
+                        .rectangle([0, 0, fw, fh], fill=(180, 40, 40)),
+                        at=0.0, until=4.0))
+        els.append(E3.E('subj2', 'subject',
+                        lambda tile, fw, fh: ImageDraw.Draw(tile)
+                        .rectangle([0, 0, fw, fh], fill=(40, 90, 180)),
+                        at=4.0, until=8.0))
+        return E3.Scene(elements=els, title=None, duration=8.0)
+
+    def _paint_red(tile, fw, fh):
+        ImageDraw.Draw(tile).rectangle([0, 0, fw, fh], fill=(180, 40, 40))
+
+    beats8 = [{'start': 0.0, 'end': 4.0, 'text': 'a'},
+              {'start': 4.0, 'end': 8.0, 'text': 'b'}]
+    hits = check_reframe(_swap_scene(), beats8)
+    if not hits:
+        failures.append('REFRAME: a full-frame subject swap was NOT flagged')
+    print('%-9s control (subject repaints frame) -> %s'
+          % ('REFRAME', 'FLAGGED %s' % hits if hits else 'MISSED'))
+
+    # Control B -- the negative. A backdrop change IS a cut to a new place, and
+    # the check must stay quiet on it. svalbard and cheyenne are full of these;
+    # flagging them would bury the real defects.
+    els = [E3.E('bg', 'bg', lambda tile, fw, fh: ImageDraw.Draw(tile)
+                .rectangle([0, 0, fw, fh], fill=(232, 228, 216)),
+                at=0.0, until=4.0),
+           E3.E('bg2', 'bg', _paint_red, at=4.0, until=8.0)]
+    hits = check_reframe(E3.Scene(elements=els, title=None, duration=8.0),
+                         beats8)
+    if hits:
+        failures.append('REFRAME: a stage change was flagged %s' % hits)
+    print('%-9s negative (stage change only)    -> %s'
+          % ('REFRAME', 'FLAGGED (false positive!)' % hits if hits else 'clean'))
 
     print()
     if failures:
