@@ -164,7 +164,9 @@ class Element:
     """
 
     __slots__ = ("id", "kind", "draw", "at", "motion", "until",
-                 "_tile", "_built", "_origin", "_times")
+                 "_tile", "_built", "_origin", "_times",
+                 "needs_bg", "bg_probe_box", "bg_resolver",
+                 "_bg_bucket", "_bg_luma")
 
     def __init__(self, id, kind, draw, at=0.0, motion=None, until=None):
         self.id = id
@@ -179,6 +181,15 @@ class Element:
         self.until = None if until is None else float(until)
         self._tile = None     # cropped RGBA ink tile
         self._built = False
+        # Background-aware text (see draw_at/_resolve_against_bg). Left unset
+        # on every ordinary element so `needs_bg` is a plain attribute lookup
+        # in the hot loop rather than a getattr, and so no existing element's
+        # behaviour changes.
+        self.needs_bg = False
+        self.bg_probe_box = None
+        self.bg_resolver = None
+        self._bg_bucket = None
+        self._bg_luma = None
 
     # -- visibility ---------------------------------------------------------
 
@@ -235,6 +246,11 @@ class Element:
         its interpolated transform. Returns True if it drew, else False."""
         if not self.visible(t):
             return False
+        # A background-aware element (a caption whose fill must be resolved
+        # against what is actually behind it) gets the page before its tile is
+        # built, so it can measure that background. See scene_common.caption.
+        if getattr(self, 'needs_bg', False):
+            self._resolve_against_bg(page)
         tile, origin = self._build_tile()
         if tile is None:
             return False
@@ -245,6 +261,40 @@ class Element:
         cim, cx0, cy0 = composited
         page.paste(cim, (cx0, cy0), cim)
         return True
+
+    def _resolve_against_bg(self, page):
+        """Let the element re-resolve its fill from the page behind it.
+
+        Called once per (element, background) and only when the background has
+        actually changed, because measuring costs a numpy crop. The resolved
+        value is folded into the element's tile-cache key so a caption that
+        moves from a light stage to a dark one rebuilds instead of reusing a
+        tile built for the wrong register.
+        """
+        box = self.bg_probe_box
+        if box is None:
+            return
+        x0, y0, x1, y1 = box
+        x0, y0 = max(0, int(x0)), max(0, int(y0))
+        x1, y1 = min(W, int(x1)), min(H, int(y1))
+        if x1 <= x0 or y1 <= y0:
+            return
+        patch = np.asarray(page.crop((x0, y0, x1, y1)).convert('L'),
+                           dtype=np.uint8)
+        if patch.size == 0:
+            return
+        med = int(np.median(patch))
+        # 24 levels of slack: a stage can shift slightly frame to frame (a
+        # wash blotch, a passing shadow) without the register changing, and
+        # rebuilding the tile on every one of those would cost far more than
+        # the occasional wrong-but-close caption does.
+        bucket = med // 24
+        if bucket == getattr(self, '_bg_bucket', None):
+            return
+        self._bg_bucket = bucket
+        self._bg_luma = med
+        self._built = None
+        self.draw = self.bg_resolver(self._bg_luma)
 
 
 # ---------------------------------------------------------------------------

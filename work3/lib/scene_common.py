@@ -145,9 +145,61 @@ def _legible_fill(fill):
     if fill is None:
         return CAPTION_ON_PAPER
     mx, mn = max(fill[:3]), min(fill[:3])
+    # The page ink is exempt. It is technically a low-saturation dark colour, so
+    # the grey test below used to swallow it and hand back CAPTION_ALERT red --
+    # turning every caption that explicitly asked for INK-on-paper into the
+    # alert colour. Measured: (24,24,28) has max-min = 4, well inside the grey
+    # band, so `fill=INK` was silently recoloured on nine chapters' worth of
+    # day cards. INK is the CORRECT fill on a light register (20.5:1), and it is
+    # not what this guard is for: the guard exists for a caption the author
+    # picked by accident, and INK is the default a card gets when nobody picks.
+    if tuple(int(v) for v in fill[:3]) == (24, 24, 28):
+        return fill
     if (mx - mn) <= 28 and _luma(fill) < 150:
         return CAPTION_ALERT          # gray: unreadable everywhere, say so loudly
     return fill
+
+
+def _resolve_fill(fill, bg_luma, dark):
+    """Pick the caption fill that actually reads against a measured background.
+
+    WHY THIS IS NEEDED AT ALL. The per-card `dark=` flag was supposed to be the
+    mechanism, and across 128 captions in nine chapters it is passed only 11
+    times. Every other caption picks an accent (RED, SNOW, PALE, AMBER_LT, LAMP)
+    without knowing whether the stage behind it is light or dark, and guesses
+    wrong about a quarter of the time. The readability gate found all nine
+    chapters affected, and the two eye-confirmed failures are opposite:
+
+        svalbard b01  AMBER on a near-white snowfield   1.6:1
+        cheyenne b03  INK on near-black clothing        1.19:1
+
+    Both are the complaint "text should never be gray or black because its hard
+    to see", and the second is worse than the complaint describes: the fill and
+    the keyline are both near-black, so the letters have no interior and the
+    caption reads as a smear.
+
+    So the register is measured instead of declared. The caller passes the
+    luminance of the pixels actually behind the caption (engine3 samples the
+    page before the tile is built) and this picks the fill:
+
+      * an authored fill that already clears MIN_CAPTION_CR is KEPT, so a
+        deliberate red-on-cream emphasis survives;
+      * otherwise fall back to the register's safe colour -- INK on a light
+        background, light amber on a dark one.
+
+    The authored fill is not silently discarded: `CAPTION_ALERT` is returned
+    when even the safe colour cannot clear the bar, which is a loud colour that
+    says "this card needs a real fix" rather than a quiet wrong one.
+    """
+    bg = (bg_luma, bg_luma, bg_luma)
+    if fill is not None:
+        chosen = _legible_fill(CAPTION_ON_NIGHT if dark else fill)
+        if _contrast_ratio(chosen, bg) >= MIN_CAPTION_CR:
+            return chosen
+    safe = CAPTION_ON_NIGHT if bg_luma < 128 else CAPTION_ON_PAPER
+    if _contrast_ratio(safe, bg) >= MIN_CAPTION_CR:
+        return safe
+    return CAPTION_ALERT
 
 
 def caption(text, cx, cy, at, until=None, size=None, fill=None, max_w=None,
@@ -157,14 +209,12 @@ def caption(text, cx, cy, at, until=None, size=None, fill=None, max_w=None,
     `until` is the whole point (invariant 1). If omitted the caller should pass
     it -- cap() always does.
 
-    `fill` defaults to ink, which is CORRECT on the paper/day register (20.5:1).
-
-    `dark=True` declares the caption is landing on a night card. That is the one
-    thing a caption author genuinely knows at author time and cannot be derived
-    from the fill alone, so it is stated explicitly: ink on night measures 1.33:1
-    (invisible) and a light fill measures 13.3:1. Without the flag there is no
-    safe default for both registers, which is exactly why the blanket
-    "never dark" version of this rule was wrong.
+    `fill` is honoured when it is legible against what is actually behind the
+    caption, and overridden when it is not. `dark=True` is still accepted and
+    still selects the night register up front, for the case where the caller
+    knows better than the sample; but it is no longer the only way to avoid
+    landing on the wrong register, because 128 captions across nine chapters
+    used it 11 times and a quarter of the rest were unreadable.
     """
     color = _legible_fill(CAPTION_ON_NIGHT if dark else fill)
     sz = size if size is not None else T.LABEL_PX
@@ -175,42 +225,56 @@ def caption(text, cx, cy, at, until=None, size=None, fill=None, max_w=None,
     outline = T.INK
     stroke_w = 2
 
-    def draw(tile, fw, fh):
-        f = T.load_font(sz, bold=True)
-        probe = ImageDraw.Draw(Image.new('RGB', (1, 1)))
-        bb = probe.textbbox((0, 0), text, font=f, stroke_width=stroke_w)
-        tw = bb[2] - bb[0]
-        if tw > max_w:
-            sz2 = max(14, int(sz * max_w / float(tw)))
-            f = T.load_font(sz2, bold=True)
+    def make_draw(color):
+        """Build the tile-drawing closure for a resolved `color`."""
+
+        def draw(tile, fw, fh):
+            f = T.load_font(sz, bold=True)
+            probe = ImageDraw.Draw(Image.new('RGB', (1, 1)))
             bb = probe.textbbox((0, 0), text, font=f, stroke_width=stroke_w)
             tw = bb[2] - bb[0]
-        pad = stroke_w + 8                                  # invariant 3 (+keyline)
-        w = int(tw) + pad * 2
-        h = int(bb[3] - bb[1]) + pad * 2
-        sub = Image.new('RGBA', (w, h), (0, 0, 0, 0))
-        _draw_keylined(sub, text, color, sz, w, h, outline, stroke_w)
-        # CLAMP into the frame. Every scene places captions by eye at a y like
-        # 690 or 700, but a 49px-tall caption centred there ends at 724 or 744
-        # -- the bottom third of the letters is sliced off by the frame edge,
-        # which reads as a broken render, not as a design choice. Clamping here
-        # rather than asking each scene to remember means a caption can never be
-        # authored off-frame, and a caption authored that low slides up instead
-        # of disappearing.
-        pad_x, pad_y = 12, 8
-        x = int(cx - w / 2)
-        y = int(cy - h / 2)
-        if x < pad_x:
-            x = pad_x
-        elif x + w > 1280 - pad_x:
-            x = 1280 - pad_x - w
-        if y < pad_y:
-            y = pad_y
-        elif y + h > 720 - pad_y:
-            y = 720 - pad_y - h
-        tile.alpha_composite(sub, (x, y))
-    return E3.E('cap_%d_%s' % (int(at * 1000), text[:14]), 'text', draw,
-                at=at, until=until)
+            if tw > max_w:
+                sz2 = max(14, int(sz * max_w / float(tw)))
+                f = T.load_font(sz2, bold=True)
+                bb = probe.textbbox((0, 0), text, font=f, stroke_width=stroke_w)
+                tw = bb[2] - bb[0]
+            pad = stroke_w + 8                                  # invariant 3 (+keyline)
+            w = int(tw) + pad * 2
+            h = int(bb[3] - bb[1]) + pad * 2
+            sub = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+            _draw_keylined(sub, text, color, sz, w, h, outline, stroke_w)
+            # CLAMP into the frame. Every scene places captions by eye at a y like
+            # 690 or 700, but a 49px-tall caption centred there ends at 724 or 744
+            # -- the bottom third of the letters is sliced off by the frame edge,
+            # which reads as a broken render, not as a design choice. Clamping here
+            # rather than asking each scene to remember means a caption can never be
+            # authored off-frame, and a caption authored that low slides up instead
+            # of disappearing.
+            pad_x, pad_y = 12, 8
+            x = int(cx - w / 2)
+            y = int(cy - h / 2)
+            if x < pad_x:
+                x = pad_x
+            elif x + w > 1280 - pad_x:
+                x = 1280 - pad_x - w
+            if y < pad_y:
+                y = pad_y
+            elif y + h > 720 - pad_y:
+                y = 720 - pad_y - h
+            tile.alpha_composite(sub, (x, y))
+        return draw
+
+    # First guess, used until the first background sample corrects it.
+    draw = make_draw(_resolve_fill(fill, 255 if not dark else 0, dark))
+
+    el = E3.E('cap_%d_%s' % (int(at * 1000), text[:14]), 'text', draw,
+              at=at, until=until)
+    # Background-aware: engine3 samples the page under this box BEFORE the tile
+    # is built, and re-resolves if the register changed.
+    el.needs_bg = True
+    el.bg_probe_box = (cx - 620, cy - 60, cx + 620, cy + 60)
+    el.bg_resolver = lambda luma: make_draw(_resolve_fill(fill, luma, dark))
+    return el
 
 
 def label(text, cx, cy, at, until=None, size=None, fill=None, max_w=None,

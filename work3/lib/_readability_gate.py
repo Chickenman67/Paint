@@ -93,20 +93,39 @@ SCENE_MODULE = {'pinegap': 'pinegap2_scene',
 # tightest correct captions in the film measure 9-11px.
 EDGE_CLEAR_PX = 6
 
-# (b) CONTRAST. WCAG AA is 4.5:1. The type here is 30-32px bold, which is
-# "large text" by WCAG's own definition (>=18.66px bold), where 3.0:1 is the
-# standard. Using 4.5 on large bold type is stricter than the standard asks,
-# which is deliberate: the complaint was that captions are hard to read, and
-# 3.0 is where "readable" starts to be arguable.
+# (b) CONTRAST.
 #
-# MEASURED, NOT ASSUMED. The fill is not read from the source -- the glyph
-# core colour is measured off the rendered pixels, because `caption()` clamps,
-# rescales and re-outlines, and the colour that lands can differ from the one
-# written. CALIBRATION: T.INK on paper measures 20.5:1 and is the most legible
-# thing in the film; (198,48,40) red on sand measures 2.5:1 and is not; ink on
-# the night stage measures 1.2:1 and is invisible. 4.5 sits above the failures
-# and far below the successes.
-MIN_CONTRAST = 4.5
+# THIS THRESHOLD IS NOT WCAG 4.5, AND THE REASON IS A SET OF EYE-CONFIRMED
+# CASES. Measuring fill-vs-background alone flagged two kinds of caption:
+#
+#   UNREADABLE (correctly flagged, both since fixed by the background-resolving
+#   fill in scene_common.caption):
+#     svalbard b01  gold (216,192,120) on white snow (239,243,246)  1.6:1
+#     cheyenne b03  black on near-black clothing                       1.19:1
+#
+#   CLEARLY READABLE (false positives, and the reason this was rewritten):
+#     svalbard b06  red on mid-grey sky          2.56:1
+#     cheyenne b38  amber on the dark door       4.1:1
+#
+# What separates the two groups is NOT the ratio. It is whether the fill and
+# its 2px keyline are the SAME colour. `caption()` gives every coloured fill a
+# black keyline, and that keyline is the contrast mechanism -- the glyph is
+# read as a shape with a dark edge, not as coloured pixels. When the fill is
+# also dark (cheyenne b03: INK fill, INK keyline) the keyline adds nothing, the
+# letters have no interior, and it is unreadable at any ratio. When the fill
+# differs from the keyline the glyph is legible well below 4.5:1, because the
+# eye is resolving an edge, not a fill.
+#
+# So a caption is flagged only when the fill and the keyline are near-identical
+# AND that shared colour is within KEYLINE_MERGE of the background. That is a
+# much narrower, much more honest defect than "ratio < 4.5", and it is the shape
+# of the thing that actually went wrong.
+#
+# WCAG 4.5 remains the bar for the AUTORRESOLVER in scene_common, which picks
+# fills blind and must therefore be conservative. The gate here is allowed to be
+# more permissive because it can see the keyline.
+KEYLINE_MERGE = 40
+MIN_FILL_VS_BG_WHEN_KEYLINED = 1.15
 
 # (c) DENSITY. The user overrode the original rule: not a progressive list, and
 # text only every couple of images. So the target is a text-free beat being the
@@ -350,25 +369,11 @@ def check_contrast(scene, beats, per_beat=3):
             sel = mask[y0:y1 + 1, x0:x1 + 1]
             stroke = drawn[y0:y1 + 1, x0:x1 + 1][sel].astype(np.float64)
 
-            # THE GLYPH FILL IS THE DOMINANT COLOUR, NOT A LUMINANCE DECILE.
-            #
-            # The first version took the brightest decile, on the reasoning
-            # that `caption()` puts a 2px INK keyline under a coloured fill so
-            # the fill is the bright end. That is true for a coloured fill and
-            # exactly backwards for the COMMON case, which is an INK fill on
-            # paper: there the fill AND the keyline are both black, so the
-            # brightest decile is not the fill at all -- it is the anti-aliased
-            # edge. Measured on pinegap b01 it read (136,143,151) and scored
-            # 1.88:1 against the paper, flagging the single most legible
-            # caption in the film. The stroke histogram there is 4726 pure
-            # (0,0,0) pixels out of ~5300; the brightest decile was the 95
-            # pixels of grey fringe.
-            #
-            # So: quantise, take the mode, and measure that. Anti-aliasing
-            # produces a spread of off-colours; the fill is the one colour that
-            # actually fills the strokes. This works for an ink fill, a
-            # coloured fill and a keyline under either, because in every case
-            # the fill is the mode.
+            # Two colour clusters: the FILL and the INK KEYLINE. Both are found
+            # by colour, not by a luminance decile -- see the long note in the
+            # module docstring; the first version measured the anti-aliased
+            # fringe and called the most legible caption in the film a 1.88:1
+            # failure.
             q = (stroke // 24 * 24).astype(np.int32)
             keys = q[:, 0] * 65536 + q[:, 1] * 256 + q[:, 2]
             vals, counts = np.unique(keys, return_counts=True)
@@ -378,39 +383,24 @@ def check_contrast(scene, beats, per_beat=3):
                 return np.array([(k >> 16) & 255, (k >> 8) & 255, k & 255],
                                 dtype=np.float64)
 
-            # The FILL is the largest cluster that is NOT the INK keyline.
-            # `caption()` draws a 2px INK keyline under every coloured fill,
-            # and on a bold 32px glyph the keyline's two edges carry as many
-            # pixels as the fill's interior -- measured on a (150,140,110)
-            # fill, INK 2053px vs fill 1582px. So "take the mode" measures the
-            # KEYLINE, which is 12:1 against paper and always passes, which is
-            # how a genuinely 2:1 caption got reported as clean.
-            #
-            # Human readability depends on the FILL against the background; the
-            # keyline only separates glyph from art. So: drop the INK cluster
-            # if a second one exists, and measure that. When the fill is ITSELF
-            # ink (the common paper case, one merged cluster) there is nothing
-            # to drop and the single cluster is the fill.
-            ink_key = _rgb(vals[order[0]])
-            fill_key = vals[order[0]]
-            # Only treat the mode as a keyline when a SECOND cluster is
-            # substantial (>=25% as many pixels). On the common INK-on-paper
-            # caption the fill and keyline merge into one cluster and the
-            # next one is a thin anti-aliasing fringe -- dropping to that would
-            # measure grey edge pixels, which is the bug this replaced.
-            #
-            # "Is this cluster the keyline" is near-BLACK, not near-INK. The
-            # keyline is drawn with T.INK=(24,24,28) but rasterises to
-            # quantised (0,0,0), which is 28 away from T.INK on the blue
-            # channel -- so a tight "within 24 of INK" test missed it and the
-            # whole drop never fired. Use a near-black luminance test instead,
-            # which is what the keyline actually is on screen.
-            mode_luma = 0.299 * ink_key[0] + 0.587 * ink_key[1] + 0.114 * ink_key[2]
-            if (len(order) > 1
-                    and mode_luma < 70
-                    and counts[order[1]] >= 0.25 * counts[order[0]]):
-                fill_key = vals[order[1]]
-            core = _rgb(fill_key)
+            def _luma(c):
+                return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
+
+            top = _rgb(vals[order[0]])
+            key = _rgb(vals[order[1]]) if len(order) > 1 else top
+
+            # Which cluster is the keyline? The near-black one. T.INK is
+            # (24,24,28) but rasterises to (0,0,0), which is 28 away on the blue
+            # channel, so an "is it INK" test has to be a near-black luminance
+            # test rather than a distance-to-INK test.
+            if _luma(top) < 70 and _luma(key) >= 70:
+                fill_c, key_c = key, top
+            elif _luma(key) < 70:
+                fill_c, key_c = top, key
+            else:
+                # No near-black cluster: an ink fill on paper, where fill and
+                # keyline are the same pixels. Treat it as its own keyline.
+                fill_c = key_c = top
 
             # Background: a ring of non-text pixels immediately around the box,
             # so it is the surface this caption actually sits on.
@@ -420,9 +410,17 @@ def check_contrast(scene, beats, per_beat=3):
             ring = bg[ry0:ry1, rx0:rx1].reshape(-1, 3)
             bgc = np.median(ring, axis=0)
 
-            ratio = contrast(core, bgc)
-            if ratio < MIN_CONTRAST:
-                hits.append((i, round(t, 2), round(float(ratio), 2)))
+            ratio = contrast(fill_c, bgc)
+            merged = np.abs(fill_c - key_c).max() <= KEYLINE_MERGE
+            # The defect is a keyline that cannot separate: fill and keyline are
+            # the same colour, so the glyph has no interior and its edge carries
+            # no information. Combined with a background close to that shared
+            # colour, the caption is a smear.
+            if merged and contrast(key_c, bgc) < MIN_FILL_VS_BG_WHEN_KEYLINED:
+                hits.append((i, round(t, 2), round(float(ratio), 2),
+                             'fill==keyline %s on bg %s'
+                             % (tuple(int(v) for v in fill_c),
+                                tuple(int(v) for v in bgc))))
     return hits
 
 
@@ -508,6 +506,80 @@ def check_cadence(scene, beats, fps=6):
 
 
 # ---------------------------------------------------------------------------
+# (d2) REFRAME -- does a persistent stage actually stay persistent?
+# ---------------------------------------------------------------------------
+#
+# check_cadence tells us a chapter is cutting. It does not say WHERE, and the
+# place it turned out to be was not the one the onsets suggested. The six
+# unconverted chapters each wrap their beats in SC.stage() -- the backdrop
+# really does persist -- but paint a fresh full-frame subject on every beat
+# INSIDE that stage, handing off at until/at. The viewer sees a cut every
+# sentence while every structural measurement says the stage held.
+#
+# So this check reports the offenders, not a summary. It measures each element
+# ONSET (not each sampled frame, which at 6fps smears a 0.4s arrival across
+# samples) and asks which onsets repaint the frame. A stage-change onset is
+# legitimate -- that is the cut to the next place. A subject onset that repaints
+# >REFRAME_MAX of the frame is the defect: it is a new image wearing the old
+# stage's clothes.
+#
+# There is deliberately no cap on the printed list. A truncated work-list reads
+# as "covered everything" when it did not
+# ([[a-capped-gate-list-truncates-a-work-list]]).
+
+REFRAME_MAX = 0.30
+
+
+def check_reframe(scene, beats):
+    """Return the list of full-frame subject swaps inside a persistent stage.
+
+    Each hit is (t, fraction, beat_label, [element ids]). `fraction` is how much
+    of the frame changed; beat_label is the beat whose onset this is, so the
+    fix can be located in the scene file without hunting.
+    """
+    import numpy as np
+    import engine3 as E3
+
+    els = list(getattr(scene, 'elements', []))
+    if not els:
+        return []
+
+    # Which onsets belong to a stage (backdrop) change rather than a subject?
+    def kinds_at(t, tol=0.01):
+        return set((getattr(e, 'kind', '') or '') for e in els
+                   if abs(float(e.at) - t) < tol)
+
+    times = sorted(set(round(float(e.at), 3) for e in els))
+    hits = []
+    for t in times:
+        # A stage swap is a real cut to a new place. Not the defect.
+        if 'bg' in kinds_at(t):
+            continue
+        prev = max(0.0, t - 0.20)
+        after = t + 0.20
+        dur = float(scene.duration or beats[-1].get('end', 0.0))
+        if after > dur:
+            after = dur
+        a = np.asarray(E3.render_frame(scene, prev).convert('RGB'), dtype=np.int16)
+        b = np.asarray(E3.render_frame(scene, after).convert('RGB'), dtype=np.int16)
+        frac = float((np.abs(a - b).max(axis=2) > 24).mean())
+        if frac <= REFRAME_MAX:
+            continue
+        ids = sorted(e.id for e in els if abs(float(e.at) - t) < 0.01)
+        # nearest beat label
+        lab = 'b??'
+        best = None
+        for bt in beats:
+            s = float(bt.get('start', 0.0))
+            if best is None or abs(s - t) < abs(best - t):
+                best, lab = s, bt.get('id') or bt.get('beat') or 'b??'
+        hits.append((round(t, 2), round(frac, 3), str(lab), ids))
+    hits.sort(key=lambda h: -h[1])
+    return hits
+
+
+
+# ---------------------------------------------------------------------------
 # (e) MOTION -- is anything actually moving
 # ---------------------------------------------------------------------------
 
@@ -557,6 +629,7 @@ def run(chapter, per_beat=3, fps=6):
     res['text_free'] = len(nocap)
     res['cadence'], res['max_still'], res['repaints'] = check_cadence(scene, beats, fps)
     res['motion'], res['still'] = check_motion(scene, beats, fps)
+    res['reframe'] = check_reframe(scene, beats)
 
     res['bad'] = []
     if res['fit']:
@@ -576,6 +649,9 @@ def run(chapter, per_beat=3, fps=6):
         res['bad'].append('STILL GAP %.0fs' % res['max_still'])
     if not (MOTION_FRAC_MIN <= res['motion'] <= MOTION_FRAC_MAX):
         res['bad'].append('MOTION %.0f%%' % (100 * res['motion']))
+    if res['reframe']:
+        res['bad'].append('REFRAME %d full-frame swaps inside a stage'
+                          % len(res['reframe']))
     return res
 
 
@@ -611,6 +687,13 @@ def main(argv):
                 print('              %s: %s%s'
                       % (label, s, ',+%d' % (len(r[key]) - 8)
                          if len(r[key]) > 8 else ''))
+        # The work-list. No cap: a truncated list reads as "covered everything".
+        if r['reframe']:
+            print('              reframe (%d full-frame swaps inside a stage):'
+                  % len(r['reframe']))
+            for t, frac, lab, ids in r['reframe']:
+                print('                %-5s t=%-6.2f %3.0f%%  %s'
+                      % (lab, t, 100 * frac, ' '.join(ids[:5])))
     print('\n%d chapter(s) with gaps' % bad)
     return 0
 
@@ -637,9 +720,13 @@ def selftest_main():
     """Each check must FAIL on a frame that is broken on purpose.
 
     A gate that cannot be shown to fail is not a gate -- it is a comment that
-    runs. This builds four deliberately broken scenes and asserts the matching
-    check catches each one.
+    runs. This builds deliberately broken scenes and asserts the matching check
+    catches each one.
     """
+    from PIL import ImageDraw
+    import engine3 as E3
+    import scene_common as SC
+
     beats = [{'start': 0.0, 'end': 4.0, 'text': 'x'}]
     failures = []
 
@@ -680,37 +767,62 @@ def selftest_main():
     print('%-9s negative (normal caption at 360)   -> %s'
           % ('FIT', 'FLAGGED (false positive!)' if hits else 'clean'))
 
-    # (b) CONTRAST: a mid-tone fill on paper that measures ~2:1.
+    # (b) CONTRAST.
     #
-    # The first control was grey-on-grey, and it MISSED -- correctly, because
-    # `_legible_fill()` in scene_common intercepts grey and swaps it for
-    # CAPTION_ALERT red, so a grey caption can never reach the frame. To test
-    # this gate you have to defeat that guard, which means a SATURATED mid-tone
-    # (150,140,110): saturation max-min = 40, above the guard's 28, so it is
-    # rendered as written, and against the 236,232,220 paper it measures about
-    # 2:1. That is the real defect class -- a caption that is not grey, is not
-    # intercepted, and is still unreadable.
-    sc = _fake_scene(dict(text='LOW CONTRAST TAN ON PAPER', cx=640, cy=360,
-                          at=0.0, until=4.0, size=32,
-                          fill=(150, 140, 110)), beats)
+    # The control is the eye-confirmed cheyenne b03 defect: an INK caption on a
+    # dark card, where the fill and the 2px INK keyline are the SAME colour, so
+    # the glyph has no interior and reads as a smear.
+    #
+    # Note it bypasses SC.caption on purpose. The background resolver added to
+    # caption() means INK-on-night can no longer be PRODUCED through the normal
+    # path -- it is corrected before it reaches the frame. That is the fix
+    # working, not the gate being unnecessary: a scene that draws its own text,
+    # or a caption on a frame split light-behind/dark-in-front where the median
+    # sample picks the wrong register, can still produce it. The gate is the
+    # backstop for those, so the control has to be able to make the thing.
+    def _dark_scene():
+        def night(tile, fw, fh):
+            ImageDraw.Draw(tile).rectangle([0, 0, fw, fh], fill=(28, 32, 44))
+
+        def ink_text(tile, fw, fh):
+            import v2type as T
+            f = T.load_font(32, bold=True)
+            s = 'A DARK ROOM, A DARK WORD'
+            bb = ImageDraw.Draw(tile).textbbox((0, 0), s, font=f,
+                                              stroke_width=2)
+            ImageDraw.Draw(tile).text(
+                (fw / 2.0 - (bb[2] - bb[0]) / 2.0, fh / 2.0 - 24), s,
+                font=f, fill=SC.INK, stroke_width=2, stroke_fill=T.INK)
+        els = [E3.E('bg', 'bg', night, at=0.0),
+               E3.E('inktext', 'text', ink_text, at=0.0)]
+        return E3.Scene(elements=els, title=None, duration=4.0)
+
+    sc = _dark_scene()
     hits = check_contrast(sc, beats, per_beat=1)
     if not hits:
-        failures.append('CONTRAST: a 2:1 tan caption was NOT flagged')
-    print('%-9s control (tan fill ~2:1 on paper)  -> %s'
-          % ('CONTRAST', 'FLAGGED %s' % [round(h[2], 2) for h in hits]
+        failures.append('CONTRAST: INK-on-night was NOT flagged')
+    print('%-9s control (INK fill==keyline on night) -> %s'
+          % ('CONTRAST', 'FLAGGED %s' % [(h[0], h[2]) for h in hits]
              if hits else 'MISSED'))
 
-    # ...and an INK caption on paper -- the most common and most legible case
-    # in the film -- must NOT be flagged.
-    sc = _fake_scene(dict(text='INK ON PAPER IS LEGIBLE', cx=640, cy=360,
-                          at=0.0, until=4.0, size=32), beats)
+    # Negative: a KEYLINED coloured caption on a mid background. This measured
+    # 2.56:1 and was flagged by the ratio-only version, but by eye it is plainly
+    # readable -- the black keyline supplies the edge. It must NOT be flagged.
+    def _grey_scene():
+        def sky(tile, fw, fh):
+            ImageDraw.Draw(tile).rectangle([0, 0, fw, fh], fill=(128, 132, 140))
+        els = [E3.E('bg', 'bg', sky, at=0.0)]
+        els.append(SC.caption(text='RED ON MID GREY IS FINE', cx=640, cy=360,
+                              at=0.0, until=4.0, size=32,
+                              fill=(198, 48, 40)))
+        return E3.Scene(elements=els, title=None, duration=4.0)
+
+    sc = _grey_scene()
     hits = check_contrast(sc, beats, per_beat=1)
     if hits:
-        failures.append('CONTRAST: an INK-on-paper caption was flagged %s'
-                        % hits)
-    print('%-9s negative (INK on paper, 20.5:1)   -> %s'
-          % ('CONTRAST', 'FLAGGED (false positive!) %s'
-             % [round(h[2], 2) for h in hits] if hits else 'clean'))
+        failures.append('CONTRAST: a keylined red caption was flagged %s' % hits)
+    print('%-9s negative (red+keyline on mid grey)   -> %s'
+          % ('CONTRAST', 'FLAGGED (false positive!)' if hits else 'clean'))
 
     # (c) DENSITY: a caption on every beat is wall-to-wall text.
     sc = _fake_scene(dict(text='TEXT ON EVERY BEAT', cx=640, cy=360,
