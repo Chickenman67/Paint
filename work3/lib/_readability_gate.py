@@ -71,6 +71,7 @@ CHAPTERS = ['pinegap', 'area51', 'tomb', 'room39', 'mezhgorye', 'cheyenne',
 # the gate and the shipper can never again disagree about which module ships.
 # Path setup above is complete at this point, so the import is safe here.
 from scene_common import SCENE_MODULE  # noqa: E402
+import scene_common as SC  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Thresholds. Every one of these is a BAND, and every band has two
@@ -172,6 +173,38 @@ STILL_MAX = 20.0
 # overcorrection (too much movement is its own readability problem).
 MOTION_FRAC_MIN = 0.05
 MOTION_FRAC_MAX = 0.22
+
+# (f) STRADDLE. A caption whose ring spans BOTH registers.
+#
+# check_contrast measures the fill against the MEDIAN background in a ring
+# around the glyphs. For a caption that straddles a hard edge -- half dark sky,
+# half pale wall -- the median is whichever side is darker, the resolver picks a
+# fill that matches THAT side, the ratio comes out high, and the gate PASSES.
+# Meanwhile half the letters are unreadable. That is not a hypothetical: it is
+# mezhgorye b08, where "Gulag prisoners did most of the digging." straddled the
+# top edge of a pale wall at y=130 (rows y=40..120 measure luma ~118-122, rows
+# y=130..220 measure ~203-219). The fill could be right and the text still
+# illegible, because the glyphs genuinely occupy two surfaces.
+#
+# So the median is the wrong statistic for this failure. What matters is
+# whether ONE fill can serve the WHOLE surface the glyphs occupy. check_straddle
+# therefore splits the pixels DIRECTLY BEHIND the glyphs into a dark cluster and
+# a light cluster and checks the caption's own resolved fill against BOTH: a
+# straddle is only a defect when the fill FAILS one of the two halves, because
+# that is the half the viewer cannot read. A light fill over a dark ridge with
+# pale sky above (mezhgorye b11) reads on both halves and is correctly silent;
+# a dark fill over a dark dome (b01, b04) vanishes on the dome and is caught.
+#
+# This is a two-sided test -- the same reasoning as
+# `guard-that-skips-real-defects-is-worse-than-none`, where a one-sided "is the
+# fill dark" test silently skipped dark-on-dark art.
+#
+# STRADDLE_HARD is the "the viewer cannot read this at all" line, well below the
+# 4.5 caption bar. Calibrated on 2026-10-06 by eye at 2x: mezhgorye b01/b04
+# measure 1.36 and ARE unreadable (a black glyph on a dark dome -- the words
+# "mountain lies" simply vanish); room39 b05 measures 3.4 and is plainly legible.
+# 2.0 sits between them.
+STRADDLE_HARD = 2.0
 
 
 # ---------------------------------------------------------------------------
@@ -494,6 +527,145 @@ def check_contrast(scene, beats, per_beat=3):
 
 
 # ---------------------------------------------------------------------------
+# (f) STRADDLE -- a caption whose ring holds BOTH registers, so no single
+# fill can serve it, however good the measured ratio looks. See STRADDLE_SPREAD.
+# ---------------------------------------------------------------------------
+
+def check_straddle(scene, beats, per_beat=3):
+    """Report captions sitting across a hard light/dark boundary.
+
+    POSITIVE CONTROL: mezhgorye b08, the caption that straddled the top edge of
+    a pale wall. It is reported as known-bad in scene_common.caption()'s probe-box
+    comment and again at STRADDLE_SPREAD above; if this function does not flag
+    b08, it is a no-op and everything it says is worthless.
+    """
+    import numpy as np
+    hits = []
+    for i, b in enumerate(beats, 1):
+        for t in sample_times(scene, [b], per_beat):
+            mask, bg, drawn = frame_text_ink(scene, t)
+            if mask.sum() < 40:
+                continue
+            ys, xs = np.nonzero(mask)
+            y0, y1 = int(ys.min()), int(ys.max())
+            x0, x1 = int(xs.min()), int(xs.max())
+            if (y1 - y0) < 4 or (x1 - x0) < 4:
+                continue
+
+            # The caption's OWN fill colour: the lightest (or, for a light fill,
+            # the dominant) cluster among the drawn text pixels. This is the same
+            # colour-cluster logic check_contrast uses, and deliberately so --
+            # two checks that measure a different "fill" disagree with each other.
+            sel = mask[y0:y1 + 1, x0:x1 + 1]
+            stroke = drawn[y0:y1 + 1, x0:x1 + 1][sel].astype(np.float64)
+            q = (stroke // 24 * 24).astype(np.int32)
+            keys = q[:, 0] * 65536 + q[:, 1] * 256 + q[:, 2]
+            vals, counts = np.unique(keys, return_counts=True)
+            order = np.argsort(counts)[::-1]
+            top = vals[order[0]]
+            key = vals[order[1]] if len(order) > 1 else top
+
+            def _rgb(k):
+                return np.array([(k >> 16) & 255, (k >> 8) & 255, k & 255],
+                                dtype=np.float64)
+
+            def _luma(c):
+                return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
+
+            top_c, key_c = _rgb(top), _rgb(key)
+            # The fill is whichever cluster is NOT the near-black keyline.
+            if _luma(top_c) < 70 and _luma(key_c) >= 70:
+                fill_c = key_c
+            else:
+                fill_c = top_c
+            # The keyline is NOT guessed from pixels: scene_common.caption()
+            # sets outline=T.INK unconditionally, so it is a known constant.
+            # Inferring it from a second colour cluster fails on exactly the
+            # case that matters -- a dark keyline on a dark stage is invisible,
+            # so there is no second cluster and whatever the sampler picked
+            # instead is noise. It read b11's amber-on-dark caption as a
+            # keyline failure at 1.01:1 and nearly shipped a false positive.
+            key_c = np.array(SC.T.INK, dtype=np.float64)
+
+            # The surface directly behind the glyphs: inside the text bounding
+            # box, minus the text pixels. NOT a ring around the box -- a ring
+            # picks up a high-contrast object sitting NEAR the caption and calls
+            # it a straddle, which is how a legible caption over a distant ridge
+            # gets flagged. Inside-the-box can only see what the glyphs sit on.
+            sub = bg[y0:y1 + 1, x0:x1 + 1]
+            submask = mask[y0:y1 + 1, x0:x1 + 1]
+            behind = sub[~submask].reshape(-1, 3)
+            if behind.shape[0] < 60:
+                continue
+            lum = 0.299 * behind[:, 0] + 0.587 * behind[:, 1] + 0.114 * behind[:, 2]
+            dark_m = lum < 128
+            light_m = lum >= 128
+            # A second surface only counts as a surface if a real share of the
+            # glyphs sit on it. Without this floor, a dark object clipping one
+            # corner of the inter-letter gaps (pinegap b08 has 0.7% dark pixels
+            # behind the glyphs -- a sliver of an object edge, not a surface)
+            # flips the verdict and the caption is legible dark-on-light
+            # throughout. 15% is well above the slivers (0.7-2.3% measured) and
+            # well below a genuine straddle, where the boundary cuts the text.
+            frac_dark = dark_m.sum() / float(len(lum))
+            frac_light = light_m.sum() / float(len(lum))
+            if frac_dark < 0.15 or frac_light < 0.15:
+                continue                      # one surface only -- not a straddle
+            dark_bg = np.median(behind[dark_m], axis=0)
+            light_bg = np.median(behind[light_m], axis=0)
+
+            # The defect: the fill cannot serve BOTH surfaces. A dark fill reads
+            # on pale ground and vanishes on dark; a light fill does the reverse.
+            # The bar is the caption machinery's OWN bar (scene_common's
+            # MIN_CAPTION_CR, WCAG AA): the resolver already picked a fill that
+            # clears 4.5 against the single register it measured. A straddle is
+            # when that fill then FAILS the other half -- i.e. the resolver
+            # guessed one surface and the glyphs actually sit on two. Requiring
+            # it to clear one half AND fail the other keeps uniformly
+            # low-contrast captions (check_contrast's job) out of this report.
+            rd = contrast(fill_c, dark_bg)
+            rl = contrast(fill_c, light_bg)
+            # The readability unit is the GLYPH, not the bare fill: an ink keyline
+            # around the glyph is what carries the contrast on a surface the fill
+            # itself cannot serve (memory `keyline-is-the-contrast-not-the-fill`).
+            # So a half is only a real failure when NEITHER the fill nor its
+            # keyline reads there. b11 (amber fill over a pale snow half) clears
+            # 4.5 on the fill nowhere but the INK keyline reads the snow, so the
+            # caption is legible and must NOT be flagged; b01/b04 (black fill AND
+            # black keyline over the dark dome) fail both, so they must be.
+            rd_k = contrast(key_c, dark_bg)
+            rl_k = contrast(key_c, light_bg)
+
+            def _reads(fcr, kcr):
+                return fcr >= SC.MIN_CAPTION_CR or kcr >= SC.MIN_CAPTION_CR
+
+            reads_dark = _reads(rd, rd_k)
+            reads_light = _reads(rl, rl_k)
+            if reads_dark != reads_light:
+                bad = 'dark' if not reads_dark else 'light'
+                got = min(rd, rd_k) if not reads_dark else min(rl, rl_k)
+                # Only a HARD failure is a straddle defect. The bar that decides
+                # "clears" is the caption bar (4.5), but the bar that decides
+                # "the viewer cannot read this half at all" is much lower --
+                # eye-checked: mezhgorye b01/b04 measure 1.36 (black glyph on
+                # the dark dome, genuinely unreadable, a real defect), while
+                # room39 b05 measures 3.4 (cream glyph on brown ground with a
+                # couple of trunk slivers behind it) and is plainly legible, the
+                # fill and keyline together carrying it. Reporting the 3.4 case
+                # would put a warning next to a real bug and train a reader to
+                # skim the list.
+                if got < STRADDLE_HARD:
+                    hits.append((i, round(t, 2), round(float(got), 2),
+                                 'straddles: glyph unreadable on %s half '
+                                 '(fill%s keyline%s best=%.2f <%.1f)'
+                                 % (bad,
+                                    np.asarray(fill_c).astype(int).tolist(),
+                                    np.asarray(key_c).astype(int).tolist(),
+                                    got, STRADDLE_HARD)))
+    return hits
+
+
+# ---------------------------------------------------------------------------
 # (c) DENSITY -- text on too few / too many beats
 # ---------------------------------------------------------------------------
 
@@ -738,6 +910,7 @@ def run(chapter, per_beat=3, fps=6):
     res['fit'] = check_fit(scene, beats, per_beat)
     res['motion_fit'] = check_motion_fit(scene)
     res['contrast'] = check_contrast(scene, beats, per_beat)
+    res['straddle'] = check_straddle(scene, beats, per_beat)
     frac, trun, trat, nocap = check_density(scene, beats)
     res['text_frac'] = frac
     res['text_run'] = trun
@@ -755,6 +928,8 @@ def run(chapter, per_beat=3, fps=6):
         res['bad'].append('MOTION-FIT %d' % len(res['motion_fit']))
     if res['contrast']:
         res['bad'].append('CONTRAST %d' % len(res['contrast']))
+    if res['straddle']:
+        res['bad'].append('STRADDLE %d' % len(res['straddle']))
     if frac < TEXT_FRAC_MIN:
         res['bad'].append('TEXT %.0f%% TOO LOW' % (100 * frac))
     if frac > TEXT_FRAC_MAX:
@@ -805,7 +980,8 @@ def main(argv):
                  100 * r['motion'],
                  ('%d/%d' % (r['ratio'][0], r['ratio'][1])) if r['ratio'] else '?',
                  ('  ' + '  '.join(r['bad'])) if r['bad'] else ''))
-        for label, key in (('fit', 'fit'), ('contrast', 'contrast')):
+        for label, key in (('fit', 'fit'), ('contrast', 'contrast'),
+                           ('straddle', 'straddle')):
             if r[key]:
                 s = ','.join('b%02d@%.1fs' % (b, t) for b, t, *_ in r[key][:8])
                 print('              %s: %s%s'
@@ -947,6 +1123,63 @@ def selftest_main():
         failures.append('CONTRAST: a keylined red caption was flagged %s' % hits)
     print('%-9s negative (red+keyline on mid grey)   -> %s'
           % ('CONTRAST', 'FLAGGED (false positive!)' if hits else 'clean'))
+
+    # (b2) STRADDLE. The control is the eye-confirmed mezhgorye b01/b04 defect:
+    # an INK caption sitting across the crown of a near-black dome, where the
+    # words "mountain lies" measured 1.36:1 and simply vanished. check_contrast
+    # MISSES this by construction -- it measures against the MEDIAN background
+    # in a ring, the median matches the dark side, the resolver then picks a fill
+    # matching THAT side, and the ratio comes out high. That is why this needs its
+    # own check and its own control.
+    #
+    # Built as a hard horizontal split straight through the caption's bounding
+    # box, which is the geometric worst case.
+    def _split_scene(fill, cy=360):
+        def split(tile, fw, fh):
+            d = ImageDraw.Draw(tile)
+            d.rectangle([0, 0, fw, fh // 2], fill=(236, 232, 220))   # pale sky
+            d.rectangle([0, fh // 2, fw, fh], fill=(22, 24, 30))       # dark dome
+        els = [E3.E('bg', 'bg', split, at=0.0)]
+        els.append(SC.caption(text='MIDDLE WORDS VANISH HERE', cx=640, cy=cy,
+                              at=0.0, until=4.0, size=32, fill=fill))
+        return E3.Scene(elements=els, title=None, duration=4.0)
+
+    # POSITIVE: dark fill AND dark keyline over the dark half. Both halves of the
+    # readability unit fail on the dark side, so this is unreadable and must be
+    # reported.
+    sc = _split_scene(SC.INK)
+    hits = check_straddle(sc, beats, per_beat=1)
+    if not hits:
+        failures.append('STRADDLE: INK caption across a hard edge was NOT flagged')
+    print('%-9s control (INK across sky/dome split) -> %s'
+          % ('STRADDLE', 'FLAGGED %s' % [(h[0], h[2]) for h in hits]
+             if hits else 'MISSED'))
+
+    # NEGATIVE, and this is the one that matters. A LIGHT fill straddling the same
+    # edge reads on the dark half via the fill and on the pale half via the INK
+    # keyline, so the viewer can read every word and it must stay SILENT. This is
+    # the real mezhgorye b11 case. A gate that flagged it would put a warning next
+    # to correct art and train a reader to skim the list -- the failure mode that
+    # produced `a-capped-gate-list-truncates-your-work-list`.
+    #
+    # It CANNOT be built at the symmetric cy=360 of the positive control. The
+    # caption is re-resolved at frame time from the median of its probe box, and
+    # that box hugs the glyphs, so a balanced split measures mid-register and the
+    # resolver hands back a DARK fill -- reproducing the positive control instead
+    # of the negative one. (My first attempt at exactly this did, and the selftest
+    # caught it: fill[0,0,0]. A control that does not contain the case it claims
+    # to test is worse than no control.) So the negative is built with the real
+    # b11 geometry instead: the DARK half is the majority of the box, so the
+    # median is dark, so the resolver correctly picks the light amber -- and the
+    # pale top of the glyphs still covers ~25% of them, comfortably over the 15%
+    # surface floor, so this really is a straddle and not a one-surface hold.
+    sc = _split_scene((255, 236, 150), cy=368)
+    hits = check_straddle(sc, beats, per_beat=1)
+    if hits:
+        failures.append('STRADDLE: a light keylined caption across the same edge '
+                        'was flagged %s' % hits)
+    print('%-9s negative (light fill, INK keyline)   -> %s'
+          % ('STRADDLE', 'FLAGGED (false positive!) %s' % hits if hits else 'clean'))
 
     # (c) DENSITY: a caption on every beat is wall-to-wall text.
     sc = _fake_scene(dict(text='TEXT ON EVERY BEAT', cx=640, cy=360,

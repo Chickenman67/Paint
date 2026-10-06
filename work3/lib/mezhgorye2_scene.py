@@ -228,7 +228,18 @@ def build():
                     expression='worried', seed=9)
     els.append(E3.E('a_presenter_b', 'character', a_presenter_b,
                     at=_aa, until=_au))
-    els.append(cap(1, 640, 128, size=36))
+    # cy 128 -> 95. At 128 the caption ran straight across the crown of the dark
+    # mountain: rows y=90-110 measure a uniform pale sky (spread 24-27) but from
+    # y=114 down the dome's dark mass begins (spread jumps to 218 and the median
+    # falls to 0 at y=130). So "Beneath this mountain lies a secret city." had
+    # its middle words -- "mountain lies" -- drawn in INK-black ON the near-black
+    # dome, at 1.36:1. Eye-checked at 2x and unreadable; this is the user's
+    # complaint verbatim. The straddle gate (check_straddle) catches exactly this
+    # class: one fill cannot serve both halves of the surface the glyphs sit on.
+    #
+    # cy=95 puts the whole 32-36px line inside the clear sky band (y 79-111),
+    # just above the crown and just below the title strip.
+    els.append(cap(1, 640, 95, size=36))
 
     # ---- the sealed door, arriving into the archway at b02 ---------------- #
     # MOVING. The door dropping into the archway is the one arrival worth
@@ -272,7 +283,11 @@ def build():
     # budget had no continuous track in it at all before this.
     els.append(SC.accrue(clock, 4, 6, a_snow, kind='shape', eid='a_snowbank',
                          motion=SC.drift(clock, 4, 6, dx=0, dy=-26)))
-    els.append(cap(4, 640, 128, size=32))
+    # cy 128 -> 95, same reason and same measurement as b01: at 128 this caption
+    # ran across the dark mountain crown and "above Magadan," was INK-black on
+    # near-black (1.36:1, eye-checked unreadable at 2x). The clear sky band is
+    # y 90-110, so 95 keeps the whole line above the crown.
+    els.append(cap(4, 640, 95, size=32))
 
     # ---- b05  the gale ---------------------------------------------------- #
     # Long shallow wind curves, all leaning the same way. Wind drawn as short
