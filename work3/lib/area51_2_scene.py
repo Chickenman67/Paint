@@ -1035,19 +1035,30 @@ def build():
         # that this story happens in offices rather than on the playa. The one
         # blacked-out line is the subject; NOT PUBLIC is stamped across it so
         # the beat needs no caption.
-        sheet = [(60, 120), (470, 120), (470, 430), (60, 430)]
+        #
+        # RESIZED to fill the frame. It used to be a small sheet at (60,120)-
+        # (470,430): correct as a thing on a wall, but the critic's eye and my
+        # own render both saw the b26 frame as ~85% empty grey -- a timid prop
+        # in an empty field. At b26 the sheet is the ONLY subject on screen, so
+        # it must dominate. It now spans x -80..520, y 110..600 (a 600x490
+        # document), cropped off the LEFT edge so the frame admits the room is
+        # bigger than the picture -- the frame-fill canon's own idiom. It still
+        # clears the man at b28 (x 522..758) by 2px and the lectern by 46px,
+        # so nothing later in the stage collides.
+        sheet = [(-80, 110), (520, 110), (520, 600), (-80, 600)]
         PA.fill_poly(tile, sheet, PAPER, seed=464, value=0.05)
-        PA.hand_stroke(d, sheet, INK, 6, closed=True, seed=465, wavelength=140.0)
+        PA.hand_stroke(d, [(0, 110), (520, 110), (520, 600), (-80, 600)],
+                       INK, 6, closed=False, seed=465, wavelength=140.0)
         # NO 'BUDGET' heading. It used to sit on the same baseline as a caption
         # 30px away, so the two read as one run of text -- the pile-up defect
         # arrived at from the other direction. The sheet is identified by its
         # ruled lines and the redaction.
-        for i in range(4):
-            y = 180 + i * 44
-            PA.hand_stroke(d, [(96, y), (300 - (i % 3) * 40, y)],
-                           (150, 146, 138), 4, seed=466 + i, wavelength=70.0)
-        PA.fill_rect(tile, [110, 352, 420, 390], INK, seed=470, value=0.04)
-        D.draw_label(tile, 'NOT PUBLIC', center=(265, 412), color=RED, size=32,
+        for i in range(6):
+            y = 180 + i * 52
+            PA.hand_stroke(d, [(-40, y), (360 - (i % 3) * 70, y)],
+                           (150, 146, 138), 5, seed=466 + i, wavelength=70.0)
+        PA.fill_rect(tile, [-20, 430, 470, 496], INK, seed=470, value=0.04)
+        D.draw_label(tile, 'NOT PUBLIC', center=(215, 545), color=RED, size=38,
                      outline=INK, outline_w=2)
     els.append(SC.accrue(clock, 26, 31, f_sheet, kind='shape', eid='f_sheet',
                          motion=SC.enter(clock, 26, dy=-40, dur=ARRIVE)))
@@ -1131,8 +1142,29 @@ def build():
         PA.hand_stroke(d, dome, INK, 5, closed=False, seed=506, wavelength=120.0)
         PA.hand_stroke(d, [(cx - 100, cy - 34), (cx + 100, cy - 34)],
                        (108, 114, 120), 5, seed=507, wavelength=100.0)
-        _hand_sketch(d, 668, 392, 508, flip=1)
-        _hand_sketch(d, 1180, 344, 509, flip=-1)
+        # REPLACED the two floating _hand_sketch claws. With nothing connecting
+        # them to a body they read as disembodied talons: one hovered over the
+        # man's own face, the other floated above the television. A hand only
+        # makes sense here as part of a reaching arm, so draw ONE arm from his
+        # right shoulder up toward the disc, with the hand at its end. Anchored
+        # to fullbody's standing pose (shoulder near (700,470)), the arm reads
+        # as "he is indicating the thing he just described" -- which is the line.
+        # One idea per frame: the disc is the idea; the arm is the verb.
+        _shoulder = (700, 474)
+        _elbow = (826, 400)
+        _wrist = (938, 330)
+        PA.hand_stroke(d, [_shoulder, _elbow], INK, 7, seed=508,
+                       wavelength=70.0)
+        PA.hand_stroke(d, [_elbow, _wrist], INK, 7, seed=509,
+                       wavelength=70.0)
+        # The hand at the end of the reach: a small open palm, not a claw.
+        d.ellipse([_wrist[0] - 9, _wrist[1] - 7, _wrist[0] + 11,
+                   _wrist[1] + 9], fill=(238, 226, 210))
+        PA.hand_stroke(d, [(_wrist[0] - 9, _wrist[1] - 7),
+                           (_wrist[0] + 11, _wrist[1] - 7),
+                           (_wrist[0] + 11, _wrist[1] + 9),
+                           (_wrist[0] - 9, _wrist[1] + 9)],
+                       INK, 4, closed=True, seed=510, wavelength=40.0)
     els.append(SC.layer(clock, 29, f_sketch, j=30, kind='shape',
                         eid='f_sketch',
                         motion=SC.enter(clock, 29, dy=-34, dur=0.45)))
