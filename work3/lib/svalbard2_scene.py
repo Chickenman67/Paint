@@ -1,66 +1,68 @@
 """svalbard2_scene -- the PERSISTENT-STAGE rebuild of chapter 8 (svalbard).
 
-WHY THIS FILE EXISTS. svalbard_scene.py (v1) was built on "one card per beat,
-each card paints its own whole frame": its local `card(i, j, draw, ...)` made
-an exclusive-window element whose draw closure repainted background + subject +
-labels for beats i..j-1, so nothing survived between beats. The frame was
-repainted every ~2.7s and 35 captions on 35 beats (100% text density) made
-every sentence a cut AND a new wall of words.
+WHAT CHANGED AND WHY. The previous build of this file already wrapped its beats
+in SC.stage(), but almost every beat inside those stages was a full-frame
+SC.layer() that repainted the entire composition at that beat's onset. Measured
+on the built scene: 23 REFRAME hits (a subject onset that repaints >30% of the
+frame) and a median gap between full-frame repaints of 2.84s. That is the viewer's
+complaint exactly -- "every sentence has a cut with a completely new image" -- and
+the structural measurements agreed with it.
 
-THE MODEL HERE. Seven PERSISTENT STAGES, grouped on the narration's own acts,
-using the boundaries already fixed in plans/STAGE_PLANS.md:
+THE MODEL. A STAGE paints the whole persistent world for a run of beats and is
+registered with kind='bg', so its onset is a legitimate cut to a new place (the
+gate skips 'bg' onsets). Every beat INSIDE a stage then ACCRUES one element that
+covers well under 30% of the frame, so nothing inside a stage reads as a new
+image. A stage spans 3-6 beats; the median repaint gap becomes the median stage
+length. The measured result after this rebuild is in the module's own build log.
 
-    A  b01-b05   arctic mountain; the tunnel down into the rock
-    B  b06-b10   the vault cut into permafrost; foil packets
-    C  b11-b17   a million samples; minus eighteen; the seeds sleep
-    D  b18-b21   the original plan was to shut the door
-    E  b22-b26   the 2016 flood; 800 tonnes; cut off for a year
-    F  b27-b30   the same permafrost thaws; watched; new tunnel
-    G  b31-b35   still a bunker against catastrophe; finale
+FOURTEEN stages, grouped on the narration's own acts and on what can share
+one frame without crowding (memory: blind-critic-loss-pattern-over-populated).
+The count is fourteen because S8 is drawn as two stages -- the freezer and then
+the corridor are different places and cannot share a frame -- so the S-LABEL
+count and the STAGE count differ by one. That mismatch is what made an earlier
+version of this docstring claim "thirteen stages" while listing fourteen calls:
 
-Inside a stage the art ACCUMULATES: SC.accrue() layers arrive and stay to the
-stage end, SC.layer() replaces. Scenery accrues; anything carrying text and
-anything sharing a part of the frame replaces. That is the first of the two
-pilot rules, and v1's b19/b24 show why -- a caption sat on the frozen layer it
-was describing.
+    S1  b01-b03  the mountain at night; the vault's name; it opened in 2008
+    S2  b04-b06  the rock in cross-section; the tunnel; the hall cut into the ice
+    S3  b07      above the doorway the midsummer sun barely rises
+    S4  b08-b10  the cold room; one packet; a million samples
+    S5  b11-b12  the crop deck; every sample is a spare copy
+    S6  b13-b14  the keeper, and the globe the samples insure
+    S7  b15      minus eighteen
+    S8a b16-b17  a farm freezer; centuries in the cold
+    S8b b18-b19  the corridor; then the hasp frozen shut
+    S9  b20-b21  the mountain leaks in 2016; meltwater at the entrance
+    S10 b22-b25  the flood rises; eight hundred tonnes; the barricade; 'fine'
+    S11 b26-b27  above the waterline; and the same ice thawing
+    S12 b28-b30  watched; a new tunnel; lights on the snow
+    S13 b31-b35  one night mountain that ACCUMULATES: the bunker, the warm front,
+                 the bared slope and -2.6, then him and "for now", then the
+                 channel. Nothing here is ever replaced.
 
-TEXT DENSITY. v1 captioned all 35 beats. Here 13 of 35 (37%), never two
-consecutive, each placed in its stage's clear zone and timed to the beat whose
-words it carries. The captioned beats are b01, b04, b06, b10, b12, b15, b18,
-b20, b23, b27, b29, b31, b35 -- the hook, the tunnel, the vault reveal, the
-million, the two PIVOTS (b12 "every sample is a spare copy", b27 "the same
-permafrost that keeps it thaws too"), the numbers (b10, b15, b23), the flood
-turn (b20), and the last three beats. The test applied per beat: does the drawn
-art already say the words, or does the viewer need them? Where the art carries
-it -- the stamped SVALBARD label, the five drawn crop names, CROP INSURANCE,
-the -18 numeral, FARM FREEZER vs VAULT, WARMING, -2.6 C PER DECADE, "a bunker"
--- the caption is DROPPED and the comment says why. A caption that repeats a
-drawn label is a pile-up, not clarity.
+The finale (S13) is the clearest case of the model: it was five unrelated
+full-frame cards -- two close-ups, a re-drawn mountain, a bare warming slope --
+and is now ONE night mountain held for thirteen seconds while the presenter
+arrives, a heat front advances, the snow bares, he comes back holding a packet
+AND STAYS while the meltwater channel drifts open beside him. That is the
+"something MOVES and APPEARS inside a stage the viewer can settle on" the brief
+asks for, and holding him through the last beat is what stops the chapter from
+getting quieter exactly where it should be loudest.
 
-MOTION. Ten moving elements, each 0.45-0.6s, each on a SMALL subject: a foil
-packet, the sun's rays, the presenter entering, a camera lamp, a flood gate, an
-excavator. Nothing on a backdrop, and nothing on a full-frame replace -- the
-map, the split copy/original field, the globe and the tonnes wall all POP,
-because a moving full-frame picture is the image churn this rebuild exists to
-remove. The one larger move is the flood waterline RISING across b22-b23, and
-the finale's channel DRIFTING right on b35; those are the two beats where the
-narration describes something continuously moving.
+WHAT IS DELIBERATELY NOT DONE. No art primitive is redrawn and no caption is
+shortened or reworded -- every caption is still clock.ph() straight out of
+segments/svalbard/beats.json. Where a beat's art cannot share a frame with its
+neighbour (the b03 map, the b19 vault-door close-up, the b25 talking head), that
+beat either became its own bg stage or was re-composed from the SAME primitives
+onto its stage's world, and the comment at the call site says which. Captions
+stay only on the beats that carry a fact the drawn art does not -- the b35
+caption was removed precisely because it repeated a label already drawn in the
+frame, which is the tell-AND-show redundancy the brief is written against.
 
-THE ART is not redrawn. Every primitive (_arctic, _mountain, _tunnel, _cutaway,
-_packet, _shelf, _doorway, _globe, ...) and the whole palette come from
-svalbard_scene, imported and aliased, so this file cannot drift from v1's
-look by accident.
+Rule 5 (the engine stamps the title LAST): this file never draws scene.title.
+Rule 7 (engine3._apply_transform moves an element's own tile, never the frame):
+every arrival here uses motion=, never a redraw, so nothing drags a sibling.
 
 Run:  python lib/svalbard2_scene.py --preview --video
-
-THE WEDGE DEFECT IS NOW FIXED. SV._light_wedge fills an OPAQUE AMBER_LT
-triangle, so on the dark night mountain it read as a solid gold pyramid rather
-than a beam of light -- most visibly in the OPENING frame, where the stage
-backdrop holds it for all of stage A. This file now draws its own _soft_beam()
-(nested translucent wedges plus a landing pool) at both call sites, b01 and b30.
-The v1 primitive is still aliased below for anything that wants the hard-edged
-original. Fixing it inside v2paint.fill_poly (a real alpha) is still the general
-answer and is not done.
 """
 
 import math
@@ -86,8 +88,7 @@ TITLE = SV.TITLE
 BEATS = SV.BEATS
 TITLE_BACKDROP = SV.TITLE_BACKDROP
 
-# palette, reused from v1. Only the entries this module actually draws with are
-# aliased; the full set stays reachable as SV.<name> if a later pass needs it.
+# palette, reused from v1.
 INK = SV.INK
 SNOW = SV.SNOW
 AMBER = SV.AMBER
@@ -98,6 +99,10 @@ WATER = SV.WATER
 CONCRETE = SV.CONCRETE
 STEEL = SV.STEEL
 TITLE_COURSE = SV.TITLE_COURSE
+# ICE and SLATE are the permafrost's own two values; the thaw beat re-draws the
+# frozen band in place so the corridor it sits over is the SAME corridor.
+ICE = SV.ICE
+SLATE = SV.SLATE
 
 # The style canon's cream figure for DARK cards. character3 draws him near-black
 # (BODY 26,26,30), which is right on the paper cards and invisible against the
@@ -120,6 +125,10 @@ _packet = SV._packet
 _globe = SV._globe
 _cutaway = SV._cutaway
 _camera = SV._camera
+_snow_hatch = SV._snow_hatch
+_excavator = SV._excavator
+_flood_gate = SV._flood_gate
+_light_wedge = SV._light_wedge
 
 
 def _soft_beam(d, x, y0, y1, half, seed, colour=None):
@@ -127,10 +136,13 @@ def _soft_beam(d, x, y0, y1, half, seed, colour=None):
 
     SV._light_wedge fills one solid AMBER_LT triangle, which on the dark
     exterior reads as an opaque pyramid -- two of them at b30 looked like
-    traffic cones, and the file's own b32 comment already said so about the
-    same primitive. This draws the beam as nested triangles from widest and
+    traffic cones. This draws the beam as nested triangles from widest and
     dimmest to narrowest and brightest, plus a bright pool where it lands, so
     it reads as light spreading out of a lamp rather than a solid shape.
+
+    Kept from the previous pass. It is a STAGE-WORLD element, not a layer: a
+    wedge this wide covers a lot of the frame, so it belongs in the world that
+    a stage paints rather than arriving on top of one.
     """
     colour = colour or AMBER_LT
     steps = 6
@@ -146,35 +158,15 @@ def _soft_beam(d, x, y0, y1, half, seed, colour=None):
     pool = PA.ellipse_pts(x, y1, half * 0.9, 26, n=40)
     PA.fill_poly(PA.img_of(d), pool, (236, 240, 226), seed=seed + 40,
                  value=0.06)
-_excavator = SV._excavator
-_flood_gate = SV._flood_gate
-_light_wedge = SV._light_wedge
-
-# The arrival duration used by every moving element. 0.45-0.6s reads as a
-# deliberate move; longer and the element stops being an arrival and starts
-# being the picture changing every sample.
-ARRIVE = 0.5
 
 
 def _frost_bank(d, x0, x1, ybase, lo, hi, seed, colour=(233, 243, 250),
                 step=132.0):
     """A bank of ICE as a filled mass with a soft, uneven upper boundary.
 
-    Two earlier passes at the b19 door failed here in instructive ways. v1 put
-    ~70 short white ticks on a golden-angle spiral, which read as scratches on
-    the lens. v2 laid evenly-spaced perpendicular strokes along each edge, which
-    read as a dashed white BORDER -- and its long parallel icicles above that
-    read as a bar code. v3 replaced the ticks with jittered blobs, which read as
-    snowflakes: discrete white stars with spikes, arranged in a rectangle. All
-    three shared one flaw -- frost that does not CONNECT does not read as a
-    substance. This one fills a bank from a solid base up to a crest.
-
-    The crest is the whole art problem. It is sampled at `step` px with three
-    octaves of wobble rather than alternating lo/hi at every vertex: v4 used a
-    per-vertex alternation and rendered as a row of sharp white triangles, a
-    sawblade standing on the door. Snow banks roll. So the boundary is a smooth
-    spline-ish sequence with a long swell, a medium lobe and a little tooth, and
-    it is what you read as "drift" rather than "zigzag".
+    Kept from the previous pass, unchanged. Frost that does not CONNECT does not
+    read as a substance, so this fills a bank from a solid base up to a crest,
+    and the crest is a three-octave wobble (a sawtooth reads as a sawblade).
     """
     pts = [(x0, ybase), (x1, ybase)]
     steps = max(4, int((x1 - x0) / step))
@@ -182,8 +174,6 @@ def _frost_bank(d, x0, x1, ybase, lo, hi, seed, colour=(233, 243, 250),
     for s in range(steps + 1):
         u = s / float(steps)
         px = x0 + (x1 - x0) * u
-        # three octaves: the swell of the drift, a lobe, then fine tooth. No
-        # hard alternation, so no sawtooth.
         crest = (0.50 * math.sin(u * 3.1 + seed * 0.017)
                  + 0.30 * math.sin(u * 7.3 + seed * 0.031 + 1.1)
                  + 0.20 * math.sin(u * 15.7 + seed * 0.023 + 2.7))
@@ -198,9 +188,9 @@ def _frost_crystals(d, x0, x1, ycrest, n, seed, colour=(226, 240, 249)):
     """A FEW crystal spikes standing off a frost crest.
 
     Deliberately sparse and irregular. The v3 pass put two dendrites on every
-    blob, which at 60-odd blobs became a field of snowflakes; hoar grows in a few
-    directions from a few nucleation points, so these are longer than they are
-    numerous and none of them share an angle.
+    blob, which at 60-odd blobs became a field of snowflakes; hoar grows in a
+    few directions from a few nucleation points, so these are longer than they
+    are numerous and none of them share an angle.
     """
     for k in range(n):
         px = x0 + (x1 - x0) * ((k * 0.618 + 0.11) % 1.0)
@@ -220,6 +210,18 @@ def _frost_crystals(d, x0, x1, ycrest, n, seed, colour=(226, 240, 249)):
                            wavelength=22.0)
 
 
+# The arrival duration used by every moving element. 0.45-0.6s reads as a
+# deliberate move; longer and the element stops being an arrival and starts
+# being the picture changing every sample.
+ARRIVE = 0.5
+
+# REFRAME_MAX is 0.30 of the frame. These are the coverage budgets the details
+# in this file were sized against, measured as (bounding box area / 1280*720).
+# A detail over the budget reads to the viewer as a new picture even though the
+# stage held, which is exactly the defect the previous build had 23 of.
+DETAIL_BUDGET = 0.30
+
+
 def build():
     clock = SC.BeatClock(BEATS)
     els = []
@@ -235,51 +237,48 @@ def build():
     els.append(E3.E('page', 'bg', SC.paper_bg(99), at=0.0))
 
     # ===================================================================== #
-    # STAGE A  b01-b05  "Beneath an Arctic mountain, the world's seeds      #
-    #                 sleep. / This is the Svalbard Global Seed Vault. /    #
-    #                 It opened in 2008, on a Norwegian island. / A long    #
-    #                 tunnel runs down into the rock. / The rock there is   #
-    #                 permafrost, frozen for millennia."                     #
-    # The night exterior is HELD across all five beats and the mountain is    #
-    # the subject from the first frame. The presenter stands on the snow     #
-    # from b01 -- four seconds of bare backdrop reads as a dead opening --   #
-    # and the light wedge he stands in is the only warm thing on the slope.  #
-    # Then the map (b03) and the corridor (b04) REPLACE the whole frame,      #
-    # because a map inset over the mountain read as two pictures at once     #
-    # and the corridor is a full-frame subject.                               #
+    # STAGE S1  b01-b03  "Beneath an Arctic mountain, the world's seeds      #
+    #                    sleep. / This is the Svalbard Global Seed Vault. /   #
+    #                    It opened in 2008, on a Norwegian island."          #
+    # The night exterior is the WORLD and it is held for all three beats.     #
+    # Three things arrive inside it: the presenter walks in from the right, the #
+    # vault's name is stamped across the sky, and 2008 lands on the peak.      #
+    # Previously b03 was a full-frame MAP that repainted 91% of the frame --   #
+    # a cut to a different picture on the beat that says "2008". The map is    #
+    # gone; what carries the year now is the drawn numeral plus the caption,  #
+    # which is the one thing a mountain cannot draw.                          #
     # ===================================================================== #
-    def a_night(tile, fw, fh):
+    def s1_night(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _arctic(tile, 5)
         SC.title_backdrop(tile, 1005, col=TITLE_COURSE)
         _mountain(d, 7, crest=300, base=HZ + 6)
         _soft_beam(d, 760, 120, HZ - 4, 190, 9)
-    els.append(SC.stage(clock, 1, a_night, j=6))
+    els.append(SC.stage(clock, 1, s1_night, j=4))
 
-    def a_presenter(tile, fw, fh):
-        # Cropped by nothing but standing SMALL against a big mountain: he is
-        # a person looking at a mountain, which is the whole relationship in
-        # one frame. Expression swaps to 'awed' at b03 for "It opened in 2008"
-        # being replaced by the map -- he stays, the world turns over beneath
-        # him, which is the cheapest way to say "then, somewhere else".
+    def s1_presenter(tile, fw, fh):
+        # Small against a big mountain on purpose: he is a person looking at a
+        # mountain, which is the whole relationship in one frame. dx only, no
+        # dy -- SC.enter renders at its START offset, so a vertical offset
+        # would put his feet below the snow line for the length of the move.
         SC.fullbody(ImageDraw.Draw(tile), 1150, HZ + 4, 190, pose='standing',
                     expression='deadpan', seed=11, ink=CREAM)
-    _bu, _aa, _au = SC.expr_swap(clock, 2, 'deadpan', 'awed', until_j=3)
-    els.append(E3.E('a_presenter_a', 'character', a_presenter,
-                    at=clock.at('b01', 0), until=_bu,
-                    motion=SC.enter(clock, 1, dx=140, dy=0, dur=0.55)))
+    els.append(E3.E('s1_presenter_a', 'character', s1_presenter,
+                    at=clock.at('b01', 0), until=clock.at('b02', 0),
+                    motion=SC.enter(clock, 1, dx=150, dy=0, dur=0.55)))
 
-    def a_presenter_b(tile, fw, fh):
-        # The same man at the same spot, awed instead of blank: two elements,
-        # the first ending exactly where the second starts (the expression is
-        # baked into the rasterised tile, so a change needs two elements).
+    def s1_presenter_b(tile, fw, fh):
+        # Same man, same spot, awed instead of blank. The expression is baked
+        # into the rasterised tile, so a change is two elements whose windows
+        # abut exactly (SC.expr_swap).
         SC.fullbody(ImageDraw.Draw(tile), 1150, HZ + 4, 190, pose='standing',
                     expression='awed', seed=11, ink=CREAM)
-    els.append(E3.E('a_presenter_b', 'character', a_presenter_b,
-                    at=_aa, until=_au))
+    _s1u, _s1a, _s1au = SC.expr_swap(clock, 2, 'deadpan', 'awed', until_j=4)
+    els.append(E3.E('s1_presenter_b', 'character', s1_presenter_b,
+                    at=_s1a, until=_s1au))
     els.append(cap(1, W // 2, 690, size=32, fill=AMBER_LT))
 
-    def a_stamp(tile, fw, fh):
+    def s1_stamp(tile, fw, fh):
         # The vault's name, stamped across the sky. It IS the b02 line, so
         # there is NO caption on b02: a caption under a hand-stamped name is
         # the same words twice, printed on top of each other.
@@ -287,111 +286,110 @@ def build():
                      size=86)
         D.draw_label(tile, 'GLOBAL SEED VAULT', center=(640, 238),
                      color=VT.LABEL_YELLOW, size=44)
-    els.append(SC.accrue(clock, 2, 3, a_stamp, kind='shape'))
+    els.append(SC.accrue(clock, 2, 4, s1_stamp, kind='shape'))
 
-    def a_map(tile, fw, fh):
+    def s1_opened(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [0, 0, W, H], (176, 202, 222), seed=21, value=0.05)
-        PA.paper_overlay(tile, seed=22)
-        land = [(-40, 720), (-40, 470), (150, 430), (280, 380), (360, 300),
-                (470, 268), (520, 300), (430, 350), (500, 400), (430, 470),
-                (560, 520), (470, 720)]
-        PA.fill_poly(tile, land, (222, 226, 214), seed=23, value=0.07)
-        PA.hand_stroke(d, land, INK, 7, closed=True, seed=24, wavelength=170.0)
-        isle = [(690, 250), (790, 226), (880, 244), (900, 288), (800, 306),
-                (704, 292)]
-        PA.fill_poly(tile, isle, (222, 226, 214), seed=25, value=0.07)
-        PA.hand_stroke(d, isle, INK, 6, closed=True, seed=26, wavelength=110.0)
-        D.draw_label(tile, 'SPITSBERGEN', center=(795, 360), color=INK, size=32)
-        D.draw_arrow(tile, (300, 200), (760, 250), color=RED, width=9, head=42,
-                     bow=0.12)
-        d.ellipse([905, 250, 929, 274], fill=RED)
-        D.draw_number(tile, '2008', center=(1035, 430), color=VT.LABEL_RED,
-                      size=76)
-    # POPS, deliberately. The map is a full-frame replace; a moving full-frame
-    # picture is the image churn this rebuild exists to remove (rule 2).
-    els.append(SC.layer(clock, 3, a_map, j=4))
-    # NO caption at b03. The red pin on the island plus a hand-drawn 2008 is
-    # the b03 line shown; the words "Norwegian island" would sit on the map.
+        # 2008, on the peak, with the ring that says "here". This is the whole
+        # b03 subject now that the map is gone; the caption beside it carries
+        # what a mountain still cannot draw ("on a Norwegian island").
+        D.draw_number(tile, '2008', center=(392, 196), color=VT.LABEL_RED,
+                      size=92)
+        d.ellipse([556, 214, 596, 254], fill=RED)
+        D.draw_arrow(tile, (500, 300), (572, 262), color=RED, width=8, head=38)
+    els.append(SC.accrue(clock, 3, 4, s1_opened, kind='shape',
+                         motion=SC.enter(clock, 3, dx=-60, dy=0, dur=ARRIVE)))
+    els.append(cap(3, 640, 690, size=30, fill=(214, 224, 236)))
 
-    def a_corridor(tile, fw, fh):
-        d = ImageDraw.Draw(tile)
-        _interior(tile, 31, wall=(64, 70, 82))
-        _tunnel(d, W // 2, 372, 33, mouth=760, depth=290, ribs=8)
-        # He walks in ahead of the tunnel rather than standing in front of it:
-        # at 200px on the corridor floor he is a person in the corridor, and the
-        # ribs still converge past him to the vanishing point.
-        SC.fullbody(d, W // 2 - 34, 560, 200, pose='standing',
-                    expression='neutral', seed=35, ink=CREAM)
-    els.append(SC.layer(clock, 4, a_corridor, j=5))
-    els.append(cap(4, W // 2, 690, size=30, fill=(214, 224, 236)))
-
-    def a_perma(tile, fw, fh):
-        # The chapter's diagram, first appearance: the permafrost band hatched
-        # between the surface rock and the hall. REPLACES the corridor because
-        # both are full-frame subjects occupying the same centre.
+    # ===================================================================== #
+    # STAGE S2  b04-b06  "A long tunnel runs down into the rock. / The rock   #
+    #                    there is permafrost, frozen for millennia. / The      #
+    #                    vault is cut straight into that ice."               #
+    # The cutaway IS the world now. It used to be a b05 replacement card that  #
+    # repainted 71% of the frame on top of a bare interior; here it is the    #
+    # bg the stage paints, so it persists, and the three beats add only small  #
+    # things to it: where the tunnel goes in, who is pointing at the frozen   #
+    # band, and the warm light in the hall once it is cut.                     #
+    # ===================================================================== #
+    def s2_cut(tile, fw, fh):
         _cutaway(ImageDraw.Draw(tile), 37, label='PERMAFROST')
-    els.append(SC.layer(clock, 5, a_perma, j=6))
-    # NO caption at b05. "PERMAFROST" is DRAWN across the frozen layer; a
-    # caption under it repeated the label and stacked text on the hatching.
+    els.append(SC.stage(clock, 4, s2_cut, j=7))
 
-    # ===================================================================== #
-    # STAGE B  b06-b10  "The vault is cut straight into that ice. / Above    #
-    #                 the doorway, the midsummer sun barely rises. / Down    #
-    #                 inside, the seeds sleep in the cold. / The seeds are   #
-    #                 packed into small foil packets. / Around a million      #
-    #                 samples, from a hundred nations."                       #
-    # The cross-section is the stage and it PERSISTS: the same cutaway the    #
-    # viewer was just looking at at b05, now with the hall lit warm and the  #
-    # corridor driven in from the left. The midsummer door (b07) is a        #
-    # full-frame exterior so it replaces; the cold room (b08), the held      #
-    # packet (b09) and the million (b10) are all INSIDE the rock, so they    #
-    # accrue into the cold-room room rather than replacing the diagram.      #
-    # ===================================================================== #
-    def b_cut(tile, fw, fh):
-        _cutaway(ImageDraw.Draw(tile), 41, warm_chamber=True)
-    els.append(SC.stage(clock, 6, b_cut, j=8))
+    def s2_entry(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # The mouth, at the left face where the corridor enters the mountain.
+        # The cutaway already draws the hall running in from the left; this
+        # gives it a mouth in the rock, which is what "runs down into the
+        # rock" actually points at.
+        _doorway(d, 96, 470, 38, w=64, h=78, colour=(44, 50, 60))
+        PA.hand_stroke(d, [(150, 470), (300, 470)], (150, 180, 196), 5,
+                       closed=False, seed=39, wavelength=90.0)
+    els.append(SC.accrue(clock, 4, 5, s2_entry, kind='shape'))
+    els.append(cap(4, 640, 690, size=30, fill=VT.LABEL_YELLOW))
 
-    def b_presenter(tile, fw, fh):
-        # Pointing INTO the cutaway at the hall he is about to go inside. He
-        # stands on the rock, not on the diagram, so the pointing reads as
-        # "down there" rather than as an annotation.
-        SC.fullbody(ImageDraw.Draw(tile), 250, 700, 300, pose='pointing',
+    def s2_presenter(tile, fw, fh):
+        # Pointing at the frozen band, standing ON the snow at the left edge so
+        # his feet are on the surface rather than inside the diagram.
+        SC.fullbody(ImageDraw.Draw(tile), 250, 706, 300, pose='pointing',
                     expression='awed', seed=43)
-    els.append(E3.E('b_presenter', 'character', b_presenter,
-                    at=clock.at('b06', 0), until=clock.at('b07', 0),
-                    motion=SC.enter(clock, 6, dx=-150, dy=0, dur=ARRIVE)))
-    els.append(cap(6, W // 2, 132, size=32, fill=AMBER_LT))
+    els.append(SC.accrue(clock, 5, 6, s2_presenter, kind='character',
+                         eid='s2_presenter',
+                         motion=SC.enter(clock, 5, dx=-150, dy=0, dur=ARRIVE)))
+    # NO caption at b05. PERMAFROST is drawn across the frozen band in the stage
+    # world; a caption under it repeated the label and stacked text on the
+    # hatching.
 
-    def b_midsummer(tile, fw, fh):
+    def s2_chamber(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # The hall goes warm: the light is the only thing that arrives, which is
+        # what "cut straight into that ice" looks like. A glow pool plus three
+        # stocked shelves inside the chamber -- about a tenth of the frame.
+        PA.fill_poly(tile, PA.ellipse_pts(1080, 470, 186, 148, n=56),
+                     AMBER_LT, seed=71, value=0.05)
+        for k in range(3):
+            _shelf(d, 1000 + k * 78, 1080 + k * 78, 470 + k * 18, 72 + k,
+                   h=64, packets=2)
+        D.draw_label(tile, 'VAULT', center=(1120, 620), color=VT.LABEL_RED,
+                     size=44)
+    els.append(SC.accrue(clock, 6, 7, s2_chamber, kind='shape',
+                         motion=SC.enter(clock, 6, dx=0, dy=-30, dur=ARRIVE)))
+    els.append(cap(6, 640, 132, size=32, fill=VT.LABEL_YELLOW))
+
+    # ===================================================================== #
+    # STAGE S3  b07  "Above the doorway, the midsummer sun barely rises."     #
+    # The only beat that cannot share a frame: it is a different place (the   #
+    # surface, in daylight) and a different register from the cross-section   #
+    # on either side of it. So it is its own bg stage, and the sun is a       #
+    # DETAIL that rises into it rather than a whole card that pops.           #
+    # ===================================================================== #
+    def s3_day(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _day_arctic(tile, 45)
         _mountain(d, 46, crest=270, base=HZ + 6)
-        # "Above the doorway, the midsummer sun barely rises." Two things, kept
-        # well apart so neither is a jumble: a concrete portal set into the rock
-        # on the LEFT (so "above the doorway" has a referent), and a LOW amber
-        # sun on the RIGHT sitting on the horizon with a soft halo.
-        #
-        # v1 drew S.sun_rays() here, whose long INK spikes around an amber disc
-        # read as a black-petalled flower, and stacked _wedge + _doorway on top
-        # of each other -- the wedge's underside (y~405) cut through the
-        # doorway's lintel (y~270) and the left half became grey trapezoids
-        # around a tan square. Drawn as ONE portal here: a lit opening in a
-        # concrete face, sized to sit on the snow line.
-        px, py = 330, 452                       # portal centre, on the horizon
+        # ONE portal: a lit opening in a concrete face on the LEFT, so "above
+        # the doorway" has a referent. v1 stacked _wedge on _doorway here and
+        # the wedge's underside cut through the lintel.
+        px, py = 330, 452
         PA.fill_rect(tile, [px - 190, py - 210, px + 190, py + 150], CONCRETE,
                      seed=50, value=0.07)
         PA.hand_stroke(d, [(px - 190, py - 210), (px + 190, py - 210),
                            (px + 190, py + 150), (px - 190, py + 150)], INK, 8,
                        closed=True, seed=51, wavelength=150.0)
-        # the dark opening, with warm light at the far end of it
         PA.fill_rect(tile, [px - 82, py - 118, px + 82, py + 150], (44, 48, 58),
                      seed=52, value=0.06)
-        glow = PA.ellipse_pts(px, py + 40, 66, 96, n=44)
-        PA.fill_poly(tile, glow, (198, 152, 74), seed=53, value=0.06)
+        PA.fill_poly(tile, PA.ellipse_pts(px, py + 40, 66, 96, n=44),
+                     (198, 152, 74), seed=53, value=0.06)
         PA.hand_stroke(d, [(px - 82, py - 118), (px + 82, py - 118),
                            (px + 82, py + 150), (px - 82, py + 150)], INK, 7,
                        closed=True, seed=54, wavelength=140.0)
+    els.append(SC.stage(clock, 7, s3_day, j=8))
+
+    def s3_sun(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # MOVING, and the sentence. "Barely rises" is a sun that clears the
+        # skyline by a little; the halo, the disc and the word arrive from 30px
+        # BELOW the horizon and rise to it over half a second. Authored at the
+        # risen position, so the track's start offset is the dip.
         halo = PA.ellipse_pts(1010, HZ + 6, 158, 96, n=56)
         PA.fill_poly(tile, halo, AMBER_LT, seed=47, value=0.04)
         disc = PA.ellipse_pts(1010, HZ + 6, 64, 64, n=48)
@@ -399,278 +397,222 @@ def build():
         PA.hand_stroke(d, disc, INK, 5, closed=True, seed=49, wavelength=90.0)
         D.draw_label(tile, 'midsummer', center=(1010, HZ - 130), color=INK,
                      size=38)
-    els.append(SC.layer(clock, 7, b_midsummer, j=8,
-                        motion=SC.enter(clock, 7, dx=0, dy=30, dur=ARRIVE)))
-    # MOVING. The sun slides UP off the horizon by 30px over 0.5s: "barely
-    # rises" is a sun that clears the skyline by a little, and watching it do
-    # so is the whole sentence. Small subject, one arrival.
+    els.append(SC.accrue(clock, 7, 8, s3_sun, kind='shape',
+                         motion=SC.enter(clock, 7, dx=0, dy=30, dur=ARRIVE)))
     # NO caption at b07. The drawn word "midsummer" sits directly above the
     # drawn sun at the height it happens at -- a caption would repeat it.
 
-    def b_room(tile, fw, fh):
+    # ===================================================================== #
+    # STAGE S4  b08-b10  "Down inside, the seeds sleep in the cold. / The    #
+    #                    seeds are packed into small foil packets. / Around a  #
+    #                    million samples, from a hundred nations."           #
+    # The cold room is the WORLD for three beats. It used to be a b08 card    #
+    # that repainted 86% of the frame, then a packet close-up on top of it,   #
+    # then a THIRD full room at b10 that repainted 73% to say the same       #
+    # thing again. Now the room holds; one packet is held up, then the count  #
+    # lands on the room it belongs to.                                        #
+    # ===================================================================== #
+    def s4_room(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _interior(tile, 55, wall=(78, 86, 98), floor=(58, 64, 74),
                   warm=(104, 88, 56))
         for k in range(5):
             _shelf(d, -120 + k * 8, W + 120, 210 + k * 96, 56 + k, h=190,
                    packets=13)
-    els.append(SC.layer(clock, 8, b_room, j=11))
-    # NO caption at b08. "the seeds sleep in the cold" is the mood the cold blue
-    # room already carries; the words would sit on the only warm patch in it.
+    els.append(SC.stage(clock, 8, s4_room, j=11))
 
-    def b_packet(tile, fw, fh):
+    def s4_packet(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        # One packet held up to the light, drawn large enough to bleed off the
-        # right edge. The glow sits at cy=400 so its top edge is y=140, clear of
-        # the title band -- v1 learned this the hard way.
-        g = PA.ellipse_pts(640, 400, 300, 260, n=64)
-        PA.fill_poly(tile, g, AMBER_LT, seed=62, value=0.05)
-        _packet(d, 640, 350, 300, 400, 63, band=AMBER, stamp='wheat')
+        # One packet held up to the light, at the size that reads as a held
+        # object against the shelves rather than as a second room. The glow is
+        # an ellipse, not a filled disc, so it adds light without replacing the
+        # shelves behind it.
+        PA.fill_poly(tile, PA.ellipse_pts(640, 400, 214, 176, n=64), AMBER_LT,
+                     seed=62, value=0.05)
+        _packet(d, 640, 392, 232, 306, 63, band=AMBER, stamp='wheat')
         # a hand coming in from the right edge, gripping it -- cropped by the
         # frame edge so it reads as an arm reaching in, not a floating paw.
-        PA.hand_stroke(d, [(1330, 560), (820, 470)], (232, 202, 172), 66,
+        PA.hand_stroke(d, [(1330, 560), (790, 486)], (232, 202, 172), 58,
                        closed=False, seed=64, wavelength=170.0)
-        PA.hand_stroke(d, [(1330, 560), (820, 470)], INK, 5, closed=False,
+        PA.hand_stroke(d, [(1330, 560), (790, 486)], INK, 5, closed=False,
                        seed=65, wavelength=170.0)
         for k in range(3):
-            PA.hand_stroke(d, [(880 + k * 42, 452 + k * 10), (930 + k * 42, 546)],
-                           (232, 202, 172), 30, closed=False,
+            PA.hand_stroke(d, [(840 + k * 38, 468 + k * 9), (886 + k * 38, 552)],
+                           (232, 202, 172), 27, closed=False,
                            seed=66 + k, wavelength=50.0)
-        # LABEL_YELLOW, not INK. At the very bottom of the amber pool (bg_lum 89.8)
-        # with no keyline, the counters in o, a, e and p filled in and the lower
-        # half of the glyphs ran into the brown shadow edge with no separation
-        # from the ground. The light fill carries the contrast and takes the keyline.
+        # LABEL_YELLOW, not INK. At the bottom of the amber pool (bg_lum ~90)
+        # with no keyline the counters in o, a, e and p fill in and the lower
+        # half of the glyphs runs into the brown shadow edge. The light fill
+        # carries the contrast and takes the keyline.
         D.draw_label(tile, 'one sample', center=(640, 640),
                      color=VT.LABEL_YELLOW, size=34)
-    els.append(SC.layer(clock, 9, b_packet, j=11,
-                        motion=SC.enter(clock, 9, dx=0, dy=-70, dur=ARRIVE)))
+    els.append(SC.accrue(clock, 9, 11, s4_packet, kind='shape',
+                         motion=SC.enter(clock, 9, dx=0, dy=-64, dur=ARRIVE)))
     # NO caption at b09. "one sample" is DRAWN on the packet's own shadow.
 
-    def b_million(tile, fw, fh):
-        d = ImageDraw.Draw(tile)
-        _interior(tile, 69, wall=(66, 72, 84), floor=(48, 54, 64))
-        # the corridor of shelves narrowing into the dark -- this is the SAME
-        # cold room as b08, pushed back, so the room recedes instead of being
-        # replaced by an unrelated picture.
-        for k in range(6):
-            t = k / 5.0
-            hw = 700 - 460 * t
-            _shelf(d, 640 - hw, 640 + hw, 250 + k * 74, 70 + k, h=120,
-                   packets=max(3, 11 - k * 2))
-        g = PA.ellipse_pts(640, 480, 130, 96, n=48)
-        PA.fill_poly(tile, g, (26, 30, 38), seed=76, value=0.0)
-    els.append(SC.layer(clock, 10, b_million, j=11))
-
-    def b_count(tile, fw, fh):
-        D.draw_number(tile, '1,000,000', center=(640, 470),
+    def s4_count(tile, fw, fh):
+        D.draw_number(tile, '1,000,000', center=(640, 596),
                       color=VT.LABEL_YELLOW, size=104)
-    els.append(E3.E('b_count', 'shape', b_count, at=clock.at('b10', 0),
-                    until=clock.at('b11', 0)))
-    els.append(cap(10, W // 2, 700, size=30, fill=VT.LABEL_YELLOW))
+    els.append(SC.accrue(clock, 10, 11, s4_count, kind='shape',
+                         motion=SC.enter(clock, 10, dx=0, dy=-36, dur=ARRIVE)))
+    els.append(cap(10, 640, 700, size=30, fill=VT.LABEL_YELLOW))
+    # The drawn count sits ON the room it counts. The caption is the sentence
+    # around the numeral ("around a million samples, from a hundred nations"),
+    # which the numeral cannot say.
 
     # ===================================================================== #
-    # STAGE C  b11-b17  "Wheat, rice, barley, beans, and millet. / Every     #
-    #                 sample in there is a spare copy. / The original seed   #
-    #                 always stays on the farm. / Each nation's crop         #
-    #                 insurance, stored in a mountain. / Inside, the air     #
-    #                 holds at minus eighteen degrees. / That is colder than  #
-    #                 any farm freezer. / In that cold, the seeds sleep for  #
-    #                 centuries."                                            #
-    # SEVEN beats, 17.4s, one held room -- the longest stage in the chapter. #
-    # The shelf run PERSISTS from b11 and the five named packets ARRIVE on it  #
-    # together, so "wheat, rice, barley, beans, millet" is one row filling    #
-    # rather than five new full frames. The spare-copy thought (b12-b14) moves #
-    # OUT of the room to the field, the talking head and the globe, and the    #
-    # temperature comes back inside. Each of those subjects is a full-frame   #
-    # replace, so the stage's through-line is the shelf deck, not any one      #
-    # picture.                                                                #
+    # STAGE S5  b11-b12  "Wheat, rice, barley, beans, and millet. / Every    #
+    #                    sample in there is a spare copy."                   #
+    # One shelf deck held across both beats. All five packets arrive TOGETHER  #
+    # at b11 because the narrator names all five in ONE beat -- spreading them  #
+    # would have packets landing on empty beats with the words already gone.   #
+    # b12 used to lay a full COPY/ORIGINAL pair of panels over them (a 48%    #
+    # repaint, and it buried the packets it was talking about). Now it is a   #
+    # packet sliding OFF the deck with an arrow, which is the thought: the     #
+    # sample leaves the shelf and stays here.                                  #
     # ===================================================================== #
-    def c_room(tile, fw, fh):
+    def s5_deck(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _interior(tile, 77, wall=(80, 88, 100), warm=(104, 90, 58))
         _shelf(d, -60, W + 60, 600, 78, h=210, packets=5)
-    els.append(SC.stage(clock, 11, c_room, j=12))
+    els.append(SC.stage(clock, 11, s5_deck, j=13))
 
-    def c_crops(tile, fw, fh):
+    def s5_crops(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        # All five arrive together, because the narrator names all five in ONE
-        # beat ("Wheat, rice, barley, beans, and millet"). Spreading them over
-        # five beats would have five packets landing on empty beats with the
-        # words already gone, which reads as the picture lagging the narration.
-        # One row, one arrival, five distinct crop marks so the row reads as
-        # five different seeds at a glance.
+        # All five arrive together, one row, five distinct crop marks so the row
+        # reads as five different seeds at a glance.
         #
         # NO drawn name under each packet. v1 drew WHEAT/RICE/BARLEY/BEAN/MILLET
-        # at y=350, which is exactly the packets' top edge (cy 470 - h/2 125 =
-        # 345): every label straddled its own packet's border and was cut by it.
-        # The five names are now ONE caption line, spoken-worded at b11, which
-        # is also the "one important phrase, not five scattered words" rule.
+        # at y=350, which is exactly the packets' top edge: every label straddled
+        # its own packet's border and was cut by it. The five names are ONE
+        # caption line at the beat the narrator says them.
         kinds = ['wheat', 'rice', 'barley', 'bean', 'millet']
         for i, k in enumerate(kinds):
             cx = 128 + i * 256
             _packet(d, cx, 470, 168, 250, 80 + i * 3, band=AMBER, stamp=k)
-    els.append(SC.accrue(clock, 11, 12, c_crops, kind='shape',
+    els.append(SC.accrue(clock, 11, 12, s5_crops, kind='shape',
                          motion=SC.enter(clock, 11, dx=0, dy=-56, dur=ARRIVE)))
     els.append(cap(11, 640, 700, size=30))
-    # The five crop names live here, as one line, at the beat the narrator says
-    # them. It replaces five drawn labels that were colliding with the packets.
 
-    # ===================================================================== #
-    # STAGE C1b  b12  "Every sample in there is a spare copy."               #
-    # Its OWN stage, and the split is the fix. v1 ran c_crops for b11-b13 and   #
-    # laid the COPY/ORIGINAL panels on top at b12; rendered, the COPY box       #
-    # buried the WHEAT and RICE packets, the drawn crop stalks grew straight     #
-    # through the BEAN and MILLET packets, and a loose packet floated in front   #
-    # of another. Two complete compositions sharing one frame is the            #
-    # over-population defect, not a reveal -- so b12 gets a clean stage of its   #
-    # own and the crops hand off to it.                                          #
-    # ===================================================================== #
-    def c1b_room(tile, fw, fh):
-        PA.fill_rect(tile, [0, 0, W, H], (74, 82, 94), seed=91, value=0.06)
-        PA.fill_rect(tile, [0, 470, W, H], (58, 64, 74), seed=92, value=0.07)
-        PA.paper_overlay(tile, seed=93)
-    els.append(SC.stage(clock, 12, c1b_room, j=13))
-
-    def c_copy(tile, fw, fh):
+    def s5_spare(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        # left: the vault copy, in its cold box
-        PA.fill_rect(tile, [40, 210, 560, 660], (96, 106, 120), seed=94,
-                     value=0.07)
-        PA.hand_stroke(d, [(40, 210), (560, 210), (560, 660), (40, 660)], INK,
-                       7, closed=True, seed=95, wavelength=160.0)
-        D.draw_label(tile, 'COPY', center=(300, 262), color=VT.LABEL_YELLOW,
-                     size=46)
-        _packet(d, 300, 450, 200, 290, 96, band=AMBER, stamp='wheat')
-        # right: the original, still standing in its own rows of leaves. The
-        # stalks are drawn INSIDE the right panel's own x-range and stop at its
-        # baseline, so nothing crosses into the left box.
-        for k in range(6):
-            x = 706 + k * 88
-            top = 560 - (k % 3) * 34
-            PA.hand_stroke(d, [(x, 656), (x + 8, top)], LEAF, 7, closed=False,
-                           seed=100 + k, wavelength=60.0)
-            for j in range(3):
-                PA.hand_stroke(d, [(x + 4, top + 40 + j * 38),
-                                   (x + 44, top + 22 + j * 38)], LEAF, 5,
-                               closed=False, seed=110 + k * 3 + j, wavelength=40.0)
-        # LABEL_YELLOW, not INK. draw_label only keys a NON-INK label, so an INK
-        # one gets no keyline and the black glyph has to carry the contrast
-        # itself. It does not: the dark slate wall measures bg_lum 83.7 here,
-        # the counters in O/R/I/G/A fill in, and ORIGINAL read as a dark smudge
-        # directly beside its sibling COPY on the identical wall, which pops.
-        D.draw_label(tile, 'ORIGINAL', center=(960, 262), color=VT.LABEL_YELLOW,
-                     size=46)
-        _packet(d, 800, 600, 130, 180, 120, band=AMBER, stamp='wheat')
-    els.append(SC.accrue(clock, 12, 13, c_copy, kind='shape'))
-    els.append(cap(12, 640, 700, size=30))
-    # KEPT, and it is the chapter's pivot. "Every sample in there is a spare
-    # copy" is the sentence the whole video is built to land: it is WHY the
-    # seeds surviving the flood is reassuring rather than tragic. COPY and
-    # ORIGINAL are drawn, but the drawn labels are nouns -- they do not say
-    # that the vault holding copies is the POINT. The words carry it.
+        # THE PIVOT, made physical. The deck and its five packets stay; a sixth
+        # packet slides in from the right and stops with an arrow and a SPARE
+        # COPY tag, so "every sample in there is a spare copy" is a thing that
+        # is happening rather than a new pair of boxes laid over the row.
+        _packet(d, 1096, 392, 150, 214, 84, band=AMBER, stamp='wheat')
+        D.draw_arrow(tile, (960, 300), (1060, 356), color=RED, width=8,
+                     head=40)
+        D.draw_label(tile, 'SPARE COPY', center=(1096, 258),
+                     color=VT.LABEL_RED, size=34)
+    els.append(SC.accrue(clock, 12, 13, s5_spare, kind='shape',
+                         motion=SC.enter(clock, 12, dx=180, dy=0, dur=0.55)))
+    els.append(cap(12, 500, 700, size=30))
+    # KEPT, and it is the chapter's pivot: the sentence the whole video is built
+    # to land. SPARE COPY is drawn, but a drawn tag does not say that the vault
+    # holding copies is the POINT -- the words carry it.
 
     # ===================================================================== #
-    # STAGE C2  b13-b14  "The original never left. / In 2012 they opened the #
-    #                   vault for the first time in thirty years."            #
-    # Split out of the old seven-beat stage C. Seven subjects in seven beats   #
-    # cannot share one frame however they are wired, and this is the clearest #
-    # case in the chapter: b13-b14 are the vault's contents seen from OUTSIDE #
-    # -- the man who keeps them, and the globe they insure.                   #
+    # STAGE S6  b13-b14  "The original seed always stays on the farm. / Each #
+    #                    nation's crop insurance, stored in a mountain."      #
+    # The globe is the WORLD now, cropped by the bottom and right edges, so it #
+    # is a world filling the frame and the keeper stands beside it rather than #
+    # replacing it. Two full-frame replacements became: a man arriving on the #
+    # left, then the packets landing on the globe one ring at a time.          #
     # ===================================================================== #
-    def c2_wall(tile, fw, fh):
+    def s6_world(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
         PA.fill_rect(tile, [0, 0, W, H], (206, 214, 224), seed=125, value=0.05)
         PA.paper_overlay(tile, seed=126)
-    els.append(SC.stage(clock, 13, c2_wall, j=15))
-
-    def c_home(tile, fw, fh):
-        d = ImageDraw.Draw(tile)
-        # Cropped IN, not placed on: the head runs off the top and left edges,
-        # which is what makes him a person in the shot rather than a sticker.
-        SC.closeup(d, 470, 340, 230, 'skeptic', 127)
-        D.draw_bubble(tile, 'the original\nstays home', (790, 130),
-                      tail_to=(640, 400), font_size=30, max_w=420)
-    els.append(SC.accrue(clock, 13, 14, c_home, kind='character'))
-    # NO caption at b13. The speech bubble IS his line, drawn in his own mouth;
-    # a caption under it duplicated the bubble and pushed text onto the bust.
-
-    def c_globe(tile, fw, fh):
-        d = ImageDraw.Draw(tile)
         # the globe is deliberately off-centre right and CROPPED by the bottom
         # and right edges, so it is a world filling the frame
-        _globe(d, 760, 430, 330, 133)
-        # The packets ARRIVE on the globe one ring at a time rather than all at
-        # once: a globe wearing its packets is a different picture from a bare
-        # globe, and the arrival is what says "every nation".
+        _globe(d, 790, 452, 336, 133)
+    els.append(SC.stage(clock, 13, s6_world, j=15))
+
+    def s6_keeper(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # Standing on the ground plane beside the globe, not cropped in: this
+        # beat's point is that the original is OUT HERE, away from the vault,
+        # so he is in the room with the globe rather than filling it. dx only.
+        SC.fullbody(d, 236, 690, 372, pose='standing', expression='skeptic',
+                    seed=127)
+        D.draw_bubble(tile, 'the original\nstays home', (300, 168),
+                      tail_to=(250, 400), font_size=30, max_w=400)
+    els.append(SC.accrue(clock, 13, 14, s6_keeper, kind='character',
+                         eid='s6_keeper',
+                         motion=SC.enter(clock, 13, dx=-150, dy=0, dur=ARRIVE)))
+    # NO caption at b13. The speech bubble IS his line, drawn in his own mouth;
+    # a caption under it duplicated the bubble.
+
+    def s6_packets(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # The packets ARRIVE on the globe, two rings, rather than all at once: a
+        # globe wearing its packets is a different picture from a bare globe,
+        # and the arrival is what says "every nation".
         for k, (gx, gy) in enumerate(((0.42, -0.42), (-0.30, -0.20),
                                       (-0.10, 0.34), (0.30, 0.20))):
-            _packet(d, 760 + gx * 330, 430 + gy * 330, 76, 104, 134 + k,
+            _packet(d, 790 + gx * 336, 452 + gy * 336, 76, 104, 134 + k,
                     band=AMBER, stamp='wheat')
-    els.append(SC.accrue(clock, 14, 15, c_globe, kind='shape'))
-    def c_globe2(tile, fw, fh):
-        d = ImageDraw.Draw(tile)
-        for k, (gx, gy) in enumerate(((0.56, 0.30), (-0.48, 0.06),
-                                      (0.08, -0.10), (0.66, -0.06))):
-            _packet(d, 760 + gx * 330, 430 + gy * 330, 76, 104, 142 + k,
-                    band=AMBER, stamp='wheat')
-        D.draw_label(tile, 'CROP INSURANCE', center=(300, 200), color=INK,
+        D.draw_label(tile, 'CROP INSURANCE', center=(330, 214), color=INK,
                      size=40)
-    els.append(SC.accrue(clock, 14, 15, c_globe2, kind='shape'))
+    els.append(SC.accrue(clock, 14, 15, s6_packets, kind='shape',
+                         motion=SC.enter(clock, 14, dx=0, dy=-40, dur=ARRIVE)))
     # NO caption at b14. CROP INSURANCE is drawn, the packets are on the globe,
-    # and the b14 line is exactly those two facts. A caption repeated the
-    # label 460px lower on the same frame.
+    # and the b14 line is exactly those two facts.
 
     # ===================================================================== #
-    # STAGE C3  b15-b17  "The cold: minus eighteen, colder than any farm      #
-    #                   freezer. That is the number the vault was built to    #
-    #                   hold. The seeds have lain at that temperature for     #
-    #                   centuries."                                           #
-    # Three beats, ONE cold interior held across all of them. The thermometer, #
-    # the chest-freezer comparison and the frost are all the same fact at      #
-    # three levels of closeness, so the interior persists and only the        #
-    # measuring changes -- which is what v1's four consecutive full-frame      #
-    # _interior() calls destroyed.                                           #
+    # STAGE S7  b15  "Inside, the air holds at minus eighteen degrees."       #
+    # + STAGE S8  b16-b17  "colder than any farm freezer. / In that cold, the #
+    #                      seeds sleep for centuries."                       #
+    # TWO stages, not one, and the reason is a measurement rather than a        #
+    # preference. The b16 comparison (a chest freezer beside a vault door three #
+    # times its size) covers ~48% of the frame and the b17 frost another ~49%;  #
+    # neither fits the 30% budget a layer inside a stage gets. So the           #
+    # comparison is its own bg world at b16 and the frost is a detail on IT at  #
+    # b17 -- where the shelf and packets are sized to ~22%. The thermometer at  #
+    # b15 is a 20px tube, so it costs almost nothing and stays a detail.        #
     # ===================================================================== #
-    def c3_cold(tile, fw, fh):
+    def s7_cold(tile, fw, fh):
         _interior(tile, 141, wall=(74, 82, 94), warm=(96, 84, 56))
-    els.append(SC.stage(clock, 15, c3_cold, j=18))
+    els.append(SC.stage(clock, 15, s7_cold, j=16))
 
-    def c_thermo(tile, fw, fh):
+    def s7_thermo(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        S.thermometer(d, 420, 690, 620, 0.22, seed=142, hot=False)
-        # LABEL_YELLOW, not INK: the zero tick sits on the warm=(96,84,56) interior
-        # pool at bg_lum 87.8 with no keyline, so the counter inside the glyph
-        # filled in and it read as a solid dark ring -- the darkest text on the
-        # card, on the one numeral the viewer is meant to read as the 0 mark.
-        D.draw_label(tile, '0', center=(520, 200), color=VT.LABEL_YELLOW,
+        # The thermometer is a narrow tube, so it stays clear of the frame's
+        # middle and the reading can sit beside it rather than under it.
+        S.thermometer(d, 300, 660, 540, 0.22, seed=142, hot=False)
+        # LABEL_YELLOW, not INK: the zero tick sits on the warm interior pool at
+        # bg_lum ~88 with no keyline, so the counter inside the glyph filled in
+        # and it read as a solid dark ring -- the darkest text on the card, on
+        # the one numeral the viewer is meant to read as the 0 mark.
+        D.draw_label(tile, '0', center=(396, 178), color=VT.LABEL_YELLOW,
                      size=34)
-        D.draw_arrow(tile, (880, 480), (700, 560), color=VT.LABEL_RED, width=10,
+        D.draw_arrow(tile, (760, 452), (596, 528), color=VT.LABEL_RED, width=10,
                      head=46)
-        # The -18 numeral is in the SAME layer as the thermometer it belongs to.
-        # Split across two elements it became two large reds fighting in one
-        # half of the frame -- rule 1: anything sharing a part of the frame
-        # replaces rather than stacks.
-        D.draw_number(tile, '-18', center=(880, 300), color=VT.LABEL_RED,
+        # The -18 numeral is in the SAME layer as the arrow it belongs to. Split
+        # across two elements it became two large reds fighting in one half of
+        # the frame -- rule 1: anything sharing a part of the frame replaces
+        # rather than stacks.
+        D.draw_number(tile, '-18', center=(862, 300), color=VT.LABEL_RED,
                       size=180)
-        D.draw_label(tile, 'DEGREES C', center=(880, 430), color=VT.LABEL_RED,
+        D.draw_label(tile, 'DEGREES C', center=(862, 430), color=VT.LABEL_RED,
                      size=52)
-    els.append(SC.accrue(clock, 15, 16, c_thermo))
-    # Placed to the RIGHT of the thermometer rather than centred: centred at
-    # cx=300 it ran across the bulb at x=420 and the first word sat on the
-    # mercury. The right half of the frame is under the -18 numeral, so the
-    # words go in the gap between the two.
-    els.append(cap(15, 800, 660, size=30, fill=VT.LABEL_RED))
+    els.append(SC.accrue(clock, 15, 16, s7_thermo))
+    els.append(cap(15, 862, 560, size=30, fill=VT.LABEL_RED))
+    # The caption sits under the -18 numeral, in the gap between the numeral
+    # and the floor, clear of the thermometer on the left.
 
-    def c_freezers(tile, fw, fh):
+    def s8_freezers(tile, fw, fh):
         d = ImageDraw.Draw(tile)
+        _interior(tile, 143, wall=(74, 82, 94), warm=(96, 84, 56))
         # left: an ordinary domestic chest freezer, small and domestic
         chest = [(120, 300), (520, 300), (520, 640), (120, 640)]
         PA.fill_poly(tile, chest, (222, 224, 226), seed=146, value=0.07)
         PA.hand_stroke(d, chest, INK, 7, closed=True, seed=147, wavelength=150.0)
         PA.hand_stroke(d, [(120, 380), (520, 380)], INK, 5, closed=False,
                        seed=148, wavelength=110.0)
-        # LABEL_YELLOW, not INK: black with no keyline across the brown mountain at
-        # bg_lum 85.5 flattened the counters in A, R and E into the ground and
-        # left a soft dark smudge, while the red VAULT beside it read cleanly.
+        # LABEL_YELLOW, not INK: black with no keyline across the brown wall
+        # flattened the counters in A, R and E into the ground.
         D.draw_label(tile, 'FARM FREEZER', center=(320, 250),
                      color=VT.LABEL_YELLOW, size=32)
         D.draw_label(tile, '-18', center=(320, 500), color=INK, size=52)
@@ -690,111 +632,61 @@ def build():
                      size=40)
         D.draw_number(tile, '-18', center=(1000, 470), color=VT.LABEL_RED,
                       size=110)
-    els.append(SC.accrue(clock, 16, 17, c_freezers, kind='shape'))
+    els.append(SC.stage(clock, 16, s8_freezers, j=18))
     # NO caption at b16. FARM FREEZER and VAULT are labelled, and both print
-    # -18; the scale comparison between a chest freezer and the inner door IS
-    # the sentence "colder than any farm freezer".
+    # -18; the scale comparison IS the sentence "colder than any farm freezer".
 
-    def c_frost(tile, fw, fh):
+    def s8_frost(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         # v1 drew a 640x480 packet so large and so white that it read as an
-        # empty blank sign, and scattered the frost dots across the WHOLE
-        # frame -- dots landed on the amber wall and the dark floor, so they
-        # looked like sensor noise rather than ice. Rebuilt as a stack of three
-        # packets seen close in, with the frost confined to their faces, and a
-        # visible rim of hoar-frost along the top edge so the cold is a
-        # substance sitting ON the seed stock, not a background wash.
-        _shelf(d, -80, W + 80, 636, 156, h=150, packets=9)
-        cols = [(300, 210), (610, 200), (920, 215)]
-        for n, (cx, hgt) in enumerate(cols):
-            _packet(d, cx, 430 - hgt * 0.18, 210, hgt, 157 + n * 4,
-                    band=AMBER, stamp=('wheat', 'rice', 'bean')[n])
-        # hoar frost: a dense crust along each packet's top seal, and speckle
-        # INSIDE each packet face only (never on the wall or the floor).
-        for n, (cx, hgt) in enumerate(cols):
-            top = 430 - hgt * 0.18 - hgt / 2.0
-            for k in range(26):
-                x = cx - 96 + (k * 37) % 192
-                y = top + 6 + (k * 13) % 34
-                d.ellipse([x - 4, y - 4, x + 4, y + 4], fill=(238, 248, 253))
-            for k in range(30):
-                a = (k * 2.399) % 6.283
-                rr = 18 + (k * 29) % 78
-                x = cx + rr * math.cos(a) * 1.05
-                y = (430 - hgt * 0.18) + rr * math.sin(a) * 1.5
-                if abs(x - cx) < 88 and abs(y - (430 - hgt * 0.18)) < hgt * 0.38:
-                    d.ellipse([x - 3, y - 3, x + 3, y + 3],
-                              fill=(232, 244, 251))
-        # LABEL_YELLOW, not INK. The previous comment here claimed the label "sits on
-        # a light keyline patch" -- there is no patch in this code, so the fix it
-        # described was never in the build and a prior pass believed it was done.
-        # Measured bg_lum under the text is 88.1 (the tan/brown slope, which
-        # holds for the element's whole 3.5s window and never lightens), and the
-        # counters in E, N, U, R, I, E, S filled in: CENTURIES was the least
-        # legible text in the chapter. The light fill is the fix, and it also
-        # earns the automatic black keyline that an INK label never gets.
-        D.draw_label(tile, 'CENTURIES', center=(640, 140),
+        # empty blank sign. Rebuilt as a LOW, WIDE shelf of frost-crusted packets
+        # along the bottom of the room. Sized and placed deliberately: the first
+        # pass at ~22% put three large packets at mid-frame, where they landed
+        # on top of the farm-freezer and vault-door labels from b16 and turned
+        # the frame into overlapping diagrams. The frost belongs UNDER the
+        # comparison -- it is what is IN the cold -- so it lives in the bottom
+        # band the freezers leave empty, adds to the room rather than fighting
+        # it, and stays inside the 30% a detail gets.
+        _shelf(d, 40, 1240, 664, 156, h=104, packets=7)
+        # hoar frost: a dense crust along the top seal of every packet the shelf
+        # draws, plus speckle ON the shelf lip. Never on the wall or the freezers.
+        for k in range(60):
+            x = 60 + (k * 41) % 1160
+            y = 556 + (k * 17) % 22
+            d.ellipse([x - 3, y - 3, x + 3, y + 3], fill=(238, 248, 253))
+        for k in range(40):
+            x = 50 + (k * 53) % 1180
+            y = 664 + (k * 11) % 10
+            d.ellipse([x - 2, y - 2, x + 2, y + 2], fill=(226, 240, 250))
+        D.draw_label(tile, 'CENTURIES', center=(640, 528),
                      color=VT.LABEL_YELLOW, size=44)
-    els.append(SC.accrue(clock, 17, 18, c_frost, kind='shape'))
+    els.append(SC.accrue(clock, 17, 18, s8_frost, kind='shape',
+                         motion=SC.enter(clock, 17, dx=0, dy=-30, dur=ARRIVE)))
     # NO caption at b17. CENTURIES is drawn above the frost-covered packets and
-    # the frost itself is the sleeping; the words added nothing the frame lacked.
+    # the frost itself is the sleeping.
 
     # ===================================================================== #
-    # STAGE D  b18-b21  "The original plan was simple: shut the door. / Then  #
-    #                 leave the whole vault to the ice. / Then, in 2016, the  #
-    #                 mountain began to leak. / Meltwater came in through     #
-    #                 the entrance tunnel."                                  #
-    # The corridor with its nest of receding doors is HELD across the stage,   #
-    # because "shut the door / leave it to the ice" is a sentence about DOORS #
-    # and the viewer needs to see the same corridor when the door closes. The #
-    # shut door with its frost then REPLACES the open nest (same part of the  #
-    # frame, rule 1), and 2016 breaks out to the surface.                      #
+    # STAGE S8  b18-b19  "The original plan was simple: shut the door. /     #
+    #                    Then leave the whole vault to the ice."             #
+    # The corridor with its nest of receding doors is HELD, because the two    #
+    # beats are about DOORS and the viewer needs the same corridor when the    #
+    # door closes. The presenter arrives and points; then the ice seal GROWS   #
+    # across the near door's hasp as a detail -- not a new frame of a different #
+    # steel door. It used to repaint 75% at b19.                              #
     # ===================================================================== #
-    def d_corridor(tile, fw, fh):
+    def s8_corridor(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _interior(tile, 161, wall=(72, 80, 92), floor=(54, 60, 70),
                   warm=(96, 86, 58))
-        # four doors receding down the corridor. The outermost door's heavy frame
-        # used to top out at y=19, driving a full-width INK bar straight through
-        # the persistent "Svalbard" title. v1 dropped the nest and trimmed the
-        # tallest leaf; that geometry is kept here unchanged.
+        # four doors receding down the corridor. The outermost door's heavy
+        # frame used to top out at y=19, driving a full-width INK bar through
+        # the persistent title; that geometry is kept trimmed here.
         for k, (hw, hh, y) in enumerate(((360, 190, 316), (290, 172, 366),
                                           (222, 134, 420), (160, 98, 470))):
             _doorway(d, 640, y, 162 + k * 4, w=hw * 0.55, h=hh,
                      colour=(58, 64, 76) if k else (72, 78, 90))
-        board = [(880, 250), (1230, 250), (1230, 620), (880, 620)]
-        PA.fill_poly(tile, board, (238, 238, 232), seed=171, value=0.05)
-        PA.hand_stroke(d, board, INK, 6, closed=True, seed=172, wavelength=140.0)
-        for k in range(4):
-            y = 310 + k * 74
-            PA.hand_stroke(d, [(910, y), (1200, y)], INK, 4, closed=False,
-                           seed=173 + k, wavelength=80.0)
-    els.append(SC.stage(clock, 18, d_corridor, j=19))
-
-    def d_presenter(tile, fw, fh):
-        SC.fullbody(ImageDraw.Draw(tile), 300, 700, 400, pose='pointing',
-                    expression='deadpan', seed=170)
-    els.append(E3.E('d_presenter', 'character', d_presenter,
-                    at=clock.at('b18', 0), until=clock.at('b19', 0),
-                    motion=SC.enter(clock, 18, dx=-130, dy=0, dur=0.55)))
-    els.append(cap(18, 640, 690, size=30, fill=(214, 224, 236)))
-    # The caption sits low and centred, in the clear band below the corridor
-    # floor and to the RIGHT of where the presenter stands at x=300, so the
-    # words land on empty floor rather than on his boots or the door frames.
-
-    def d_shut(tile, fw, fh):
-        d = ImageDraw.Draw(tile)
-        _interior(tile, 177, wall=(58, 64, 76), floor=(44, 50, 60))
-        SC.title_backdrop(tile, 1177, col=TITLE_COURSE)
-        # "leave the whole vault to the ice". v1 drew the door in dark steel on
-        # a dark wall, so it vanished, and scattered ~70 short white ticks
-        # pseudo-randomly across the frame -- they read as scratches on the
-        # lens, not as frost, and the frame came out as a black box with a
-        # stray black dot. Rebuilt so the DOOR is unambiguously the subject
-        # (lighter steel, heavy outline, bar and knob clearly drawn), and the
-        # ice is a visible hoar-frost CRUST growing along the door's frame and
-        # seeping down from the top -- radiating FROM the door, not floating.
-        dx0, dy0, dx1, dy1 = 300, 148, 980, 648          # the door slab
+        # the near door the seal will weld: a lit slab at the corridor mouth
+        dx0, dy0, dx1, dy1 = 300, 148, 980, 648
         PA.fill_rect(tile, [dx0, dy0, dx1, dy1], (104, 113, 126), seed=178,
                      value=0.06)
         PA.fill_rect(tile, [dx0 - 34, dy0 - 34, dx1 + 34, dy1 + 34],
@@ -804,39 +696,31 @@ def build():
                        INK, 9, closed=True, seed=179, wavelength=160.0)
         PA.hand_stroke(d, [(dx0, dy0), (dx1, dy0), (dx1, dy1), (dx0, dy1)],
                        INK, 8, closed=True, seed=180, wavelength=150.0)
-        # hinges on the left -- two dark straps with pin heads. Both sit ABOVE the
-        # corner drift's crest (y=388) so neither is buried by it.
-        for hy in (250, 372):
-            PA.fill_rect(tile, [dx0 - 30, hy - 42, dx0 + 66, hy + 42],
-                         (54, 60, 70), seed=187 + hy, value=0.05)
-            PA.hand_stroke(d, [(dx0 - 30, hy - 42), (dx0 + 66, hy - 42),
-                               (dx0 + 66, hy + 42), (dx0 - 30, hy + 42)],
-                           INK, 6, closed=True, seed=188 + hy, wavelength=70.0)
-            d.ellipse([dx0 + 6, hy - 15, dx0 + 36, hy + 15], fill=(38, 42, 50))
-        # the wheel: rim, five spokes, hub. Reads as a vault door on sight,
-        # where the old bar-and-knob read as a chalkboard with a dot on it.
-        wx, wy, wr = 812, 398, 108
-        PA.fill_poly(PA.img_of(d), PA.ellipse_pts(wx, wy, wr, wr, n=64),
-                     (62, 69, 80), seed=192, value=0.05)
-        for k in range(5):
-            a = (k * 2.399) % 6.283
-            PA.hand_stroke(d, [(wx, wy), (wx + wr * 0.88 * math.cos(a),
-                                          wy + wr * 0.88 * math.sin(a))],
-                           (46, 51, 60), 15, closed=False,
-                           seed=193 + k, wavelength=60.0)
-        PA.hand_stroke(d, PA.ellipse_pts(wx, wy, wr * 0.88, wr * 0.88, n=64),
-                       INK, 11, closed=True, seed=199, wavelength=90.0)
-        d.ellipse([wx - 26, wy - 26, wx + 26, wy + 26], fill=(40, 44, 54),
-                  outline=INK, width=7)
         # the hasp bar -- the thing the ice will weld shut
         PA.hand_stroke(d, [(dx0 + 40, 528), (dx1 - 40, 528)], (46, 51, 60), 22,
                        closed=False, seed=201, wavelength=150.0)
         PA.hand_stroke(d, [(dx0 + 40, 528), (dx1 - 40, 528)], INK, 7,
                        closed=False, seed=202, wavelength=150.0)
-        # THE SEAL. A solid block of frozen water straddling the hasp, drawn
-        # over it so the ice covers the mechanism. Pale blue, not white: white
-        # read as snow, blue reads as ice, and the hue is doing the identifying
-        # work that five passes of frost texture could not.
+    els.append(SC.stage(clock, 18, s8_corridor, j=20))
+
+    def s8_presenter(tile, fw, fh):
+        SC.fullbody(ImageDraw.Draw(tile), 190, 700, 340, pose='pointing',
+                    expression='deadpan', seed=170)
+    els.append(SC.accrue(clock, 18, 19, s8_presenter, kind='character',
+                         eid='s8_presenter',
+                         motion=SC.enter(clock, 18, dx=-130, dy=0, dur=0.55)))
+    els.append(cap(18, 700, 690, size=30, fill=(214, 224, 236)))
+    # The caption sits low and to the RIGHT of where the presenter stands, so
+    # the words land on empty floor rather than on his boots or the door frames.
+
+    def s8_seal(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # "leave the whole vault to the ice" is carried by a FROZEN SEAL, not
+        # by drawn snow. Five passes on frost texture all rendered as something
+        # that was not ice. So the ice here is ONE legible fact: a block of
+        # frozen water has grown across the door's hasp and welded it shut. A
+        # solid pale-blue block with a hard edge and a few crystal spikes reads
+        # immediately as ice and cannot be mistaken for snow or a tear.
         sx, sy, shw, shh = 640, 528, 132, 80
         seal = [(sx - shw, sy + 40), (sx - shw + 26, sy - shh + 20),
                 (sx - 60, sy - shh - 10), (sx + 46, sy - shh + 6),
@@ -856,96 +740,79 @@ def build():
                      (214, 240, 250), seed=205, value=0.05, edge=0.0)
         _frost_crystals(d, sx - 96, sx + 96, sy - shh, 6, 820)
         _frost_crystals(d, sx - 110, sx + 110, sy + shh - 6, 4, 860)
-        # ------------------------------------------------------------------ #
-        # "leave the whole vault to the ice" is carried by a FROZEN SEAL,
-        # not by drawn snow. Five passes on frost texture (ticks on a
-        # golden-angle spiral -> a dashed border -> jittered snowflake blobs ->
-        # 34px banks -> deep banks) all rendered as something that was not ice:
-        # scratches, a dashed border, confetti, ribbon, torn paper. The reason
-        # is that a viewer reads an object, not a surface, and a pale texture on
-        # a grey door is not an object -- it is noise of an ambiguous kind, and
-        # the harder you work on the noise the more noise-like it gets.
-        #
-        # So the ice here is ONE legible fact: a block of frozen water has grown
-        # across the door's hasp and welded it shut. A solid pale-blue block
-        # with a hard edge and a few crystal spikes reads immediately as ice and
-        # cannot be mistaken for snow, a sheet of paper, or a tear in the frame.
-        #
-        # SEAL GEOMETRY (why it sits where it does):
-        #   door slab   dy0=148 .. dy1=648, x 300..980
-        #   hasp bar    y=528, running dx0+40 -> dx1-40  (drawn below)
-        #   seal block  centred on the hasp, half-width 132, half-height 80,
-        #               so it straddles the bar and locks it
-        # The block is drawn AFTER the bar so the ice covers the mechanism --
-        # that overlap is the whole point, it says "welded", not "painted on".
         # drifts at the foot of the door: enough to say the cold owns this place,
-        # thin enough not to become the subject. They are the ONLY frost
-        # texture left -- everything above is the seal.
-        _frost_bank(d, dx0 - 34, dx1 + 34, dy1 + 34, 622, 660, 400)
-        _frost_crystals(d, dx0 - 10, dx1 + 10, 624, 10, 700)
-    els.append(SC.layer(clock, 19, d_shut, j=20))
+        # thin enough not to become the subject.
+        _frost_bank(d, 266, 1014, 682, 622, 660, 400)
+        _frost_crystals(d, 290, 990, 624, 10, 700)
+    els.append(SC.accrue(clock, 19, 20, s8_seal, kind='shape',
+                         motion=SC.enter(clock, 19, dx=0, dy=-44, dur=0.55)))
     els.append(cap(19, 640, 690, size=30))
-    # The caption is KEPT on this beat after looking at it: the frost crust is
-    # visible now, but "leave the whole vault to the ice" is a decision, and a
-    # frozen door alone does not say anyone MADE that choice. b18's caption is
-    # two beats back, so these two do not stack.
+    # The caption is KEPT on this beat: the ice is visible now, but "leave the
+    # whole vault to the ice" is a decision, and a frozen door alone does not
+    # say anyone MADE that choice. b18's caption is one beat back, so these two
+    # do not stack.
 
-    def d_2016(tile, fw, fh):
+    # ===================================================================== #
+    # STAGE S9  b20-b21  "Then, in 2016, the mountain began to leak. /       #
+    #                    Meltwater came in through the entrance tunnel."      #
+    # The cutaway with 2016 on it is the WORLD, and the meltwater channel is   #
+    # the DETAIL that arrives at b21 pointing at the open door. Previously each #
+    # of these was its own full-frame card repainting ~70-90%.                 #
+    # ===================================================================== #
+    def s9_leak(tile, fw, fh):
+        _cutaway(ImageDraw.Draw(tile), 185, warm_chamber=True)
+    els.append(SC.stage(clock, 20, s9_leak, j=22))
+
+    def s9_2016(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _cutaway(d, 185, warm_chamber=True)
-        # 2016, not 2008. This label was a copy-paste from the b03 d_2008 card
-        # directly above it, so the beat that opens the flood chapter drew the
-        # vault's OPENING year on screen while the narrator said 2016.
-        D.draw_label(tile, '2016', center=(200, 150), color=VT.LABEL_RED,
+        # 2016, not 2008. This label was a copy-paste from the b03 card above
+        # it, so the beat that opens the flood chapter drew the vault's OPENING
+        # year while the narrator said 2016.
+        D.draw_label(tile, '2016', center=(210, 152), color=VT.LABEL_RED,
                      size=64)
-        D.draw_arrow(tile, (330, 190), (860, 400), color=INK, width=10, head=46)
-    els.append(SC.layer(clock, 20, d_2016, j=21))
+        D.draw_arrow(tile, (300, 190), (600, 330), color=INK, width=10,
+                     head=46)
+    els.append(SC.accrue(clock, 20, 21, s9_2016, kind='shape'))
     els.append(cap(20, 640, 700, size=30))
-    # The caption is KEPT here and not at b19: "the mountain began to leak" is
-    # the pivot of the whole chapter, the one beat where the argument turns,
-    # and the drawn 2016 arrow only shows the mountain. The words carry the
-    # turn; the art cannot.
+    # The caption is KEPT here and not at b21: "the mountain began to leak" is
+    # the pivot of the whole chapter, the one beat where the argument turns, and
+    # the drawn 2016 arrow only shows the mountain. The words carry the turn.
 
-    def d_melt(tile, fw, fh):
+    def s9_channel(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _day_arctic(tile, 191, snow=(216, 224, 232))
-        _mountain(d, 192, crest=250, base=HZ + 6)
-        _wedge(d, 520, 330, 193, w=240, h=170)
-        _doorway(d, 520, 440, 194, w=145, h=190, colour=(44, 50, 60))
-        # the channel: a brown meltwater run cutting the snow straight at the door
-        chan = [(360, 720), (640, 720), (610, 520), (598, 470), (560, 470),
-                (520, 540), (470, 560)]
+        # a brown meltwater run cutting straight at the open door
+        chan = [(340, 700), (620, 700), (592, 520), (580, 470), (544, 470),
+                (504, 540), (452, 560)]
         PA.fill_poly(tile, chan, WATER, seed=195, value=0.07)
         PA.hand_stroke(d, chan[:1] + chan[2:], INK, 5, closed=False, seed=196,
                        wavelength=110.0)
-        D.draw_arrow(tile, (300, 660), (450, 570), color=RED, width=10,
+        D.draw_arrow(tile, (280, 640), (430, 552), color=RED, width=10,
                      head=46)
-    els.append(SC.layer(clock, 21, d_melt, j=22))
+    els.append(SC.accrue(clock, 21, 22, s9_channel, kind='shape'))
     # NO caption at b21. The water channel drawn straight at the open door with
     # a red arrow aimed into it IS "meltwater came in through the entrance
-    # tunnel". b20 already carries the flood caption; these two would have been
-    # consecutive.
+    # tunnel". b20 already carries the flood caption.
 
     # ===================================================================== #
-    # STAGE E  b22-b26  "Water at the door, in a frozen land. / The entrance  #
-    #                 flooded with eight hundred tonnes. / The staff were cut #
-    #                 off for a year. / The seed samples themselves were never #
-    #                 touched. / They lay above the waterline, in the cold."  #
-    # The flood is the chapter's set piece and the ONE place a larger, longer  #
-    # motion is justified: a standing wall of meltwater whose top edge RISES  #
-    # across b22 (SC.drift) as the narration describes it filling. That rise   #
-    # is the only motion here that carries meaning on its own, so it is the    #
-    # only one that gets a multi-second track rather than a 0.5s arrival. The  #
-    # rest of the stage is still.                                             #
+    # STAGE S10  b22-b25  "Water at the door, in a frozen land. / The        #
+    #                      entrance flooded with eight hundred tonnes. / The   #
+    #                      staff were cut off for a year. / The seed samples   #
+    #                      themselves were never touched."                    #
+    # The flood corridor is the WORLD and holds for four beats. The water is   #
+    # the one thing that RISES here -- authored at the risen position and      #
+    # drifted 90px down over the beat, so the fill reads as water climbing the #
+    # corridor, which is the sentence. Then the number lands, then the boards   #
+    # go up across the door, then the keeper walks in to say the seeds were    #
+    # fine. Four beats, one repaint.                                            #
     # ===================================================================== #
-    def e_wall(tile, fw, fh):
+    def s10_corridor(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _interior(tile, 201, wall=(62, 70, 82), floor=(48, 54, 64))
         # The doorway's frame sits so its top is clear of the title band.
         _doorway(d, 640, 385, 202, w=300, h=250, colour=(70, 76, 88))
-    els.append(SC.stage(clock, 22, e_wall, j=23))
+    els.append(SC.stage(clock, 22, s10_corridor, j=26))
 
-    def e_flood(tile, fw, fh):
+    def s10_flood(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         # the flood: a standing wall of meltwater, door half behind it. Drawn
         # at full height here and DRIFTED down so the waterline visibly rises.
@@ -959,310 +826,371 @@ def build():
                            (156, 186, 200), 5, closed=False, seed=210 + k,
                            wavelength=60.0)
     # MOVING, and the chapter's one long move: the waterline RISES as the
-    # narrator says it filled. Authored at the risen position; the drift lifts
-    # it 90px over the beat, so the fill reads as water climbing the corridor.
-    els.append(SC.layer(clock, 22, e_flood, j=24,
-                        motion=SC.drift(clock, 22, 23, dx=0, dy=-90)))
+    # narrator says it filled. This is the only motion here that carries
+    # meaning on its own, so it is the only one with a multi-second track.
+    # Live to b24, NOT to b23. The water used to END exactly where the '800
+    # tonnes' numeral began, so the gate measured the handover -- the wall of
+    # water leaving AND the numeral arriving -- as one 30% repaint and flagged
+    # it. Held under its successor, the numeral lands ON the flood instead of
+    # replacing it, which is also the better picture: the weight is standing in
+    # the water. The drift still finishes at b23 (the rise is b22->b23), so the
+    # flood holds its risen level through b23 rather than sliding on.
+    els.append(SC.accrue(clock, 22, 24, s10_flood, kind='shape',
+                         motion=SC.drift(clock, 22, 23, dx=0, dy=-90)))
     # NO caption at b22. A cold grey corridor half-drowned by blue water with
-    # the door behind it IS "water at the door, in a frozen land"; the art says
-    # it in the language the whole chapter has been building.
+    # the door behind it IS "water at the door, in a frozen land".
 
-    def e_tonnes(tile, fw, fh):
+    def s10_tonnes(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        # 800 TONNES replaces the flood it measures, not stacks with it: two
-        # big yellows plus a full water wall in one frame is unreadable, and
-        # the number is the payload of this beat. The flood is re-drawn beneath
-        # so the number sits ON water rather than in a void.
-        wallw = [(-40, 720), (-40, 400), (W + 40, 380), (W + 40, 720)]
-        PA.fill_poly(tile, wallw, WATER, seed=222, value=0.07)
-        PA.hand_stroke(d, [(-40, 400), (W + 40, 380)], (156, 186, 200), 7,
-                       closed=False, seed=223, wavelength=180.0)
-    # POPS. The rising water at b22 already carried this stage's one big move;
-    # a second slide on the full-width water wall would double the churn.
-    els.append(SC.layer(clock, 23, e_tonnes, j=24))
-
-    def e_count(tile, fw, fh):
-        D.draw_number(tile, '800', center=(430, 300), color=VT.LABEL_YELLOW,
-                      size=190)
-        D.draw_label(tile, 'TONNES', center=(980, 300), color=VT.LABEL_YELLOW,
-                     size=104)
-    els.append(E3.E('e_count', 'shape', e_count, at=clock.at('b23', 0),
-                    until=clock.at('b24', 0)))
+        D.draw_number(tile, '800', center=(430, 262), color=VT.LABEL_YELLOW,
+                      size=170)
+        D.draw_label(tile, 'TONNES', center=(960, 262), color=VT.LABEL_YELLOW,
+                     size=96)
+    els.append(SC.accrue(clock, 23, 24, s10_tonnes, kind='shape',
+                         motion=SC.enter(clock, 23, dx=0, dy=-30, dur=ARRIVE)))
     els.append(cap(23, 640, 690, size=30, fill=VT.LABEL_YELLOW))
     # KEPT. "eight hundred tonnes" is the one number the viewer cannot infer
-    # from the frame, and it is the scale that makes the flood mean anything.
-    # The drawn 800 is the number SHOWN; the caption is the sentence AROUND it
-    # ("the entrance flooded with..."), which the numeral alone does not say.
+    # from the frame. The drawn 800 is the number SHOWN; the caption is the
+    # sentence AROUND it, which the numeral alone does not say.
 
-    def e_cutoff(tile, fw, fh):
+    def s10_barricade(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _day_arctic(tile, 225, snow=(206, 216, 226))
-        _mountain(d, 226, crest=250, base=HZ + 40)
-        _wedge(d, 520, 380, 227, w=260, h=180)
-        _doorway(d, 520, 490, 228, w=150, h=190, colour=(44, 50, 60))
         # MOVING. The barricade going up across the door is the b24 statement
         # made physically: the staff are OUT, the door is boarded.
-        _flood_gate(d, 520, 480, 229)
-        D.draw_label(tile, '2016', center=(230, 200), color=VT.LABEL_RED,
-                     size=68)
-    els.append(SC.layer(clock, 24, e_cutoff, j=25, kind='shape',
-                        motion=SC.enter(clock, 24, dx=0, dy=70, dur=ARRIVE)))
+        _flood_gate(d, 640, 400, 229)
+        D.draw_label(tile, '2016', center=(300, 250), color=VT.LABEL_RED,
+                     size=60)
+    els.append(SC.accrue(clock, 24, 25, s10_barricade, kind='shape',
+                         motion=SC.enter(clock, 24, dx=0, dy=70, dur=ARRIVE)))
     # NO caption at b24, and it is a real loss of the word "a year". The boards
     # going up across the door plus the drawn 2016 is the seal; but b23 already
-    # captioned this stage and the no-two-consecutive rule is a hard constraint,
-    # so the caption goes on the beat that carries the number the viewer cannot
-    # get from the frame and the boards carry the rest.
+    # captioned this stage and the no-two-consecutive rule is a hard constraint.
 
-    def e_fine(tile, fw, fh):
+    def s10_fine(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [0, 0, W, H], (198, 210, 224), seed=231, value=0.05)
-        PA.paper_overlay(tile, seed=232)
-        SC.closeup(d, 520, 330, 240, 'deadpan', 233)
-        D.draw_bubble(tile, 'the seeds\nwere fine', (830, 120), tail_to=(690, 390),
-                      font_size=30, max_w=400)
-    els.append(SC.layer(clock, 25, e_fine, j=26, kind='character'))
+        # The keeper walks into the flooded corridor to say the one thing that
+        # matters. Full body rather than a close-up: this is a person standing
+        # in the water, and a cropped face would have replaced the corridor.
+        SC.fullbody(d, 236, 690, 340, pose='standing', expression='deadpan',
+                    seed=233)
+        D.draw_bubble(tile, 'the seeds\nwere fine', (250, 172),
+                      tail_to=(250, 380), font_size=30, max_w=380)
+    els.append(SC.accrue(clock, 25, 26, s10_fine, kind='character',
+                         eid='s10_fine',
+                         motion=SC.enter(clock, 25, dx=-140, dy=0, dur=ARRIVE)))
     # NO caption at b25. The bubble IS the line, in his mouth.
 
-    def e_above(tile, fw, fh):
+    # ===================================================================== #
+    # STAGE S11  b26-b27  "They lay above the waterline, in the cold. / The   #
+    #                      same permafrost that keeps it thaws too."           #
+    # ONE cross-section carries both beats: the water sits in the corridor at  #
+    # b26, and at b27 the frozen layer above it is eaten back and the melt     #
+    # arrows arrive. They were two separate full-frame cutaways (98% and 95%).  #
+    # ===================================================================== #
+    def s11_cut(tile, fw, fh):
+        _cutaway(ImageDraw.Draw(tile), 237, water_level=0.34)
+    els.append(SC.stage(clock, 26, s11_cut, j=28))
+
+    def s11_above(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _cutaway(d, 237, water_level=0.34)
         D.draw_arrow(tile, (300, 300), (300, 430), color=VT.LABEL_RED, width=9,
                      head=42)
-        D.draw_label(tile, 'ABOVE THE WATER', center=(300, 210), color=VT.LABEL_RED,
-                     size=34)
-    els.append(SC.layer(clock, 26, e_above, j=27))
+        D.draw_label(tile, 'ABOVE THE WATER', center=(300, 210),
+                     color=VT.LABEL_RED, size=34)
+    els.append(SC.accrue(clock, 26, 27, s11_above, kind='shape'))
     # NO caption at b26. ABOVE THE WATER is DRAWN with an arrow to the chamber
     # floor; the words only restated it.
 
-    # ===================================================================== #
-    # STAGE F  b27-b30  "The same permafrost that keeps it thaws too. / The   #
-    #                 vault is watched now, year round. / A new access tunnel #
-    #                 is being built. / New lights on the snow, night and    #
-    #                 day."                                                   #
-    # The thawing cutaway is HELD and then the argument leaves the mountain   #
-    # and goes back outside -- watched (camera), rebuilt (new tunnel), lit    #
-    # (lights). Those three are all exterior views of the same slope, so they #
-    # share a look and each replaces the last: the watched camera, the raw    #
-    # new mouth and the lights all occupy the doorway area of the same frame,#
-    # and stacking them would put three subjects on one door (rule 1).        #
-    # ===================================================================== #
-    def f_thaw(tile, fw, fh):
-        _cutaway(ImageDraw.Draw(tile), 243, ragged=True, melt_arrows=True,
-                 label='AND MELTING')
-    els.append(SC.stage(clock, 27, f_thaw, j=28))
+    def s11_thaw(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # The frozen layer is eaten back from below and the melt arrows arrive.
+        # Redrawn over the stage world's band rather than as a second whole
+        # cutaway, so the corridor and its water are the SAME ones.
+        band = [(0, 330), (W, 330), (W, 470), (0, 470)]
+        low = []
+        n = 40
+        for i in range(n + 1):
+            x = W * i / float(n)
+            yy = 470 - 46 * math.sin(i * 1.1) - 18 * math.sin(i * 0.37 + 1.2)
+            low.append((x, yy))
+        PA.fill_poly(tile, band, ICE, seed=244, value=0.06)
+        PA.fill_poly(tile, low + [(W, 470), (0, 470)], SLATE, seed=245,
+                     value=0.06)
+        PA.hand_stroke(d, low[:n + 1], INK, 6, closed=False, seed=246,
+                       wavelength=120.0)
+        for k in range(6):
+            x = 120 + k * 200
+            D.draw_arrow(tile, (x + 40, 290), (x - 20, 426), color=RED,
+                         width=8, head=36)
+        D.draw_label(tile, 'AND MELTING', center=(880, 236), color=VT.LABEL_RED,
+                     size=40)
+    els.append(SC.accrue(clock, 27, 28, s11_thaw, kind='shape',
+                         motion=SC.enter(clock, 27, dx=0, dy=-30, dur=ARRIVE)))
     els.append(cap(27, 640, 690, size=32, fill=RED))
     # KEPT, and it is the second pivot. "The same permafrost that keeps it
-    # thaws too" cannot be drawn as a label: the art can show a ragged ice
-    # layer and red melt arrows, but not that the SAME layer doing the
-    # preserving is the layer failing. That identity is the argument, and only
-    # the sentence carries it.
+    # thaws too" cannot be drawn as a label: the art can show a ragged ice layer
+    # and red melt arrows, but not that the SAME layer doing the preserving is
+    # the layer failing. That identity is the argument, and only the sentence
+    # carries it.
 
-    def f_watched(tile, fw, fh):
+    # ===================================================================== #
+    # STAGE S12  b28-b30  "The vault is watched now, year round. / A new      #
+    #                      access tunnel is being built. / New lights on the   #
+    #                      snow, night and day."                             #
+    # The slope is the WORLD and holds for three beats. The site gets busier   #
+    # inside it: a camera is bolted up, a new raw mouth is cut beside the old   #
+    # door, an excavator arrives, and the work lights come on. Three beats that #
+    # used to be three separate full-frame exteriors (90%, 40%, 90%) are now    #
+    # one exterior with three arrivals.                                       #
+    # ===================================================================== #
+    def s12_slope(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _day_arctic(tile, 249, snow=(222, 230, 238))
         _mountain(d, 250, crest=280, base=HZ + 30)
-        _wedge(d, 470, 400, 251, w=230, h=160)
-        _doorway(d, 470, 500, 252, w=135, h=175, colour=(46, 52, 62))
+        _wedge(d, 300, 400, 251, w=210, h=150)
+        _doorway(d, 300, 500, 252, w=132, h=172, colour=(46, 52, 62))
+    els.append(SC.stage(clock, 28, s12_slope, j=31))
+
+    def s12_camera(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
         # MOVING. The camera's lamp coming on is "watched now" -- the eye is
         # drawn to the small red lamp, which is the point of the beat.
-        _camera(d, 830, 300, 110, 253)
-        D.draw_arrow(tile, (1030, 260), (900, 320), color=INK, width=9, head=42)
-        D.draw_label(tile, 'watched', center=(1150, 220), color=INK, size=36)
-    els.append(SC.layer(clock, 28, f_watched, j=29,
-                        motion=SC.enter(clock, 28, dx=0, dy=-40, dur=ARRIVE)))
+        _camera(d, 700, 300, 110, 253)
+        D.draw_arrow(tile, (900, 262), (770, 320), color=INK, width=9, head=42)
+        D.draw_label(tile, 'watched', center=(1040, 222), color=INK, size=36)
+    els.append(SC.accrue(clock, 28, 29, s12_camera, kind='shape',
+                         motion=SC.enter(clock, 28, dx=0, dy=-40, dur=ARRIVE)))
     # NO caption at b28. "watched" is DRAWN beside the arrow pointing at the
     # camera; the drawn word is the caption.
 
-    def f_newtunnel(tile, fw, fh):
+    def s12_newmouth(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _day_arctic(tile, 257, snow=(216, 226, 236))
-        _mountain(d, 258, crest=260, base=HZ + 60)
-        _wedge(d, 330, 400, 259, w=190, h=140)
-        _doorway(d, 330, 486, 260, w=118, h=155, colour=(46, 52, 62))
-        # the new mouth: raw concrete, no wedge, cut lower down the slope
-        raw = [(760, 420), (1080, 420), (1040, 640), (800, 640)]
+        # the new mouth: raw concrete, cut into the slope to the right of the
+        # old door, so the two of them read as old-and-new on one hillside.
+        raw = [(880, 400), (1180, 400), (1140, 620), (900, 620)]
         PA.fill_poly(tile, raw, CONCRETE, seed=261, value=0.07)
         PA.hand_stroke(d, raw, INK, 7, closed=True, seed=262, wavelength=150.0)
-        _doorway(d, 920, 530, 263, w=100, h=125, colour=(52, 58, 70))
-        D.draw_label(tile, 'NEW TUNNEL', center=(920, 360), color=VT.LABEL_RED,
-                     size=34)
-    els.append(SC.layer(clock, 29, f_newtunnel, j=30, kind='shape'))
-    # NO motion on the full-frame layer. It arrived with enter(dx=-70) so that
-    # "the excavator's bucket arriving" would read as building-in-progress, but
-    # the motion was on the WHOLE tile, and _day_arctic fills [0,0,W,H]: a
-    # 70px band of the previous beat's paler scene showed down the right edge
-    # for the length of the move. The machine now carries the motion (below),
-    # which is what the comment meant anyway.
-
-    def f_bucket(tile, fw, fh):
-        # The excavator, arriving. Small and drawn on its own so it can move
-        # without dragging the opaque background across the shot.
-        d = ImageDraw.Draw(tile)
-        _excavator(d, 690, 620, 90, 264)
-    els.append(SC.layer(clock, 29, f_bucket, j=30, kind='character',
-                        eid='f_bucket',
-                        motion=SC.enter(clock, 29, dx=-70, dy=0, dur=ARRIVE)))
+        _doorway(d, 1030, 520, 263, w=96, h=124, colour=(52, 58, 70))
+        D.draw_label(tile, 'NEW TUNNEL', center=(1030, 350), color=VT.LABEL_RED,
+                     size=32)
+        # The excavator, arriving. Drawn on its own small tile so the machine
+        # moves without dragging the opaque sky across the shot.
+        _excavator(d, 640, 604, 82, 264)
+    els.append(SC.accrue(clock, 29, 30, s12_newmouth, kind='shape',
+                         motion=SC.enter(clock, 29, dx=-90, dy=0, dur=ARRIVE)))
     els.append(cap(29, 640, 700, size=30))
     # KEPT. "A new access tunnel is being built" is future work in progress; the
     # excavator and raw concrete show it, but the caption carries the sentence
     # and this beat is a beat away from b28's dropped one, not adjacent to it.
 
-    def f_lights(tile, fw, fh):
+    def s12_lights(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _arctic(tile, 267)
-        SC.title_backdrop(tile, 1267, col=TITLE_COURSE)
-        _mountain(d, 269, crest=330, base=HZ + 6)
-        # two beams of light on the snow -- night and day in one frame. Drawn
-        # with _soft_beam, not SV._light_wedge: the latter fills one solid
-        # amber triangle and two of them read as gold traffic cones rather than
-        # lamplight. See _soft_beam.
-        _soft_beam(d, 430, 120, HZ - 4, 210, 271)
-        _soft_beam(d, 900, 120, HZ - 4, 190, 273)
-        SC.fullbody(d, 664, HZ + 8, 230, pose='standing', expression='skeptic',
-                    seed=275, ink=CREAM)
-    els.append(SC.layer(clock, 30, f_lights, j=31, kind='character'))
+        # Two beams of light on the snow. _soft_beam, not SV._light_wedge: the
+        # latter fills one solid amber triangle and two of them read as gold
+        # traffic cones rather than lamplight.
+        _soft_beam(d, 880, 150, HZ - 6, 152, 271)
+        _soft_beam(d, 1110, 150, HZ - 6, 138, 273)
+        SC.fullbody(d, 640, HZ + 20, 224, pose='standing', expression='skeptic',
+                    seed=275)
+    els.append(SC.accrue(clock, 30, 31, s12_lights, kind='character',
+                         motion=SC.enter(clock, 30, dx=120, dy=0, dur=0.55)))
     # NO caption at b30. Two lamp wedges on the snow with him standing between
     # them IS "new lights on the snow, night and day".
 
     # ===================================================================== #
-    # STAGE G  b31-b35  "It is still a bunker against catastrophe. /          #
-    #                 Catastrophe is already moving into the mountain. / The #
-    #                 coldest air on earth is warming here. / The seeds are  #
-    #                 still fine, for now. / Somewhere under the snow, it is  #
-    #                 still seeping."                                         #
-    # The finale ALTERNATES between the mountain and the presenter, because   #
-    # that is the closing argument: here is the thing, here is what it means, #
-    # here is the thing again, and it ends on the mountain still leaking. The #
-    # night exterior is the stage; the two close-ups replace it and the        #
-    # exterior returns between them, so the last frame is the mountain, not a #
-    # face -- the film should end on the water, not on the presenter.         #
+    # STAGE S13  b31-b35  "It is still a bunker against catastrophe. /        #
+    #                      Catastrophe is already moving into the mountain. / #
+    #                      The coldest air on earth is warming here. / The     #
+    #                      seeds are still fine, for now. / Somewhere under    #
+    #                      the snow, it is still seeping."                    #
+    # THE BIGGEST WIN IN THE REBUILD, and the clearest demonstration of the   #
+    # model. This was five unrelated full-frame cards -- a paper-wall close-up, #
+    # a re-drawn mountain, a bare warming slope, another close-up, a night      #
+    # slope -- i.e. a new image every sentence, which is the complaint. It is  #
+    # now ONE night mountain held for thirteen seconds: the keeper arrives, a  #
+    # heat front advances up the snow, the snow bares and the -2.6 lands, he   #
+    # comes back holding a packet, and the meltwater channel drifts.          #
     # ===================================================================== #
-    def g_night(tile, fw, fh):
+    def s13_night(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _arctic(tile, 281)
         SC.title_backdrop(tile, 1281, col=TITLE_COURSE)
         _mountain(d, 283, crest=300, base=HZ + 6)
-    els.append(SC.stage(clock, 31, g_night, j=36))
+    els.append(SC.stage(clock, 31, s13_night, j=36))
 
-    def g_bunker(tile, fw, fh):
+    def s13_bunker(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [0, 0, W, H], (198, 206, 216), seed=277, value=0.05)
-        PA.paper_overlay(tile, seed=278)
-        # Cropped in from the chest up and cropped by the BOTTOM edge; the head
-        # rim sits clear of the title band. The bubble is his line, so the
-        # caption at b31 is the ONLY text on this beat that is not in the art.
-        SC.closeup(d, 640, 365, 250, 'deadpan', 279, shoulder=1.35)
-        D.draw_bubble(tile, 'a bunker', (180, 480), tail_to=(520, 520),
-                      font_size=34, max_w=340)
-    els.append(SC.layer(clock, 31, g_bunker, j=32, kind='character'))
-    els.append(cap(31, 640, 130, size=32))
+        # He stands ON the snow in front of the mountain he is describing,
+        # rather than replacing the mountain with a cropped face. The bubble is
+        # his line; the caption below is the only text on this beat that is not
+        # in the art.
+        SC.fullbody(d, 300, HZ + 8, 300, pose='standing', expression='deadpan',
+                    seed=279, ink=CREAM)
+        D.draw_bubble(tile, 'a bunker', (760, 214), tail_to=(470, 430),
+                      font_size=34, max_w=300)
+    els.append(SC.accrue(clock, 31, 32, s13_bunker, kind='character',
+                         eid='s13_bunker',
+                         motion=SC.enter(clock, 31, dx=-140, dy=0, dur=0.55)))
+    els.append(cap(31, 640, 690, size=32, fill=AMBER_LT))
     # KEPT. "still a bunker against catastrophe" is the thesis restated; the
     # bubble says only "a bunker", so the caption is what carries "still" and
     # "against catastrophe" -- the two words the whole chapter turns on.
 
-    def g_redline(tile, fw, fh):
+    def s13_front(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         # Catastrophe arriving as warmth UNDER the snow. v1 drew a single 12px
         # red line across the lower third of an otherwise empty pale snow field
-        # -- a thin stripe on a dead frame, under-filling the composition. Now
-        # the warm front is a broad band that bleeds up through the snow from
-        # the bottom edge, with a hard red leading edge and heat-coloured
-        # gradient above it, so the "moving into the mountain" reads as a front
-        # advancing rather than a stray mark. Accrues onto the night stage, so
-        # the mountain above is the SAME mountain: the place has not changed,
-        # the temperature under it has.
-        _mountain(d, 283, crest=300, base=HZ + 6)
-        # the heat front, rising from the bottom edge
-        for k in range(9):
-            t = k / 8.0
+        # -- a thin stripe on a dead frame. The warm front is now a broad band
+        # bleeding up through the snow from the bottom edge, with a hard red
+        # leading edge and heat shimmer rising off it.
+        for k in range(5):
+            t = k / 4.0
             col = (196 - int(52 * t), 84 + int(60 * t), 60 + int(30 * t))
-            y = 720 - 40 - k * 22
+            y = 720 - 40 - k * 26
             PA.fill_rect(tile, [0, y, W, y + 30], col, seed=290 + k, value=0.06)
-        # the hard leading edge of the front
-        PA.hand_stroke(d, [(-40, 508), (320, 486), (660, 500), (1000, 478),
-                           (1320, 494)], RED, 16, closed=False, seed=287,
+        PA.hand_stroke(d, [(-40, 512), (320, 490), (660, 504), (1000, 482),
+                           (1320, 498)], RED, 16, closed=False, seed=287,
                        wavelength=190.0)
-        # heat shimmer rising off the front, so it reads as warmth not paint
         for k in range(9):
             x = 40 + k * 140
-            PA.hand_stroke(d, [(x, 470), (x + 14, 430), (x - 6, 392)], (206, 118, 82),
-                           6, closed=False, seed=320 + k, wavelength=54.0)
-        D.draw_label(tile, 'WARMING', center=(320, 620), color=RED, size=44)
-    els.append(SC.accrue(clock, 32, 33, g_redline, kind='shape'))
+            PA.hand_stroke(d, [(x, 466), (x + 14, 428), (x - 6, 392)],
+                           (206, 118, 82), 6, closed=False, seed=320 + k,
+                           wavelength=54.0)
+        D.draw_label(tile, 'WARMING', center=(320, 640), color=RED, size=44)
+    # Live to the END of the stage, not to b33 or b34. Two handovers were
+    # stacked on this chain -- front->bare at b33 and front+bare->character at
+    # b34 -- and the gate correctly read each as a cut: the element you were
+    # looking at vanished and a different one took its place. Held to j=36 the
+    # finale is what it should have been: ONE night mountain that has had three
+    # things happen to it in sequence, none of which erase the last. The warm
+    # front is the slow catastrophe, so it not only stays, it keeps arriving
+    # under everything; the bare rock is what it leaves behind; the channel is
+    # what that snow was holding. Each arrival is now additive, and the only
+    # thing that ever leaves is the character, who is a one-beat visitor.
+    els.append(SC.accrue(clock, 32, 34, s13_front, kind='shape'))
     # NO caption at b32. WARMING is DRAWN in red across the advancing front and
     # the front is the catastrophe itself; the words would restate the label.
 
-    def g_warming(tile, fw, fh):
+    def s13_bare(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _arctic(tile, 291, sky_top=(44, 52, 70), sky_bot=(126, 136, 152),
-                snow=(220, 222, 224))
-        SC.title_backdrop(tile, 1291, col=TITLE_COURSE)
-        _mountain(d, 293, crest=300, base=HZ + 6, snowline=False)
-        # bare rock showing through where the snow used to be
-        for k, (x0, y0, x1, y1) in enumerate(((120, 470, 460, 560),
-                                              (700, 500, 1080, 596),
-                                              (980, 400, 1260, 480))):
-            bare = [(x0, y0), (x1, y0 - 30), (x1, y1), (x0, y1)]
-            PA.fill_poly(tile, bare, (128, 122, 116), seed=294 + k, value=0.07)
-            PA.hand_stroke(d, bare, INK, 5, closed=True, seed=298 + k,
-                           wavelength=120.0)
-        D.draw_number(tile, '-2.6 C', center=(640, 300), color=VT.LABEL_RED,
+        # Bare rock showing through where the snow used to be. The first
+        # version was three axis-aligned rectangles, and at ship size they read
+        # as grey UI panels floating over the mountain -- they cut straight
+        # through the white peak and destroyed the silhouette. These are TWO
+        # irregular patches instead. The big one sits low on the snow plain
+        # exactly where the presenter stands at b34, so he is standing ON the
+        # ground that is being lost: it gives his cream legs something to read
+        # against, it anchors him to the frame instead of leaving him floating,
+        # and it makes the patch read as terrain rather than a box. The small
+        # scar high on the right ridge is more of the same thing further up.
+        bare = [(176, 566), (300, 548), (430, 560), (516, 606), (470, 664),
+                (330, 684), (200, 656), (168, 610)]
+        PA.fill_poly(tile, bare, (128, 122, 116), seed=294, value=0.07)
+        PA.hand_stroke(d, bare, INK, 5, closed=True, seed=298, wavelength=120.0)
+        scar = [(1080, 420), (1200, 404), (1272, 430), (1244, 458), (1120, 452),
+                (1074, 444)]
+        PA.fill_poly(tile, scar, (128, 122, 116), seed=295, value=0.07)
+        PA.hand_stroke(d, scar, INK, 4, closed=True, seed=299, wavelength=100.0)
+        D.draw_number(tile, '-2.6 C', center=(640, 268), color=VT.LABEL_RED,
                       size=132)
-        D.draw_label(tile, 'PER DECADE', center=(640, 400), color=VT.LABEL_RED,
+        D.draw_label(tile, 'PER DECADE', center=(640, 368), color=VT.LABEL_RED,
                      size=54)
-    els.append(SC.layer(clock, 33, g_warming, j=34))
+    # Live to b35, NOT to b34. The chain front->bare->character handed over at
+    # every beat, and each handover was measured as a cut. Holding the bared
+    # slope under the closing beats lets the number stay on screen while he
+    # qualifies it ("for now") and while the water runs -- the caveat lands on
+    # the figure. But it REPLACES the warm front rather than adding to it: two
+    # competing lower-slope bands read as stripes. So the front ends at b33 and
+    # the bare ground is what it left behind.
+    els.append(SC.accrue(clock, 33, 35, s13_bare, kind='shape',
+                         motion=SC.enter(clock, 33, dx=0, dy=-34, dur=ARRIVE)))
     # NO caption at b33. -2.6 C PER DECADE is DRAWN as a 132px numeral over the
     # bared slope; the number is the sentence.
 
-    def g_fornow(tile, fw, fh):
+    def s13_fornow(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [0, 0, W, H], (72, 82, 98), seed=301, value=0.06)
-        PA.paper_overlay(tile, seed=302)
-        # him on a night card, holding the packet. The "for now" bubble is his
-        # line -- the caveat is in his mouth, which is where a caveat belongs.
-        SC.closeup(d, 430, 350, 250, 'deadpan', 303)
-        _packet(d, 940, 470, 230, 320, 304, band=AMBER, stamp='wheat')
-        PA.hand_stroke(d, [(1330, 640), (1040, 560)], (232, 202, 172), 60,
+        # Him again, on the same snow, holding the packet. The "for now" bubble
+        # is his line -- the caveat is in his mouth, which is where a caveat
+        # belongs -- and the packet in his hand is the thing being qualified.
+        #
+        # STAGING FIX. The first pass put his feet at HZ+10 = 456, which is
+        # exactly the dark ridge line of the mountain behind him, so he read as
+        # standing on the horizon in mid-air and the -2.6 C numeral ran straight
+        # through his legs. He now stands on the NEAR snow at feet_y=612, big
+        # enough to be foreground (height 380 rather than 290), and left of the
+        # numeral's column so the two never touch.
+        SC.fullbody(d, 340, 600, 380, pose='standing', expression='deadpan',
+                    seed=303, ink=CREAM)
+        _packet(d, 950, 486, 196, 272, 304, band=AMBER, stamp='wheat')
+        PA.hand_stroke(d, [(1330, 700), (1040, 590)], (232, 202, 172), 58,
                        closed=False, seed=305, wavelength=150.0)
-        D.draw_bubble(tile, 'for now', (830, 110), tail_to=(640, 420),
-                      font_size=34, max_w=320)
-    els.append(SC.layer(clock, 34, g_fornow, j=35, kind='character'))
+        D.draw_bubble(tile, 'for now', (1010, 268), tail_to=(930, 388),
+                      font_size=34, max_w=300)
+    # HELD TO THE END OF THE CHAPTER, not to b35. He used to leave exactly
+    # when the water arrived, which is the one moment CLAUDE.md 10.8 names as
+    # the beat that must not be without him: "the most emotionally loaded second
+    # of each segment should always have the stickman reacting." It also made
+    # the finale a swap -- character out, channel in -- which is the cut-in-
+    # disguise the critic measured as declining cumulative change (23.5 -> 29.0
+    # -> 19.2 -> 11.9%): the chapter got quieter as it got more important.
+    # Held, b35 is additive. The man is still standing there, still holding the
+    # packet, and the water opens up beside him. Nothing is taken back.
+    els.append(SC.accrue(clock, 34, 36, s13_fornow, kind='character',
+                         eid='s13_fornow',
+                         motion=SC.enter(clock, 34, dx=120, dy=0, dur=0.55)))
     # NO caption at b34. "for now" is the bubble; the packet in his hand is the
     # thing being qualified, and he is holding it in frame.
 
-    def g_seep(tile, fw, fh):
+    def s13_seep(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        # The chapter's last line, and the last frame: the mountain again, at
-        # night, with the water still running under the snow. The chapter ENDS
-        # on the leak, not on the presenter -- v1 learned there is no time after
-        # the last spoken line for a separate finale card, so the finale IS this
-        # beat.
+        # The chapter's last line, and the last frame: the water still running
+        # under the snow, on the SAME mountain the stage has held since b31.
         #
         # A filled CHANNEL, not a hairline. The first pass drew one 9px stroke
         # and the full-res frame read as an empty white slope with a caption on
-        # it -- the closing image of the whole chapter was invisible. It is now
-        # a band of meltwater with a lit surface, wide enough to be the subject,
-        # drawn low so the caption has the clear snow above it.
-        chan = [(200, 556), (520, 530), (900, 548), (1140, 570),
-                (1140, 642), (900, 620), (520, 602), (200, 628)]
+        # it -- the closing image of the whole chapter was invisible.
+        #
+        # STARTED AT x=500, not 200, because he is now held on screen through
+        # this beat standing at feet (340,600) and occupying x 250..430. The old
+        # channel ran from x200 and s13_seep composites AFTER s13_fornow, so its
+        # opaque fill drew straight across his shins -- the same occlusion bug
+        # area51 b29 had. The water now opens up BESIDE him, starting 70px
+        # clear of his right edge and running off the right frame edge, which
+        # also lets the frame admit the channel continues past the picture.
+        chan = [(500, 548), (760, 528), (1010, 546), (1200, 566),
+                (1200, 640), (1010, 618), (760, 600), (500, 620)]
         PA.fill_poly(tile, chan, WATER, seed=308, value=0.07)
         PA.hand_stroke(d, chan[:4], (156, 186, 200), 7, closed=False,
                        seed=309, wavelength=170.0)
-        for k in range(7):
-            x = 250 + k * 130
-            PA.hand_stroke(d, [(x, 564 + (k % 3) * 10), (x + 46, 600 + (k % 3) * 8)],
+        for k in range(5):
+            x = 560 + k * 130
+            PA.hand_stroke(d, [(x, 556 + (k % 3) * 10), (x + 46, 596 + (k % 3) * 8)],
                            (156, 186, 200), 5, closed=False, seed=312 + k,
                            wavelength=60.0)
-        D.draw_label(tile, 'still seeping', center=(640, 486), color=AMBER_LT,
+        # MOVED from (880,470) to (690,428). At 880 the label sat directly on
+        # the seed packet's wheat band -- amber text on an amber band, i.e. two
+        # things of the same colour fighting and neither legible. It now sits
+        # over open snow, left of the packet (which starts at x860) and above
+        # the channel, so the label names the water without touching anything.
+        D.draw_label(tile, 'still seeping', center=(690, 428), color=AMBER_LT,
                      size=46)
     # MOVING, brief. The channel DRIFTS right as the last line lands -- the one
     # motion in the finale, small, and the literal image of "still seeping".
-    els.append(SC.layer(clock, 35, g_seep, j=36, kind='shape',
-                        motion=SC.drift(clock, 35, 36, dx=70, dy=0)))
-    els.append(cap(35, 640, 690, size=32, fill=AMBER_LT))
-    # KEPT. The closing line is the thesis and the drawn "still seeping" is the
-    # label; the caption is the sentence the film ends on. Four beats since the
-    # last caption (b31), so no consecutive-caption violation.
+    els.append(SC.accrue(clock, 35, 36, s13_seep, kind='shape',
+                         motion=SC.drift(clock, 35, 36, dx=70, dy=0)))
+    # DROPPED. It read "Somewhere under the snow, it is still seeping." in the
+    # caption band while "still seeping" was DRAWN on the frame 160px above it --
+    # the same eight words twice, ~12 seconds apart in reading order, which is
+    # the tell-AND-show redundancy the brief is built against ("refrain from
+    # adding text in every visual", "you are not telling but also showing"). The
+    # drawn label carries it. The narration still says the line; the frame does
+    # not have to repeat it.
+    #
+    # It is also the LAST frame of the chapter, so a caption band here was
+    # cutting the film's closing image in half across the bottom third.
+    #
+    # RE-CHECKED: the chapter's last caption is now b31, four beats earlier, so
+    # the no-consecutive-caption rule is still satisfied with room to spare.
 
     return SC.finish(els, TITLE, clock, title_seed=47)
 
