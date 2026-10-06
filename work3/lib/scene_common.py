@@ -656,9 +656,33 @@ def drift(clock, i, j, dx=0, dy=0):
 
     For the "something is moving" case -- a searchlight beam, a cloud, a falling
     missile. Eased start to eased end so it never looks like a linear slide.
+
+    WHY t1 IS THE LAST BEAT'S END, NOT ITS ONSET. This used to read
+
+        t1 = clock.at('b%02d' % min(j, len(clock.meta['beats'])), 0)
+
+    which silently produces a DEAD TRACK whenever j runs past the final beat.
+    svalbard called drift(clock, 35, 36) in a 35-beat chapter: min(36,35)=35,
+    so t1 == t0 and the track rendered as [(94.14, 0.0), (94.14, 70.0)] --
+    two keyframes at the same instant, zero duration, an object that can never
+    move. Verified on rendered pixels: t=94.20s and t=96.70s differ by ZERO
+    pixels. The film froze for its closing 2.5 seconds, and nothing reported it,
+    because a zero-length motion track is still a well-formed list and the
+    motion gate only counts tracks it finds.
+
+    So: if j is inside the chapter, end at that beat's onset; if it runs past
+    the end, end at the beat's END instead. A drift is always a duration.
     """
     t0 = clock.at('b%02d' % i, 0)
-    t1 = clock.at('b%02d' % min(j, len(clock.meta['beats'])), 0)
+    n = len(clock.meta['beats'])
+    if j <= n:
+        t1 = clock.at('b%02d' % j, 0)
+    else:
+        # Past the final beat: run to where the narration actually stops.
+        t1 = float(clock.bend.get('b%02d' % min(j, n),
+                                  clock.meta.get('duration_s', t0)))
+    if t1 <= t0:
+        t1 = t0 + 0.6          # never emit a zero-duration track
     return [(t0, 0.0, 0.0, 1.0, 0.0), (t1, float(dx), float(dy), 1.0, 0.0)]
 
 
