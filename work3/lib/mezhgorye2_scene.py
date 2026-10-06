@@ -186,15 +186,27 @@ def build():
     # stage -- so it is an arriving element, not a card swap. The presenter #
     # stands right from b01 and swaps expression at b05 (brutal winters).   #
     # ===================================================================== #
+    # THE SNOW IS PAINTED BY THE STAGE, NOT ARRIVED AT b04. It used to be a
+    # beat-04 accrual -- a full-width white mass down to y=780 -- which the
+    # gate measured as a 39% full-frame swap INSIDE the stage: a cut to a new
+    # picture on the beat that says "frozen hills". The chapter is a winter
+    # chapter; the stage is born white. Register changes that ARE the stage
+    # belong in the stage.
     def a_back(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _exterior(tile, 5)
+        _exterior(tile, 5, sky=SKY, ground=SNOW)
         _mountain(d, 560, HZ + 30, 620, 118, 6)
         # a big dark archway low in the mountain, the "secret" the hook names.
         # h=360 (not 380) so the arch's apex lands at y=116, clear of the
         # persistent title band; h=380 pushed it to y=96, close enough that
         # the 7px keyline grazed the band.
         _archway(d, 560, HZ + 30, 300, 360, 8)
+        # the frozen valley, part of the world from the first frame
+        _ridgeline(d, 500, 470, 20, col=SNOW_SH, width=5)
+        _ridgeline(d, HZ + 10, 150, 21, col=(198, 210, 222), width=5)
+        valley = [(-60, 700), (-60, 596), (200, 560), (520, 542), (860, 560),
+                  (1160, 610), (1340, 654), (1340, 780), (-60, 780)]
+        _mass(d, valley, SNOW, 22, width=6)
     els.append(SC.stage(clock, 1, a_back, j=6))
 
     # The presenter arrives on b01 and stands through the whole stage. He is
@@ -238,19 +250,29 @@ def build():
     els.append(SC.accrue(clock, 3, 6, a_name, kind='shape',
                          motion=SC.enter(clock, 3, dx=0, dy=-40, dur=0.45)))
 
-    # ---- b04  the valley turns to snow: a white mass accrues -------------- #
-    # The ONE register change inside stage A, made by an ARRIVING element, not
-    # a card swap: a snow field with two ridges accrues over the green, so the
-    # frame becomes "frozen hills" while the mountain and door stay put.
+    # ---- b04  a drift banked against the archway -------------------------- #
+    # BOUNDED, and the whole point of the change. This used to be the full
+    # valley turning white -- a full-width mass to y=780 -- which is a new
+    # picture on the beat that says "frozen hills". Now the valley is white
+    # from the first frame (see a_back) and b04 adds what actually changes the
+    # beat: snow BANKED against the foot of the archway, a low band across the
+    # bottom third, plus two mounds. ~19% of frame height, under the 30% that
+    # makes the gate call it a cut.
     def a_snow(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _ridgeline(d, 500, 120, 20, col=SNOW_SH, width=5)
-        _ridgeline(d, HZ + 40, 90, 21, col=(198, 210, 222), width=5)
-        drift = [(-60, 720), (-60, 560), (240, 528), (640, 512), (1040, 528),
-                 (1340, 566), (1340, 780), (-60, 780)]
-        _mass(d, drift, SNOW, 22, width=6)
-    els.append(SC.accrue(clock, 4, 6, a_snow))
-    els.append(cap(4, 640, 660, size=32))
+        bank = [(-60, 690), (120, 648), (360, 634), (600, 646), (840, 668),
+                (1080, 686), (1340, 692), (1340, 780), (-60, 780)]
+        _mass(d, bank, (250, 250, 252), 22, width=6)
+        _mass(d, [(250, 646), (318, 596), (386, 646)], (250, 250, 252), 23,
+              width=5)
+        _mass(d, [(820, 668), (884, 622), (948, 670)], (250, 250, 252), 24,
+              width=5)
+    # DRIFTING, slowly across b04-b05: snow that moves a little for two beats
+    # is the cheapest honest motion in the chapter, and the chapter's motion
+    # budget had no continuous track in it at all before this.
+    els.append(SC.accrue(clock, 4, 6, a_snow, kind='shape', eid='a_snowbank',
+                         motion=SC.drift(clock, 4, 6, dx=0, dy=-26)))
+    els.append(cap(4, 640, 128, size=32))
 
     # ---- b05  the gale ---------------------------------------------------- #
     # Long shallow wind curves, all leaning the same way. Wind drawn as short
@@ -308,7 +330,7 @@ def build():
         _mountain(d, 460, 340, 240, 190, 44, col=(150, 164, 178))
         _bunker(d, 460, 300, 108, 45, decks=3, deck_h=34, tunnel_dy=[96],
                 lamps=False)
-    els.append(SC.accrue(clock, 6, 7, b_sheet_v1, kind='shape',
+    els.append(SC.accrue(clock, 6, 10, b_sheet_v1, kind='shape',
                          motion=SC.enter(clock, 6, dx=0, dy=-36, dur=ARRIVE)))
     els.append(cap(6, 640, 664, size=32))
 
@@ -322,7 +344,7 @@ def build():
         _stamp(d, 645, 300, 190, 88, -7, 51)
         D.draw_label(tile, 'GIPRONIKOM', center=(645, 300), color=INK,
                      size=24)
-    els.append(SC.accrue(clock, 7, 8, b_sheet_v2, kind='shape'))
+    els.append(SC.layer(clock, 7, b_sheet_v2, kind='shape', eid='b_sheet_stamp'))
     # NO caption at b07. The GIPRONIKOM stamp IS the words. No motion either:
     # b06's panel already slid in, and sliding the same rectangle again on the
     # next beat would make a replace read as a second animation.
@@ -333,19 +355,26 @@ def build():
     # is the subject now.
     def b_workers(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        for i, x in enumerate((-40, 150, 340, 530, 720, 910, 1100, 1290)):
-            _worker(d, x, 700, 360, 60 + i, coat=(80, 88, 100))
-    els.append(SC.accrue(clock, 8, 10, b_workers,
-                         motion=SC.enter(clock, 8, dx=0, dy=48, dur=ARRIVE)))
-    els.append(cap(8, 640, 132, size=32))
+        for i, x in enumerate((-40, 250, 540, 830)):
+            _worker(d, x, 700, 300, 60 + i, coat=(80, 88, 100))
+    els.append(SC.accrue(clock, 8, 10, b_workers, eid='b_workers_a'))
+    # cy 132 -> 180. At 132 the caption straddled the top edge of the pale
+    # building: rows y=40..120 measure luma ~120 (dark sky) and rows y=130..220
+    # measure ~213 (pale wall), so a caption centred at 132 sat half on each and
+    # its dark-ink fill disappeared into the dark half -- 'Gulag prisoners did
+    # most of the digging' was half-unreadable at 1280x720. The background
+    # resolver cannot rescue this: whichever register it picks, the other half
+    # of the glyphs is unreadable, because the glyphs genuinely straddle an
+    # edge. 180 is wholly inside the pale band, where INK is correct.
+    els.append(cap(8, 640, 180, size=32))
     # NO caption at b09. A closer second line of workers arrives and the
     # presenter joins them -- "workers were brought in too" is exactly what
     # more workers arriving says, and b08 already carried the reveal.
 
     def b_more_workers(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        for i, x in enumerate((60, 300, 540, 780, 1020, 1260)):
-            _worker(d, x, 720, 300, 90 + i, coat=(70, 78, 90))
+        for i, x in enumerate((960, 1150, 1330)):
+            _worker(d, x, 700, 290, 90 + i, coat=(70, 78, 90))
         # The presenter, cropped by the top edge and looking down at the line.
         # He is inset at the upper right, clear of the workers' heads, because
         # a worker-sized copy of him would turn the presenter into just another
@@ -428,28 +457,28 @@ def build():
     # ---- b12  four plain lids in the rock, no names ----------------------- #
     def c_lids(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        niche = [(120, 250), (900, 250), (900, 520), (120, 520)]
+        niche = [(380, 310), (860, 310), (860, 486), (380, 486)]
         PA.fill_poly(tile, niche, (128, 120, 106), seed=112, value=0.08,
                      edge=2.0)
         PA.hand_stroke(d, niche, INK, 7, closed=True, seed=113, wavelength=130.0)
         for i in range(4):
-            x0 = 150 + i * 190
-            lid = [(x0, 282), (x0 + 158, 282), (x0 + 158, 492), (x0, 492)]
+            x0 = 396 + i * 114
+            lid = [(x0, 326), (x0 + 100, 326), (x0 + 100, 466), (x0, 466)]
             PA.fill_poly(tile, lid, CONC_D, seed=120 + i, value=0.07, edge=1.8)
             PA.hand_stroke(d, lid, INK, 6, closed=True, seed=130 + i,
                            wavelength=90.0)
-            PA.hand_stroke(d, [(x0 + 14, 304), (x0 + 144, 304)], INK, 4,
+            PA.hand_stroke(d, [(x0 + 12, 314), (x0 + 128, 314)], INK, 4,
                            seed=140 + i, wavelength=60.0)
-            PA.hand_stroke(d, [(x0 + 14, 470), (x0 + 144, 470)], INK, 4,
+            PA.hand_stroke(d, [(x0 + 12, 460), (x0 + 128, 460)], INK, 4,
                            seed=150 + i, wavelength=60.0)
-            d.ellipse([x0 + 72, 380, x0 + 84, 392], fill=INK)   # no name plate
+            d.ellipse([x0 + 62, 384, x0 + 74, 396], fill=INK)   # no name plate
     els.append(SC.accrue(clock, 12, 13, c_lids))
     # The presenter, cropped by the right edge, looking at the lids. A closeup
     # rather than a full body: this is the beat where the chapter turns, and a
     # small standing figure beside four lids reads as set dressing.
     def c_presenter(tile, fw, fh):
-        SC.closeup(ImageDraw.Draw(tile), 1150, 350, 168, 'grim', 159)
-    els.append(SC.accrue(clock, 12, 13, c_presenter, kind='character'))
+        SC.closeup(ImageDraw.Draw(tile), 1146, 356, 138, 'grim', 159)
+    els.append(SC.accrue(clock, 12, 13, c_presenter, kind='character', eid='c_presenter'))
     # NO caption at b12. Four lids with blank plates and a grim face carry it.
 
     # ===================================================================== #
@@ -495,33 +524,29 @@ def build():
             y = 356 + k * 76
             PA.hand_stroke(d, [(36, y), (92, y)], INK, 4, seed=170 + k,
                            wavelength=60.0)
-    els.append(SC.accrue(clock, 13, 14, d_bunker))
+    els.append(SC.accrue(clock, 13, 17, d_bunker, eid='d_bunker'))
     els.append(cap(13, 640, 700, size=32, max_w=860))
 
     # ---- b14  the ruler: 120 km ------------------------------------------- #
     # REPLACES the b13 section. Same hill (it is the backdrop), flatter cap.
-    def d_flat(tile, fw, fh):
-        _bunker(ImageDraw.Draw(tile), 640, 300, 430, 186, decks=4, deck_h=62,
-                cap_h=170, tunnel_dy=[90, 175], lamps=False)
-    els.append(SC.accrue(clock, 14, 15, d_flat))
 
     # MOVING, and small: the ruler is a band of numbers, not a backdrop. This
     # is the chapter's one measurement beat, so the measurement arriving is the
     # only arrival here.
     def d_ruler(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        y = 700
-        PA.hand_stroke(d, [(70, y), (1210, y)], RED, 8, seed=187,
+        y = 706
+        PA.hand_stroke(d, [(120, y), (1160, y)], RED, 8, seed=187,
                        wavelength=180.0)
-        for k in range(13):
-            x = 70 + k * 95
-            PA.hand_stroke(d, [(x, y - 16), (x, y + 16)], RED, 5,
+        for k in range(11):
+            x = 120 + k * 104
+            PA.hand_stroke(d, [(x, y - 14), (x, y + 14)], RED, 5,
                            seed=190 + k, wavelength=60.0)
-        D.draw_arrow(tile, (70, y), (1210, y), color=RED, width=8, head=40)
-        D.draw_number(tile, '120', center=(640, 585), color=RED, size=130)
-        D.draw_label(tile, 'KILOMETRES', center=(640, 665), color=INK,
-                     size=40)
-    els.append(SC.accrue(clock, 14, 15, d_ruler, kind='shape',
+        D.draw_arrow(tile, (120, y), (1160, y), color=RED, width=8, head=36)
+        D.draw_number(tile, '120', center=(392, 686), color=RED, size=64)
+        D.draw_label(tile, 'KILOMETRES', center=(760, 686), color=INK,
+                     size=34)
+    els.append(SC.accrue(clock, 14, 17, d_ruler, kind='shape',
                          motion=SC.enter(clock, 14, dx=0, dy=-34, dur=0.45)))
     # NO caption at b14. A 130px red "120" over "KILOMETRES" IS the sentence;
     # a caption under it repeated the number and stacked text on text.
@@ -533,30 +558,28 @@ def build():
     # clears 4.5:1 against it.
     def d_deep(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        deep = [(-60, 150), (240, 132), (560, 126), (900, 134), (1340, 152),
-                (1340, 780), (-60, 780)]
-        _mass(d, deep, EARTH, 200, width=7)
         PA.fill_poly(tile, [(-60, 150), (240, 132), (560, 126), (900, 134),
                             (1340, 152), (1340, 214), (-60, 214)], EARTH_D,
                      seed=201, value=0.07, edge=2.0)
-    els.append(SC.accrue(clock, 15, 17, d_deep))
+    els.append(SC.accrue(clock, 14, 17, d_deep, eid='d_strata'))
 
     def d_chambers(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        y = 380
-        bore = [(-60, y - 90), (1340, y - 90), (1340, y + 90), (-60, y + 90)]
+        y = 326
+        bore = [(-60, y - 82), (1340, y - 82), (1340, y + 82), (-60, y + 82)]
         PA.fill_poly(tile, bore, DARK, seed=202, value=0.03, edge=1.8)
-        PA.hand_stroke(d, [(-60, y - 90), (1340, y - 90)], INK, 7, seed=203,
+        PA.hand_stroke(d, [(-60, y - 82), (1340, y - 82)], INK, 7, seed=203,
                        wavelength=180.0)
-        PA.hand_stroke(d, [(-60, y + 90), (1340, y + 90)], INK, 7, seed=204,
+        PA.hand_stroke(d, [(-60, y + 82), (1340, y + 82)], INK, 7, seed=204,
                        wavelength=180.0)
-        _chamber(d, 210, y, 320, 300, 205, door_side=1)
-        _chamber(d, 1070, y, 320, 300, 206, door_side=-1)
+        _chamber(d, 190, y, 280, 250, 205, door_side=1)
+        _chamber(d, 1090, y, 280, 250, 206, door_side=-1)
         # the third chamber's floor runs down INTO the bore, which is also what
         # a chamber off this tunnel is supposed to look like.
-        _chamber(d, 640, 250, 280, 230, 207, door_side=1)
-        D.draw_label(tile, 'chambers', center=(640, 600), color=INK, size=38)
-    els.append(SC.accrue(clock, 15, 16, d_chambers, kind='shape'))
+        _chamber(d, 640, 204, 250, 188, 207, door_side=1)
+        D.draw_label(tile, 'chambers', center=(640, 466), color=INK, size=34)
+    els.append(SC.accrue(clock, 15, 17, d_chambers, kind='shape',
+                         eid='d_chambers'))
     # NO caption at b15. The drawn "chambers" label over three of them IS the
     # words; a caption beside it repeated the label.
 
@@ -565,17 +588,17 @@ def build():
     # it. Two chamber-rows in the same rectangle would stack.
     def d_services(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.fill_poly(tile, [(-60, 104), (1340, 104), (1340, 168), (900, 182),
-                            (400, 182), (-60, 168)], EARTH_D, seed=210,
+        PA.fill_poly(tile, [(-60, 470), (1340, 470), (1340, 534), (900, 548),
+                            (400, 548), (-60, 534)], EARTH_D, seed=210,
                      value=0.08, edge=2.0)
-        PA.hand_stroke(d, [(-60, 168), (400, 182), (900, 182), (1340, 168)],
+        PA.hand_stroke(d, [(-60, 534), (400, 548), (900, 548), (1340, 534)],
                        INK, 7, seed=211, wavelength=170.0)
         for i, x in enumerate((250, 640, 1030)):
-            _chamber(d, x, 430, 300, 330, 220 + i, door_side=1)
-        _coil_icon(d, 250, 430, 105, 230)
-        _tank_icon(d, 640, 430, 105, 231)
-        _bunk_icon(d, 1030, 430, 100, 232)
-        SC.fullbody(d, 96, 720, 400, pose='pointing', expression='awed',
+            _chamber(d, x, 616, 250, 240, 220 + i, door_side=1)
+        _coil_icon(d, 250, 616, 84, 230)
+        _tank_icon(d, 640, 616, 84, 231)
+        _bunk_icon(d, 1030, 616, 80, 232)
+        SC.fullbody(d, 90, 714, 320, pose='pointing', expression='awed',
                     seed=233)
     els.append(SC.accrue(clock, 16, 17, d_services, kind='character'))
     # NO caption at b16, and this one is forced, not chosen: b17 is captioned
@@ -601,12 +624,13 @@ def build():
                  (1340, 780), (-60, 780)]
         _mass(d, ridge, ROCK, 240, width=7)
         _snow_cap(d, ridge[:5], 600, 241)
+        # The fortress IS the stage now. b17 and b18 are the same wall at two
+        # distances, so it is painted once, here, and never repainted: b18 is a
+        # detail opening in a wall that is already standing.
+        _fortress(d, 640, 596, 900, 420, 242, slits=6)
     els.append(SC.stage(clock, 17, e_ridge, j=19))
 
     # ---- b17  the fortress above ground ------------------------------------ #
-    def e_fortress(tile, fw, fh):
-        _fortress(ImageDraw.Draw(tile), 620, 592, 900, 420, 242, slits=6)
-    els.append(SC.accrue(clock, 17, 18, e_fortress))
     els.append(cap(17, 640, 690, size=32))
 
     # ---- b18  one slit, and no door anywhere ------------------------------ #
@@ -621,8 +645,10 @@ def build():
     # place, closer, one new fact.
     def e_wall(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        # Zoomed: base below the frame, top near the title band, sides cropped.
-        _fortress(d, 640, 880, 2100, 700, 250, slits=9, wall_only=True)
+        # No wall is drawn here. The stage already carries the fortress, and
+        # redrawing it wider was the full-frame swap this beat was meant not
+        # to be. What arrives is the DETAIL: one embrasure, cut into the wall
+        # that is already standing.
         # the one big embrasure, cut deep into the near wall
         sx, sy = 640, 470
         slit = [(sx - 30, sy - 165), (sx + 30, sy - 165), (sx + 74, sy + 165),
@@ -676,7 +702,7 @@ def build():
         floor = [(-60, 700), (240, 686), (640, 678), (1040, 686), (1340, 700),
                  (1340, 780), (-60, 780)]
         _mass(d, floor, (206, 214, 224), 2795, width=6)
-    els.append(SC.stage(clock, 19, e2_railhall, j=22))
+    els.append(SC.stage(clock, 19, e2_railhall, j=21))
 
     # ---- b19+b20  the only way in: the rail, held across BOTH beats -------- #
     # These two beats were two separate full-frame tunnel cards (b19 a dark
@@ -763,7 +789,7 @@ def build():
         # INK, not RED: RED on this snow measures 2.6:1, which is a signpost
         # nobody can read from the back row.
         D.draw_label(tile, 'NO ROAD', center=(500, 560), color=INK, size=76)
-    els.append(SC.accrue(clock, 21, 22, e_noroad, kind='shape'))
+    els.append(SC.stage(clock, 21, e_noroad, j=22))
     # NO caption at b21. "NO ROAD" is drawn at 76px across the empty half of
     # the frame, and the road that visibly stops at nothing says the rest.
 
@@ -809,16 +835,16 @@ def build():
             y = 150 + k * 66
             PA.hand_stroke(d, [(160, y), (1120, y)], (216, 210, 196), 4,
                            seed=320 + k, wavelength=150.0)
-    els.append(SC.accrue(clock, 23, 24, f_form))
+    els.append(SC.accrue(clock, 23, 27, f_form, eid='f_form'))
 
     # MOVING, and small: the stamp slamming down is the beat. INK for the word
     # (RED on paper measures 2.9:1); the stamp's own box stays RED, which is
     # what makes it read as a stamp rather than as type.
     def f_stamp(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _stamp(d, 640, 380, 720, 300, -8, 330)
-        D.draw_label(tile, 'CLOSED', center=(640, 380), color=INK, size=120)
-    els.append(SC.accrue(clock, 23, 24, f_stamp, kind='shape',
+        _stamp(d, 640, 246, 700, 208, -8, 330)
+        D.draw_label(tile, 'CLOSED', center=(640, 246), color=INK, size=96)
+    els.append(SC.accrue(clock, 23, 27, f_stamp, kind='shape',
                          motion=SC.enter(clock, 23, dx=0, dy=56, dur=0.45)))
     # NO caption at b23. "CLOSED" is stamped across the middle of the page at
     # 120px. That is the word.
@@ -828,9 +854,9 @@ def build():
     # clears 4.5:1 against INK.
     def f_nuclear_panel(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [26, 128, 566, 648], (120, 114, 106), seed=340,
+        PA.fill_rect(tile, [180, 396, 560, 636], (120, 114, 106), seed=340,
                      value=0.07, edge=2.0)
-        PA.hand_stroke(d, [(26, 128), (566, 128), (566, 648), (26, 648)],
+        PA.hand_stroke(d, [(180, 396), (560, 396), (560, 636), (180, 636)],
                        INK, 7, closed=True, seed=341, wavelength=150.0)
     els.append(SC.accrue(clock, 24, 27, f_nuclear_panel, kind='shape',
                          eid='f_nuclear_panel'))
@@ -839,28 +865,28 @@ def build():
     # panel underneath stays still, so nothing full-bleed ever moves.
     def f_rumour(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _mushroom_cloud(d, 296, 400, 150, 353, col=RED_L)
-        D.draw_label(tile, 'NUCLEAR?', center=(296, 214), color=INK, size=40)
+        _mushroom_cloud(d, 370, 552, 104, 357, col=RED_L)
+        D.draw_label(tile, 'NUCLEAR?', center=(370, 430), color=INK, size=34)
         # half of it struck out -- the rumour is denied, not deleted
-        PA.hand_stroke(d, [(160, 320), (450, 520)], INK, 16, seed=360,
+        PA.hand_stroke(d, [(250, 498), (490, 608)], INK, 13, seed=360,
                        wavelength=140.0)
-        PA.hand_stroke(d, [(450, 320), (160, 520)], INK, 16, seed=361,
+        PA.hand_stroke(d, [(490, 498), (250, 608)], INK, 13, seed=361,
                        wavelength=140.0)
     els.append(SC.accrue(clock, 24, 27, f_rumour, kind='shape', eid='f_rumour',
                          motion=SC.enter(clock, 24, dx=0, dy=-44, dur=0.5)))
-    els.append(cap(24, 296, 700, size=30))
+    els.append(cap(24, 370, 676, size=30))
     # KEEP the b24 caption: the panel says "NUCLEAR?" and strikes it out, but
     # only the narrator says the rumours SPREAD and that they were down there.
 
     # ---- b25  rumour two: the empty table, no one in it -------------------- #
     def f_refuge_panel(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [714, 128, 1254, 648], (120, 114, 106), seed=370,
+        PA.fill_rect(tile, [720, 396, 1100, 636], (120, 114, 106), seed=370,
                      value=0.07, edge=2.0)
-        PA.hand_stroke(d, [(714, 128), (1254, 128), (1254, 648), (714, 648)],
+        PA.hand_stroke(d, [(720, 396), (1100, 396), (1100, 636), (720, 636)],
                        INK, 7, closed=True, seed=371, wavelength=150.0)
-        _table_and_chairs(d, 984, 430, 500, 380)
-        D.draw_label(tile, 'REFUGE?', center=(984, 214), color=INK, size=40)
+        _table_and_chairs(d, 910, 556, 330, 220)
+        D.draw_label(tile, 'REFUGE?', center=(910, 430), color=INK, size=34)
     els.append(SC.accrue(clock, 25, 27, f_refuge_panel, kind='shape'))
     # NO caption at b25. The second panel ACCRUES beside the first -- two claims
     # on one page, which is what "others say" means -- so this beat needs no
@@ -872,22 +898,22 @@ def build():
     # on it, and the presenter is left standing in the cleared space.
     def f_wash(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [16, 118, 576, 660], PAPER, seed=391, value=0.05)
-        PA.fill_rect(tile, [704, 118, 1264, 660], PAPER, seed=392, value=0.05)
-        PA.hand_stroke(d, [(26, 128), (566, 128), (566, 648), (26, 648)],
+        PA.fill_rect(tile, [180, 396, 560, 636], PAPER, seed=391, value=0.05)
+        PA.fill_rect(tile, [720, 396, 1100, 636], PAPER, seed=392, value=0.05)
+        PA.hand_stroke(d, [(180, 396), (560, 396), (560, 636), (180, 636)],
                        (222, 216, 202), 5, closed=True, seed=393,
                        wavelength=150.0)
-        PA.hand_stroke(d, [(714, 128), (1254, 128), (1254, 648), (714, 648)],
+        PA.hand_stroke(d, [(720, 396), (1100, 396), (1100, 636), (720, 636)],
                        (222, 216, 202), 5, closed=True, seed=394,
                        wavelength=150.0)
-        SC.fullbody(d, 420, 770, 600, pose='shrug', expression='deadpan',
+        SC.fullbody(d, 640, 730, 360, pose='shrug', expression='deadpan',
                     seed=395)
         # xy=(925,...), not 980: the bubble is max text width + 2*BUBBLE_PAD
         # wide (273+44=317), so at 980 its right edge landed at 1297 -- 17px
         # past the frame, and "paper" sat 5px off the right edge. draw_bubble
         # has no frame clamp (unlike SC.caption). 925 leaves a 38px gap.
-        D.draw_bubble(tile, 'nothing on paper', xy=(925, 300),
-                      tail_to=(620, 430), font_size=36, max_w=520)
+        D.draw_bubble(tile, 'nothing on paper', xy=(300, 500),
+                      tail_to=(470, 590), font_size=34, max_w=460)
     els.append(SC.accrue(clock, 26, 27, f_wash, kind='character'))
     # NO caption at b26, and this one is forced as well as chosen: b27 is the
     # next captioned beat and no two captioned beats may be adjacent. The beat
@@ -908,7 +934,7 @@ def build():
     # ===================================================================== #
     def g_winter(tile, fw, fh):
         _winter(tile, 429)
-    els.append(SC.stage(clock, 27, g_winter, j=31))
+    els.append(SC.stage(clock, 27, g_winter, j=29))
 
     def g_cliff(tile, fw, fh):
         d = ImageDraw.Draw(tile)
@@ -923,44 +949,44 @@ def build():
                 u = i / 6.0
                 pts.append((140 + 900 * u, y + 18 * math.sin(u * 5 + k)))
             PA.hand_stroke(d, pts, ROCK_D, 5, seed=440 + k, wavelength=120.0)
-    els.append(SC.accrue(clock, 27, 31, g_cliff, eid='g_cliff'))
+    els.append(SC.accrue(clock, 27, 29, g_cliff, eid='g_cliff'))
 
     # MOVING, and small: the fortress is the last thing that gets built in the
     # film, so it arrives rather than pops.
     def g_fortress(tile, fw, fh):
         _fortress(ImageDraw.Draw(tile), 700, 285, 340, 150, 450, slits=4,
                   wall_only=True)
-    els.append(SC.accrue(clock, 27, 31, g_fortress, eid='g_fortress',
+    els.append(SC.accrue(clock, 27, 29, g_fortress, eid='g_fortress',
                          motion=SC.enter(clock, 27, dx=0, dy=-48, dur=0.55)))
 
     def g_label(tile, fw, fh):
-        D.draw_label(tile, 'STILL STANDING', center=(330, 600), color=INK,
+        D.draw_label(tile, 'STILL STANDING', center=(214, 214), color=INK,
                      size=40)
-    els.append(SC.accrue(clock, 27, 31, g_label, kind='shape'))
+    els.append(SC.accrue(clock, 27, 29, g_label, kind='shape', eid='g_label'))
     els.append(cap(27, 980, 618, size=32, max_w=520))
 
     # ---- b28  the drift buries the gate ------------------------------------ #
     def g_gate(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        wall = [(-60, 318), (240, 296), (640, 282), (1040, 296), (1340, 314),
-                (1340, 700), (-60, 700)]
+        # A gate block standing on the ridge: bounded, so the cliff the stage
+        # already painted keeps showing either side of it.
+        wall = [(392, 322), (888, 322), (888, 596), (392, 596)]
         _mass(d, wall, CONCRETE, 460, width=7)
         for i in range(3):
-            PA.hand_stroke(d, [(-60, 450 + i * 54), (1340, 460 + i * 54)],
+            PA.hand_stroke(d, [(404, 386 + i * 62), (876, 386 + i * 62)],
                            CONC_D, 4, seed=461 + i, wavelength=150.0)
         for i in range(5):
-            u = (i + 0.5) / 5.0
-            x = 640 + (u - 0.5) * 700
-            sl = [(x - 12, 340), (x + 12, 340), (x + 12, 410), (x - 12, 410)]
+            x = 440 + i * 100
+            sl = [(x - 14, 350), (x + 14, 350), (x + 14, 432), (x - 14, 432)]
             PA.fill_poly(tile, sl, (46, 44, 48), seed=470 + i, value=0.03,
                          edge=1.2)
             PA.hand_stroke(d, sl, INK, 4, closed=True, seed=480 + i,
                            wavelength=50.0)
-        drift = [(-60, 700), (-60, 600), (180, 540), (480, 512), (800, 528),
-                 (1080, 570), (1340, 624), (1340, 780), (-60, 780)]
+        drift = [(300, 700), (300, 616), (470, 566), (700, 548), (930, 578),
+                 (1000, 640), (1000, 780), (300, 780)]
         _mass(d, drift, SNOW, 490, width=7)
-        _snow_cap(d, drift[:7], 556, 491, col=(250, 250, 252))
-    els.append(SC.accrue(clock, 28, 31, g_gate))
+        _snow_cap(d, drift[:6], 560, 491, col=(250, 250, 252))
+    els.append(SC.accrue(clock, 28, 29, g_gate, eid='g_gate'))
     # NO caption at b28. Snow taking the bottom half of the frame over a gate
     # with five slits in it IS "snow buries that gate for months".
 
@@ -975,7 +1001,7 @@ def build():
         _mass(d, deep, (98, 94, 90), 500, width=7)
         _bore(d, 180, 430, 1180, 400, 560, 210, 503, lamps=3)
         SC.closeup(d, 1150, 340, 158, 'grim', 504)
-    els.append(SC.accrue(clock, 29, 30, g_cutaway, kind='character'))
+    els.append(SC.stage(clock, 29, g_cutaway, j=30))
     # NO caption at b29. A lit bore going away from the viewer, unchanged, with
     # the presenter looking into it, is the sentence.
 
@@ -994,7 +1020,7 @@ def build():
         _steel_door(d, 640, 350, 200, 300, 513, handle=False)
         SC.fullbody(d, 300, 720, 420, pose='standing', expression='deadpan',
                     seed=514)
-    els.append(SC.accrue(clock, 30, 31, g_door, kind='character'))
+    els.append(SC.stage(clock, 30, g_door, j=31))
     els.append(cap(30, 1010, 640, size=32, max_w=520))
 
     return SC.finish(els, TITLE, clock, title_seed=41)

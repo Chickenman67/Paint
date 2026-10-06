@@ -161,6 +161,27 @@ def _contrast_ratio(fg, bg):
     return (hi + 0.05) / (lo + 0.05)
 
 
+def _probe_width(text, size, max_w):
+    """Width of the rendered glyphs, mirroring make_draw's max_w shrink.
+
+    It has to mirror the shrink exactly: if the box were built from the
+    UNSHRUNK width on a long caption, the box would be wider than the text and
+    we would be back to sampling the far side of the frame.
+    """
+    stroke_w = 2
+    f = T.load_font(size, bold=True)
+    probe = ImageDraw.Draw(Image.new('RGB', (1, 1)))
+    bb = probe.textbbox((0, 0), text, font=f, stroke_width=stroke_w)
+    tw = bb[2] - bb[0]
+    mw = max_w or 980
+    if tw > mw:
+        sz2 = max(14, int(size * mw / float(tw)))
+        f = T.load_font(sz2, bold=True)
+        bb = probe.textbbox((0, 0), text, font=f, stroke_width=stroke_w)
+        tw = bb[2] - bb[0]
+    return int(tw) + 36
+
+
 def _legible_fill(fill):
     """Resolve a caption fill against a KNOWN background.
 
@@ -301,8 +322,25 @@ def caption(text, cx, cy, at, until=None, size=None, fill=None, max_w=None,
               at=at, until=until)
     # Background-aware: engine3 samples the page under this box BEFORE the tile
     # is built, and re-resolves if the register changed.
+    #
+    # The box must hug the GLYPHS, not the frame. It used to be a fixed
+    # cx+-620 by cy+-60 -- 1240px wide, the full width of a 1280 frame -- so its
+    # median was the average of everything in that band. On mezhgorye b08 the
+    # caption sits on a dark ridge with pale sky to either side; the wide box
+    # measured 131 (paper) and the caption was drawn in dark ink ON the dark
+    # ridge, unreadable. The text is only ~500px wide and its own patch
+    # measures ~119, but even that is an average across the ridge's edge.
+    #
+    # The honest sample is the band the glyphs actually cover, and for a
+    # caption straddling an edge the register is genuinely ambiguous -- so
+    # sample the text width, which at least stops the far side of the frame
+    # from voting. Captions that straddle a hard edge are a placement problem
+    # the scene should fix (move it onto one surface), not something the
+    # resolver can guess correctly. This is `sample-label-bg-in-the-full-frame`
+    # applied to captions: measure locally, never average across an edge.
+    _pw = _probe_width(text, size if size is not None else T.LABEL_PX, max_w)
     el.needs_bg = True
-    el.bg_probe_box = (cx - 620, cy - 60, cx + 620, cy + 60)
+    el.bg_probe_box = (cx - _pw / 2.0, cy - 46, cx + _pw / 2.0, cy + 46)
     el.bg_resolver = lambda luma: make_draw(_resolve_fill(fill, luma, dark))
     return el
 
