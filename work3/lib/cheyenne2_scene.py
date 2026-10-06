@@ -1311,3 +1311,10 @@ def build():
     # the disclaimer are the content, and neither is drawn.
 
     return SC.finish(els, TITLE, clock, title_seed=47)
+
+
+_pylon = CH._pylon
+_painted_tree = CH._painted_tree
+_vent_tower = CH._vent_tower
+_norad_badge = CH._norad_badge
+_sat = CH._sat
