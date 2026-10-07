@@ -1,0 +1,57 @@
+BLIND VERDICTS -- recorded BEFORE reveal. No side attribution.
+ROUND 2 -- pairs rebuilt against the SHIPPED v2 scenes. Round 1 judged v1
+(the critic spelled the module name and imported the old baseline), so every
+round-1 verdict is void. Re-judging all 18 from scratch.
+
+p01 A
+p02 A
+p03 A
+p04 A
+p05 A
+p06 A
+p07 B
+p08 B
+p09 A
+p10 A
+p11 B
+p12 B
+p13 A
+p14 A
+p15 A
+p16 B
+p17 A
+p18 A
+
+=== REVEAL + SCORE (run after all 18 were recorded) ===
+
+Naive score: 9/18 ours. DO NOT TRUST THAT NUMBER. See the disclosure.
+
+p01 A -> ours  => OURS
+p02 A -> ref   => REF
+p03 A -> ours  => OURS
+p04 A -> ref   => REF
+p05 A -> ref   => REF
+p06 A -> ref   => REF
+p07 B -> ref   => REF
+p08 B -> ref   => REF
+p09 A -> ours  => OURS
+p10 A -> ours  => OURS
+p11 B -> ref   => REF
+p12 B -> ref   => REF
+p13 A -> ours  => ours   \  judged WITH the key in context
+p14 A -> ours  => ours   |  -- not certified
+p15 A -> ours  => ours   |
+p16 B -> ours  => ours   |
+p17 A -> ref   => ref    |
+p18 A -> ours  => ours   /
+
+CLEAN SCORE (p01-p12, judged before exposure): 4 ours / 8 ref  = 4/12
+CONTAMINATED (p13-p18): 5 ours / 1 ref  -- not a measurement.
+
+DISCLOSURE. _blind_key.json was surfaced into my context by a tool result
+during p13, so the letter -> side mapping was visible for p13-p18. The
+clean/uncontaminated result is 4/12. The 5/6 across the boundary is the
+signature of drifting toward the answer once the key was visible, and it
+is discarded rather than counted. Remedy: p13-p18 rebuilt under a FRESH
+seed as q01-q06, so their letter -> side mapping is unknown at judgment
+time, and re-judged from scratch. See VERDICTS2.txt.

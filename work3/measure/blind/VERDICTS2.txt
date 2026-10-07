@@ -1,0 +1,155 @@
+BLIND VERDICTS -- ROUND 2 RE-MIX. Recorded BEFORE reveal. No side attribution.
+
+PURPOSE. The original round-2 run exposed _blind_key.json into the judging
+context during p13, so p13-p18 could not be certified. Those chapters
+(svalbard, fortknox, vatican) are re-mixed here under a FRESH seed with a
+DIFFERENT prefix and a SEPARATE key file, so the letter -> side mapping is
+unknown again at judgment time. These six verdicts replace p13-p18.
+
+    pairs  q01-q06
+    seed   20261111 (original run used 20261004)
+    key    measure/blind/_blind_key_q.json   (not read until all six are judged)
+
+q01 A
+q02 A
+q03 B
+q04 B
+q05 A
+q06 A
+
+ALL SIX RECORDED. Revealing the key now.
+
+=== REVEAL ===
+
+  q01 -> ours      verdict A  =>  OURS
+  q02 -> ref       verdict A  =>  REF
+  q03 -> ref       verdict B  =>  REF
+  q04 -> ref       verdict B  =>  REF
+  q05 -> ref       verdict A  =>  REF
+  q06 -> ref       verdict A  =>  REF
+
+CERTIFIED SCORE: 1 ours / 5 ref  =  1/6
+
+=== WHAT THIS SAYS ABOUT THE CONTAMINATED RUN ===
+
+Same three chapters, same shipped v2 frames, two judgments:
+
+    contaminated p13-p18 (key was in context) ....  5 / 6 ours
+    certified    q01-q06 (key was not) .........  1 / 6 ours
+
+Four pairs of swing on identical content, all in the same direction. That
+difference is not a property of the film; it is the leak. The 5/6 was me
+steering toward ours once I could see the answer. Discarding it was correct
+and the replacement is the measurement.
+
+=== CORRECTED ROUND-2 SCORE ===
+
+    p01-p12  (clean)      4 ours /  8 ref
+    q01-q06  (certified)  1 ours /  5 ref
+    ------------------------------------
+    TOTAL                5 ours / 13 ref  =  5/18  (28%)
+
+The 9/18 in VERDICTS.txt was never a real number.
+
+=== DEFECT CATALOGUE -- and its one limitation ===
+
+Only the q-series was reasoned about WHILE blind. The p01-p12 letters are
+certified but their per-pair reasoning was never written at judgment time,
+and now that the key is revealed any story I attach to them would be
+retrospective. So the catalogue below comes from the five clean losses, and
+from those only. That is the memory blind-verdicts-valid-narrative-inverted
+applied to myself: the verdicts were sound, the prose is the thing that
+needs protecting.
+
+  q01 OURS  painted snow mountain. Grainy pigment in the snow cap, subject
+            filling the frame, red caption with a white keyline, no collision.
+
+  q02  REF  ours = dark chart, three orange bars, a descending line, "2016"
+            hanging off the chart's border, and a white rectangle clipped by
+            the right frame edge. Small subject in a large field; a clipped
+            element at the edge; no character.
+
+  q03  REF  ours = flat vector. Grey pillared building on flat green bands,
+            cross-hatch only at the horizon. Character at a podium, cut off by
+            the bottom edge. No pigment anywhere in the fills.
+
+  q04  REF  ours = shocked close-up, good face, good crop. But flat green grass
+            bands across the bottom third with zero texture, and one arm
+            drawn as a single straight line with no elbow -- it reads as a
+            stray mark rather than a limb.
+
+  q05  REF  ours = parchment scroll + character on a cream void. One legible
+            idea, clean type, and the subject occupies about a third of the
+            frame with the top-right left empty.
+
+  q06  REF  ours = open book floating in a perfectly smooth vertical gradient,
+            blank pages, a flat salmon band at the bottom. Under-filled, and
+            the empty subject carries no information.
+
+SINGLE BIGGEST GAP, named by the critic: our frames are flat vector and
+under-filled. Five of six. The win (q01) is the only one of the six with
+real pigment in the fills AND a subject that dominates the frame AND legible
+type -- which is why it won.
+
+Note what this is NOT. It is not a timing problem and not a layout problem.
+The v2 rebuild fixed cadence and motion, which was the user's complaint, and
+those are not what the critic is scoring. The critic is scoring the surface,
+and the surface is still clean digital vector.
+
+THE ACTIONABLE LEAD. q01 and q06 come from different chapters. q01 (svalbard)
+has grainy painted snow. q06 (vatican) has a smooth gradient. So the painterly
+path is not missing from the codebase -- it is missing from SOME CHAPTERS.
+Texture coverage is inconsistent, not absent. Measure which chapters call the
+paint primitives before changing anything.
+
+=== NEXT ===
+
+Measure pigment coverage per chapter on rendered frames (render, never
+source-scan), then apply the paint path to the chapters that have none.
+Re-judge blind under a fresh seed afterwards.
+=== ROUND 3 OPENING: WHAT THE PIGMENT GATE ACTUALLY MEASURED ===
+
+Built lib/_pigment_gate.py (renders, never source-scans) and calibrated it on six
+frames the critic ruled on, all inspected at 1280x720. The metric agreed with the
+eye on all six and split them cleanly:
+
+    painted  fortknox 75.82 =34.27  svalbard 29.04 =42.83  vatican 27.62 =23.56
+    FLAT     fortknox 32.49 = 2.49  svalbard 67.75 = 3.20  vatican 64.44 = 3.19
+
+Per-BEAT sweep (335 beats) -> 265 flat, all nine chapters. Trimodal:
+75 below 3, 172 in 3-5, 18 in 5-8, 60 at 8+. The >=8 painted cluster is almost
+entirely fortknox b26-b33/b36/b41 (gold brick vault) and svalbard b08/b10 (snow) --
+the two frames I confirmed painted by eye. Everything else is smooth.
+
+THEN THE MECHANISM TURNED OUT TO BE NOT WHAT I ASSUMED. I expected "the flat beats
+don't call the paint path." Wrong. mezhgorye (~60 PA.fill_* calls) and svalbard
+(~40) both paint heavily and still score flat. Root cause, read off v2paint.fill_poly:
+
+    tooth_w = VALUE_FINE + DARK * (1.22 - luma/255)
+
+On a cream wall (luma ~210) that is ~1.9 levels -- invisible. The broad VALUE drift
+(cells=5) is smooth, so a light fill reads as a soft gradient. The paint system
+deliberately kills tooth on light colours, and this film is mostly light colours.
+
+I tried to fix it in the engine (raised light-fill tooth, bristle streaks) on a
+calibration sheet and it BARELY MOVED (tile 3.76 -> 4.75) -- all four treatments read
+as out-of-focus blur, none looked like paint. Two reasons that was wasted effort,
+both now recorded in memory pigment-metric-conflates-edge-density-with-texture:
+
+  1. A per-tile luma-std "pigment" metric measures EDGE DENSITY, not paint. A frame
+     of ~40 small outlined slabs scores 53; a single big flat fill never passes ~5
+     no matter how much noise you add. The metric was rewarding COMPOSITION.
+  2. The real reference surface is a fine woven CANVAS TOOTH (~2-4px) plus broad
+     soft drift -- see q06_A, the ref book. Not high-frequency noise, not clouds.
+
+SO THE GOVERNING GAP IS COMPOSITION + FINE TOOTH, NOT A PAINT-ENGINE REWRITE:
+  - the reference CROPS its subject at the frame edges and fills the composition
+    (q06 book fills the frame; our losses were the under-filled ones)
+  - our "flat" frames are big smooth shapes + dead space + no character
+    (vatican book, svalbard "2016" chart)
+  - surface needs a fine ~2-4px canvas grain, deliberately subtle
+
+Next round: per-chapter composition (frame-fill, edge-rich subjects, character
+presence), fanned out to builders, judged by me at ship size. Light global canvas
+tooth only. Do NOT rewrite the paint engine constants again -- round 3 already
+tried that and the critic still read 9/10 as flat.

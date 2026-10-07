@@ -23,6 +23,13 @@ WHY THREE BLINDING VECTORS, ALL THREE HIT. (memory blind-pairs-leak-vectors)
 
     python lib/_blind_pairs.py            # build all pairs
     python lib/_blind_pairs.py --reveal   # print the letter -> side key AFTER judging
+
+    python lib/_blind_pairs.py --chapters svalbard fortknox vatican \
+        --seed 20261111 --prefix q --key _blind_key_q.json
+        # re-mix a SUBSET under a different seed. Used to replace pairs judged
+        # with the key already in context: a fresh seed makes the letter ->
+        # side mapping unknown again, so those pairs can be re-judged blind.
+        # --reveal --key <file> reveals only that subset's key.
 """
 
 import json
@@ -79,8 +86,15 @@ def our_frame(chapter, t, path):
     sys.path.insert(0, os.path.join(REPO, 'work', 'lib'))
     import importlib
     import engine3 as E3
+    import scene_common as SC
     importlib.invalidate_caches()
-    mod = importlib.import_module('%s_scene' % chapter)
+    # SC.scene_mod(), NOT '%s_scene' % chapter. Every chapter's shippable art
+    # lives in <chapter>2_scene (the persistent-stage rebuild); the v1 modules
+    # are the old one-card-per-beat baseline. This file spelled the name itself
+    # and so judged v1 for all nine chapters while the film ships v2 -- the
+    # critic scored a build that is not in the film. Third occurrence of this
+    # exact wiring bug; see the SCENE_MODULE comment in scene_common.py.
+    mod = importlib.import_module(SC.scene_mod(chapter))
     scene = mod.build()
     t = max(0.0, min(t, scene.duration - 0.05))
     E3.render_frame(scene, t).save(path)
@@ -99,9 +113,21 @@ def mask_band(path):
 
 
 def main(argv):
+    def flag(name, default):
+        if name in argv:
+            return argv[argv.index(name) + 1]
+        return default
+
+    key_path = flag('--key', os.path.basename(KEY))
+    key_path = key_path if os.path.isabs(key_path) else os.path.join(OUT, key_path)
+    prefix = flag('--prefix', 'p')
+    seed = int(flag('--seed', '20261004'))
+    chapters = ([a for a in argv[1:] if not a.startswith('-')
+                 and a in CHAPTERS]) or CHAPTERS
+
     if '--reveal' in argv:
-        key = json.load(open(KEY))
-        print('REVEAL (read only AFTER judging):')
+        key = json.load(open(key_path))
+        print('REVEAL (read only AFTER judging):  %s' % key_path)
         for k in sorted(key):
             print('  %s -> %s' % (k, key[k]))
         return 0
@@ -110,10 +136,10 @@ def main(argv):
     # deterministic per-pair coin flip from a fixed seed: reproducible across
     # runs (so a re-run does not reshuffle a half-judged set) but not a fixed
     # A=ours bias.
-    rng = random.Random(20261004)
+    rng = random.Random(seed)
     key = {}
     idx = 0
-    for chapter in CHAPTERS:
+    for chapter in chapters:
         beats_path = os.path.join(ROOT, 'segments', chapter, 'beats.json')
         meta = json.load(open(beats_path))
         our_start = 0.0
@@ -129,7 +155,7 @@ def main(argv):
             our_t = our_start + frac * our_dur
             ref_t = ref_start + frac * ref_ch_dur
             a_is_ours = rng.random() < 0.5
-            stem = 'p%02d' % idx
+            stem = '%s%02d' % (prefix, idx)
             ours_p = os.path.join(OUT, '_tmp_%s_ours.png' % stem)
             ref_p = os.path.join(OUT, '_tmp_%s_ref.png' % stem)
             our_frame(chapter, our_t, ours_p)
@@ -145,8 +171,8 @@ def main(argv):
             key[stem + '_B'] = ('ref' if a_is_ours else 'ours')
             print('%s  %-11s frac %.2f  our_t %6.2f  ref_t %6.2f'
                   % (stem, chapter, frac, our_t, ref_t))
-    json.dump(key, open(KEY, 'w'), indent=1)
-    print('\n%d pairs -> %s' % (idx, OUT))
+    json.dump(key, open(key_path, 'w'), indent=1)
+    print('\n%d pairs -> %s\nkey -> %s' % (idx, OUT, key_path))
     print('JUDGE THE PAIRS FIRST. Run --reveal only after recording verdicts.')
     return 0
 
