@@ -477,7 +477,20 @@ def build():
         _lock_wheel(d, 690, 530, 86, 336)
     els.append(SC.accrue(clock, 10, 13, b_door, kind='shape',
                          motion=SC.enter(clock, 10, dx=0, dy=-88, dur=0.55)))
-    els.append(cap(10, 640, 674, size=32, fill=INK))
+    # MOVED from (640,674) with fill=INK to (640,694) with fill=SNOW, for two
+    # measured reasons. (1) STRADDLE: at cy=674 the glyph box was y670-691 and
+    # the door's base line -- a full-width near-black edge at y=683 (measured
+    # lum drops 155 -> 34 across that row) -- ran straight through the bottom of
+    # the letters, so the outer glyphs sat on black while the rest sat on the
+    # mid door (gate: 1.35:1). (2) COLOUR: INK is near-black, and the brief is
+    # explicit that text must never be gray or black because it is hard to see.
+    # The door face itself is a uniform mid-tone (lum ~155), and on a mid-tone no
+    # chromatic fill clears the 4.5 bar, so the resolver would keep forcing INK
+    # there. The base below the door IS dark (lum 34), so SNOW resolves and is
+    # KEPT: cream on near-black is the most legible pairing on this frame and is
+    # not a black caption. cy=694 puts the whole box (y688-713) inside the dark
+    # strip, single register, ~7px clear of the frame bottom.
+    els.append(cap(10, 640, 694, size=32, fill=SNOW))
 
     # ---- b11  hundreds of tonnes ------------------------------------------ #
     # An ordinary truck at the foot of the leaf, and the weight PRINTED. This
