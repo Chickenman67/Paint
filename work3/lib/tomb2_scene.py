@@ -164,6 +164,353 @@ _crane = TB._crane
 # defect this whole rebuild exists to remove.
 ARRIVE = 0.52
 
+# =========================================================================== #
+# STRUCTURE HELPERS -- added for the frame-fill / edge-density pass.          #
+#                                                                             #
+# WHY THESE EXIST. A per-beat pigment measurement (24px-tile luma std on       #
+# rendered frames) called 35 of 45 beats "flat". Eye-confirmed, the governing   #
+# problem is COMPOSITION, not the paint engine: a few LARGE SMOOTH shapes with  #
+# dead space around them. The beats that score high do so by stacking MANY     #
+# small outlined shapes (fortknox's gold-slab frame scores 53 because it stacks #
+# ~40 small outlined slabs). "Flat" here means big smooth voids. So the fix is  #
+# STRUCTURE: stamp edge-rich detail -- masonry courses, rammed-earth terraces,  #
+# paving slabs, rubble, contour bands -- into the large regions. Every helper    #
+# is deterministic (seeded) and paints through v2paint, so the fills keep their  #
+# value drift + brush banding. Nothing here raises paint constants or rewrites   #
+# v2paint; it changes what is DRAWN, not how.                                  #
+# =========================================================================== #
+
+
+def _stone_courses(tile, d, x0, y0, x1, y1, seed, col, mortar=None,
+                   row_h=54):
+    """A masonry wall: horizontal courses of rectangular blocks, mortared.
+
+    This is the workhorse for turning any big wall into edge-rich structure.
+    Each course is split into blocks at seeded, varied joints; every block is
+    filled with a per-block tone near `col` and outlined in INK, so a 400x600
+    smooth wall becomes ~50 small outlined rectangles. That is the difference
+    between a flat field and a built structure.
+    """
+    mortar = mortar or tuple(max(0, c - 34) for c in col)
+    y = float(y0)
+    r = 0
+    while y < y1 - 4:
+        rh = row_h * (0.85 + ((r * 37) % 40) / 100.0)   # varied course height
+        yb = min(y + rh, y1)
+        # seeded joint positions across this course
+        x = float(x0)
+        while x < x1 - 6:
+            seg = 90 + ((seed + r * 13 + int(x)) * 57) % 130   # 90-220 wide
+            xe = min(x + seg, x1)
+            tone = tuple(min(255, max(0, cc + (((seed + r * 7 + int(x)) * 29)
+                                              % 26) - 13))
+                         for cc in col)
+            box = [x + 3, y + 3, xe - 3, yb - 3]
+            if box[2] - box[0] > 10 and box[3] - box[1] > 10:
+                PA.fill_rect(tile, box, tone, seed=seed + r * 31 + int(x),
+                             value=0.09, edge=1.6)
+                PA.hand_stroke(d, [(box[0], box[1]), (box[2], box[1]),
+                                   (box[2], box[3]), (box[0], box[3])],
+                               INK, 3, closed=True, seed=seed + r * 17 + int(x),
+                               wavelength=90.0)
+            x = xe
+        # mortar course line
+        PA.hand_stroke(d, [(x0, yb - 1), (x1, yb - 1)], mortar, 4, closed=False,
+                       seed=seed + 200 + r, wavelength=140.0)
+        y = yb + 2
+        r += 1
+
+
+def _terraces(tile, d, cx, top_y, base_y, half_top, half_base, seed,
+              col, n=8, shade=None):
+    """Stacked rammed-earth courses: the mound / berm read as built, not smooth.
+
+    n trapezoid bands from the base up, each inset toward the apex, each filled
+    and outlined. Between bands the darker `shade` shows as the terrace riser, so
+    the mound carries real contour structure and edge density instead of one big
+    smooth triangle.
+    """
+    shade = shade or tuple(max(0, c - 30) for c in col)
+    for k in range(n):
+        t0 = k / float(n)
+        t1 = (k + 1) / float(n)
+        # interpolate half-width and y from base (t=0) to apex (t=1)
+        yb = base_y - (base_y - top_y) * t0
+        yt = base_y - (base_y - top_y) * t1
+        wb = half_base + (half_top - half_base) * t0
+        wt = half_base + (half_top - half_base) * t1
+        quad = [(cx - wb, yb), (cx + wb, yb), (cx + wt, yt), (cx - wt, yt)]
+        tone = col if k % 2 == 0 else shade
+        PA.fill_poly(tile, quad, tone, seed=seed + k * 7, value=0.09,
+                     tint=0.0, band=0.0, edge=1.4)
+        PA.hand_stroke(d, quad, INK, 4, closed=True, seed=seed + k * 11,
+                       wavelength=150.0)
+
+
+def _rubble(tile, d, box, n, seed, col, rmin=9, rmax=26):
+    """Scattered small chunks on a floor: many small outlined blobs.
+
+    Deterministic positions from the seed. Each is a small irregular polygon,
+    filled + outlined, so it reads as loose stone/clay debris and lifts the local
+    edge density of an otherwise flat floor.
+    """
+    x0, y0, x1, y1 = box
+    for k in range(n):
+        rx = x0 + ((seed + k * 53) * 71) % max(1, int(x1 - x0))
+        ry = y0 + ((seed + k * 97) * 43) % max(1, int(y1 - y0))
+        rr = rmin + ((seed + k * 29) % (rmax - rmin))
+        pts = []
+        sides = 5 + (k % 3)
+        for s in range(sides):
+            a = 6.283185 * s / sides + (k * 0.7)
+            rad = rr * (0.7 + 0.5 * (((seed + k * 7 + s * 13) % 10) / 10.0))
+            pts.append((rx + rad * math.cos(a), ry + rad * 0.72 *
+                        math.sin(a)))
+        tone = tuple(min(255, max(0, c + (((seed + k) * 17) % 22) - 11))
+                     for c in col)
+        PA.fill_poly(tile, pts, tone, seed=seed + k * 5, value=0.10, edge=1.2)
+        PA.hand_stroke(d, pts, INK, 3, closed=True, seed=seed + k * 9 + 1,
+                       wavelength=60.0)
+
+
+def _slab_floor(tile, d, y0, y1, seed, col, n=10, x0=-40, x1=W + 40,
+                row_h=42):
+    """A paving-slab floor: a grid of small outlined rectangles receding.
+
+    Two or three joint rows make each slab a distinct outlined rect, which is
+    what turns a flat ground band into a surface with visible local detail.
+    """
+    x = float(x0)
+    c = 0
+    while x < x1:
+        seg = 130 + ((seed + c * 29) % 90)
+        xe = x + seg
+        tone = col if c % 2 == 0 else tuple(max(0, cc - 14) for cc in col)
+        PA.fill_rect(tile, [x + 2, y0, xe - 2, y1], tone, seed=seed + c,
+                     value=0.09, edge=1.8)
+        PA.hand_stroke(d, [(x + 2, y0), (x + 2, y1)], INK, 4, closed=False,
+                       seed=seed + c * 3 + 1, wavelength=70.0)
+        # one horizontal joint mid-slab
+        ym = (y0 + y1) * 0.5
+        PA.hand_stroke(d, [(x + 2, ym), (xe - 2, ym)], INK, 3, closed=False,
+                       seed=seed + c * 5 + 2, wavelength=60.0)
+        x = xe
+        c += 1
+    PA.hand_stroke(d, [(x0, y0), (x1, y0)], INK, 5, closed=False,
+                   seed=seed + 900, wavelength=200.0)
+
+
+def _panel_grid(tile, d, x0, y0, x1, y1, seed, col, nx, ny, w_line=4):
+    """A full grid of outlined panels -- tunnel walls, plan corridors, lab walls.
+
+    Cheaper and more regular than _stone_courses; use where the surface reads as
+    panelled (a survey plan, a lab bench wall) rather than as rough masonry.
+    """
+    for r in range(ny):
+        ya = y0 + (y1 - y0) * r / float(ny)
+        yb = y0 + (y1 - y0) * (r + 1) / float(ny)
+        for c in range(nx):
+            xa = x0 + (x1 - x0) * c / float(nx)
+            xb = x0 + (x1 - x0) * (c + 1) / float(nx)
+            tone = col if (r + c) % 2 == 0 else tuple(max(0, cc - 12)
+                                                     for cc in col)
+            PA.fill_rect(tile, [xa + 2, ya + 2, xb - 2, yb - 2], tone,
+                         seed=seed + r * 17 + c, value=0.08, edge=1.2)
+            PA.hand_stroke(d, [(xa + 2, ya + 2), (xb - 2, ya + 2),
+                               (xb - 2, yb - 2), (xa + 2, yb - 2)],
+                           INK, w_line, closed=True,
+                           seed=seed + r * 23 + c * 3, wavelength=80.0)
+
+
+def _contour_bands(tile, d, x0, x1, y_base, seed, cols, n=6, h=54,
+                   amp=26):
+    """Layered contour bands stacked from a baseline -- terrain / sky relief.
+
+    Each band is a low rolling ridge (a hand-wobbled polyline) filled to the next
+    band up, so a flat sky or field gets organic layered relief instead of one
+    smooth expanse.
+    """
+    y = y_base
+    for k in range(n):
+        pts = [(x0, y)]
+        steps = 14
+        for s in range(steps + 1):
+            fx = x0 + (x1 - x0) * s / float(steps)
+            wob = amp * math.sin((s * 1.7 + k * 2.3 + seed * 0.01)
+                                 % 6.283185)
+            wob += (amp * 0.5) * (((seed + k * 13 + s * 7) % 10) / 10.0
+                                  - 0.5)
+            pts.append((fx, y + wob * 0.35))
+        top = y - h
+        PA.fill_poly(tile, pts + [(x1, top), (x0, top)], cols[k % len(cols)],
+                     seed=seed + k * 9, value=0.08, tint=0.0, band=0.0, edge=2.0)
+        PA.hand_stroke(d, pts, INK, 4, closed=False, seed=seed + k * 4 + 1,
+                       wavelength=140.0)
+        y -= h
+
+
+def _far_rank(tile, d, seed, y_base, rows=((0.42, 0.55, (96, 60, 36),
+                                            (70, 44, 26)),
+                                           (0.24, 0.36, (120, 76, 44),
+                                            (86, 54, 32)))):
+    """Small receding soldier ranks to fill the dark a terracotta pit recedes into.
+
+    The pit backdrops were one smooth black void above the near rank, which is
+    exactly the "big empty field" defect. This fills that void with ranks at
+    smaller scale and lower value, so the pit reads as an army going back into
+    the dark -- depth AND edge density -- without competing with the near row.
+    """
+    for row, (hf, hr, col, shd) in enumerate(rows):
+        hgt = int(H * hr)
+        step = int(hgt * 0.62)
+        c = -1
+        x = int(-40 + row * 26)
+        while x < W + step:
+            _soldier(d, x, int(y_base - row * 18), hgt,
+                     seed + row * 17 + c, col=col, shade=shd,
+                     has_bow=(c % 2 == 0), has_armour=False)
+            x += step
+            c += 1
+
+
+def _map_detail(tile, d, cx, cy, s, seed, ink_river=(58, 78, 104),
+                ridge=(178, 152, 112), cell=(184, 160, 122),
+                dense=True):
+    """Dense internal structure for the landmass: region cells, ridges, a river,
+    mountain ranges.
+
+    The map beats b11-b14 measured flat (2.7-3.0) because the landmass is ONE
+    large smooth sand polygon filling ~70% of the frame -- the biggest smooth
+    shape in the chapter. Enlarging it would not help; it is already big. What
+    it has no INTERNAL detail is what reads as flat, so this packs the interior
+    with small OUTLINED cells laid over it: a jittered lattice of irregular
+    province cells, two ridge belts, a river, and two dense mountain ranges.
+    Every mark is placed inside an inset ellipse so it lands on the landmass
+    rather than off its coast. `dense` is the difference between a few visible
+    strokes and a lattice that actually lifts the pigment across the whole
+    field.
+    """
+    # a point is "inside enough" if its normalized radius (in the shape's own
+    # half-extents) is under this. The shape is convex enough that an ellipse
+    # tracks its coast closely.
+    RX, RY = 345.0 * s, 240.0 * s
+
+    def inside(px, py, k=0.86):
+        nx = (px - cx) / (RX * k)
+        ny = (py - cy) / (RY * k)
+        return nx * nx + ny * ny <= 1.0
+
+    # --- PROVINCE BORDERS: a network of thin internal lines dividing the
+    # landmass into regions. This is the edge-density lever applied the way a
+    # map actually wants it -- dozens of thin outlined strokes that tile the
+    # field, not filled slabs that would read as a brick wall over the coast.
+    # Each border is a wobbled polyline; borders cross, which is what makes a
+    # region network.
+    if dense:
+        nx, ny = 7, 6
+        # vertical borders, wobbled
+        for c in range(1, nx):
+            bx = cx - RX * 0.86 + (2 * RX * 0.86) * c / float(nx)
+            pts = []
+            for r in range(9):
+                t = r / 8.0
+                py = cy - RY * 0.92 + 2 * RY * 0.92 * t
+                px = bx + (((seed + c * 17 + r * 5) % 30) - 15)
+                if inside(px, py, 0.92):
+                    pts.append((px, py))
+            if len(pts) > 2:
+                PA.hand_stroke(d, pts, INK, 4, closed=False,
+                               seed=seed + c * 23, wavelength=90.0)
+        # horizontal borders, wobbled
+        for r in range(1, ny):
+            by = cy - RY * 0.88 + (2 * RY * 0.88) * r / float(ny)
+            pts = []
+            for c in range(13):
+                t = c / 12.0
+                px = cx - RX * 0.88 + 2 * RX * 0.88 * t
+                py = by + (((seed + r * 29 + c * 7) % 26) - 13)
+                if inside(px, py, 0.92):
+                    pts.append((px, py))
+            if len(pts) > 2:
+                PA.hand_stroke(d, pts, INK, 4, closed=False,
+                               seed=seed + 40 + r * 19, wavelength=90.0)
+        # dot the region centres faintly so the cells read as territories
+        for c in range(nx):
+            for r in range(ny):
+                px = cx - RX * 0.86 + (2 * RX * 0.86) * (c + 0.5) / nx
+                py = cy - RY * 0.88 + (2 * RY * 0.88) * (r + 0.5) / ny
+                if not inside(px, py, 0.90):
+                    continue
+                rr = 7 + ((seed + c * 3 + r * 5) % 5)
+                PA.fill_poly(tile, PA.ellipse_pts(px, py, rr, rr, n=14),
+                             cell, seed=seed + c * 7 + r * 11, value=0.08,
+                             edge=0.8)
+
+    # --- two ridge belts: rows of small chevrons
+    for b, (yoff, amp) in enumerate(((-120, 0.55), (60, 0.42))):
+        pts = []
+        t = -1.0
+        while t <= 1.0:
+            px = cx + RX * 0.80 * t
+            py = cy + RY * yoff / 240.0 + amp * 30 * math.sin(t * 5.0 + b * 2)
+            if inside(px, py):
+                pts.append((px, py))
+            t += 0.08
+        if len(pts) > 3:
+            PA.hand_stroke(d, pts, ridge, 7, closed=False,
+                           seed=seed + b * 13, wavelength=110.0)
+
+    # --- one river: a thick blue-grey snake from the north-west to the south
+    riv = []
+    t = 0.0
+    while t <= 1.0:
+        px = cx + RX * (-0.62 + 1.10 * t)
+        py = cy + RY * (-0.72 + 1.44 * t) + 26 * math.sin(t * 7.0 + 1.1)
+        if inside(px, py):
+            riv.append((px, py))
+        t += 0.06
+    if len(riv) > 3:
+        PA.hand_stroke(d, riv, ink_river, 10, closed=False, seed=seed + 5,
+                       wavelength=130.0)
+
+    # --- two mountain ranges, packed so they read as terrain not specks
+    for r, (ax, ay, bx, by, n) in enumerate(
+            ((0.10, -0.40, 0.72, -0.10, 11), (-0.80, 0.30, 0.10, 0.70, 8))):
+        for k in range(n):
+            f = k / float(n - 1)
+            px = cx + RX * (ax + (bx - ax) * f) + (((seed + k * 23) % 30) - 15)
+            py = cy + RY * (ay + (by - ay) * f) + (((seed + k * 41) % 24) - 12)
+            if not inside(px, py, 0.88):
+                continue
+            w = (13 + (k % 3) * 6) * s * 0.8
+            tri = [(px, py - w), (px + w, py + w * 0.7), (px - w, py + w * 0.7)]
+            PA.fill_poly(tile, tri, ridge, seed=seed + 40 + r * 50 + k,
+                         value=0.10, edge=1.0)
+            PA.hand_stroke(d, tri, INK, 3, closed=True,
+                           seed=seed + 90 + r * 50 + k, wavelength=50.0)
+
+
+def _shelf(tile, d, y, seed, col=(146, 116, 82), x0=-60, x1=W + 60,
+           thick=34):
+    """A stone shelf / bench to stand objects on, cropped by the side edges.
+
+    A floor line with visible slab joints under the subject, so objects in a
+    room are ON something instead of floating in a wall-coloured field.
+    """
+    PA.fill_rect(tile, [x0, y, x1, y + thick], col, seed=seed, value=0.09,
+                 edge=2.0)
+    PA.hand_stroke(d, [(x0, y), (x1, y)], INK, 6, closed=False, seed=seed + 1,
+                   wavelength=200.0)
+    x = x0 + 40
+    k = 0
+    while x < x1 - 20:
+        PA.hand_stroke(d, [(x, y + 4), (x - 6, y + thick - 4)], INK, 4,
+                       closed=False, seed=seed + 10 + k, wavelength=60.0)
+        x += 118
+        k += 1
+    PA.hand_stroke(d, [(x0, y + thick), (x1, y + thick)], INK, 5, closed=False,
+                   seed=seed + 60, wavelength=200.0)
+
 
 def build():
     clock = SC.BeatClock(BEATS)
@@ -198,10 +545,21 @@ def build():
         # title to read against. Drawn before the ranks so the backdrop stays
         # UNDER the art (scene_common.title_backdrop).
         SC.title_backdrop(tile, 1130, col=(118, 92, 70))
-        # two receding ranks already standing in the dark when we arrive: this
-        # is the "eight thousand" the hook caption talks over, and it stops b01
-        # from being four seconds of bare black (which the coverage gate called
-        # NO ART, correctly).
+        # The pit FLOOR. _pit lays one smooth band of EARTH across the bottom
+        # quarter; b01/b02 measured flat because that band and the black above
+        # it were the only two things in the lower half. A paving course of
+        # slabs plus loose clay rubble gives the floor real local detail, so the
+        # near row of soldiers stands ON something instead of in front of a
+        # flat stripe.
+        _slab_floor(tile, d, 566, 720, seed=134, col=(122, 92, 66), n=10)
+        _rubble(tile, d, (0, 566, W, 720), 16, seed=136, col=(150, 112, 78))
+        # The dark the ranks recede into. Two hand-placed mid ranks (they are the
+        # readable ones, at 380 and 270) and then _far_rank, which continues the
+        # recession past them with smaller, dimmer figures -- so the void above
+        # the near row reads as an army going back into the dark rather than as
+        # an empty black field. _far_rank draws FIRST (farthest) so the two
+        # legible ranks draw over it.
+        _far_rank(tile, d, seed=138, y_base=470)
         for row, (base, hgt, col, shd) in enumerate((
                 (600, 380, (150, 92, 52), (110, 66, 38)),
                 (470, 270, (96, 60, 36), (68, 42, 26)))):
@@ -281,6 +639,16 @@ def build():
     def b_pit(tile, fw, fh):
         _pit(tile, 137, wall=EARTH_D)
         SC.title_backdrop(tile, 1371, col=(118, 92, 70))
+        # Same three-part fix as stage A's pit, and for the same reason: b06
+        # measured flat because the near rank sat under a smooth black void with
+        # a smooth earth stripe under its feet. The floor is paved and
+        # rubbled, and the black now carries receding ranks, so the top of the
+        # frame reads as an army continuing back rather than as empty dark.
+        _slab_floor(tile, ImageDraw.Draw(tile), 566, 720, seed=137,
+                    col=(110, 82, 58), n=10)
+        _rubble(tile, ImageDraw.Draw(tile), (0, 566, W, 720), 16, seed=139,
+                col=(142, 104, 70))
+        _far_rank(tile, ImageDraw.Draw(tile), seed=141, y_base=470)
     els.append(SC.stage(clock, 6, b_pit, j=11))
 
     def a_number(tile, fw, fh):
@@ -372,6 +740,24 @@ def build():
     # ===================================================================== #
     def c_paper(tile, fw, fh):
         _interior(tile, 254, PAPER2)
+        # The register is a RECORD sheet, so give it ledger structure instead of
+        # one pale field: ruled lines every 22px with heavier rules every 5th,
+        # plus a drawn border and a punched margin. This is texture across the
+        # whole pale ground (the map floats on it), and it is why the map beats
+        # read as a document rather than as a shape on blank paper.
+        d = ImageDraw.Draw(tile)
+        for k in range(31):
+            yy = 96 + k * 20
+            w = 5 if k % 5 == 0 else 3
+            col = (206, 200, 186) if k % 5 == 0 else (214, 208, 194)
+            PA.hand_stroke(d, [(52, yy), (1228, yy)], col, w, closed=False,
+                           seed=254 + k, wavelength=190.0)
+        PA.hand_stroke(d, [(30, 88), (1250, 88), (1250, 700), (30, 700)],
+                       (176, 168, 152), 6, closed=True, seed=253,
+                       wavelength=220.0)
+        # the punched margin the rules start from
+        PA.hand_stroke(d, [(30, 88), (30, 700)], (198, 120, 92), 5,
+                       closed=False, seed=252, wavelength=200.0)
     els.append(SC.stage(clock, 11, c_paper, j=17))
 
     def c_presenter(tile, fw, fh):
@@ -397,6 +783,12 @@ def build():
 
     def c_map1(tile, fw, fh):
         _china2(ImageDraw.Draw(tile), 700, 470, 1.30, 255)
+        # The landmass is one big smooth sand shape -- b11 measured 2.67, the
+        # flattest frame in the chapter. Enlarging it would not help; it is
+        # already 70% of the width. _map_detail stacks small outlined ridges,
+        # a river and mountain ticks INSIDE the same outline, which is what
+        # turns the fill from a smooth field into a drawn map.
+        _map_detail(tile, ImageDraw.Draw(tile), 700, 470, 1.30, 256)
     # Re-framed from (780, 400) at s=1.35, then dropped again to cy=470. The
     # landmass top edge sits at cy-240*s = 470-312 = 158, which clears a band
     # across the top of the frame for the FIRST EMPEROR bubble -- at cy=420
@@ -410,6 +802,7 @@ def build():
         # and crossed out. NO drawn '221 BC' -- the caption at b12 says it.
         d = ImageDraw.Draw(tile)
         _china2(d, 700, 452, 1.40, 259)
+        _map_detail(tile, d, 700, 452, 1.40, 260)
         for k in range(5):
             bx = 420 + k * 110
             by = 250 + k * 34
@@ -424,6 +817,7 @@ def build():
     def c_map3(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _china2(d, 640, 436, 1.35, 276, kingdoms=True)
+        _map_detail(tile, d, 640, 436, 1.35, 277)
         for k in range(9):
             x0 = 500 + (k % 3) * 150
             y0 = 260 + (k // 3) * 110
@@ -447,6 +841,7 @@ def build():
         # because the map outline runs through it.
         d = ImageDraw.Draw(tile)
         _china2(d, 640, 436, 1.35, 281)
+        _map_detail(tile, d, 640, 436, 1.35, 284)
         PA.hand_stroke(d, [(240, 560), (520, 520), (760, 500), (1040, 470)],
                        INK, 12, closed=False, seed=282, wavelength=150.0)
         _script_sheet(d, 1050, 200, 290, 370, 283)
@@ -463,12 +858,20 @@ def build():
         d = ImageDraw.Draw(tile)
         _interior(tile, 284, (74, 58, 46))
         SC.title_backdrop(tile, 1284, col=(118, 92, 70))
-        for k, (x, w, h, kind) in enumerate(((300, 120, 250, 0),
-                                             (560, 100, 320, 1),
-                                             (760, 140, 200, 2),
-                                             (990, 110, 280, 0))):
-            _weight(d, x, 700, w, h, 290 + k, kind=kind)
-            D.draw_label(tile, 'III', center=(x, 700 - h - 34),
+        # b15 measured 3.17 because the whole card was one smooth brown wall
+        # with four small weights on nothing. It is now a stone strong-room: a
+        # coursed masonry wall the weights stand against, a shelf they sit ON
+        # and run off both side edges, and weights 30% taller so they own the
+        # frame instead of sitting in it.
+        _stone_courses(tile, d, -20, 150, 1300, 700, seed=286,
+                       col=(96, 74, 58), row_h=62)
+        _shelf(tile, d, 660, seed=288, col=(132, 104, 76), thick=60)
+        for k, (x, w, h, kind) in enumerate(((210, 150, 340, 0),
+                                             (505, 130, 430, 1),
+                                             (790, 175, 280, 2),
+                                             (1075, 145, 380, 0))):
+            _weight(d, x, 664, w, h, 290 + k, kind=kind)
+            D.draw_label(tile, 'III', center=(x, 664 - h - 36),
                          color=PALE, size=28)
         D.draw_label(tile, 'ONE SET OF WEIGHTS', center=(640, 120),
                      color=GOLD, size=40)
@@ -482,9 +885,45 @@ def build():
         d = ImageDraw.Draw(tile)
         _interior(tile, 295, (54, 40, 32))
         SC.title_backdrop(tile, 1295, col=(118, 92, 70))
-        _throne(d, 930, 760, 620, 296)
+        # Same fix as the weights: the throne was floating in a smooth dark
+        # field (b16 measured 3.02). A coursed wall behind, a carved canopy
+        # above, ornament on the throne back and a stepped dais under it give
+        # the room real structure. The throne is kept at 560 (not 700) so it
+        # reads as a throne rather than a wall of flat terracotta.
+        _stone_courses(tile, d, -20, 150, 1300, 720, seed=298,
+                       col=(74, 56, 44), row_h=58)
+        # a canopy arch behind the throne, cropped by the top
+        PA.fill_poly(tile, [(660, 150), (660, 470), (1220, 470), (1220, 150),
+                            (1150, 118), (730, 118)], (108, 62, 44), seed=310,
+                     value=0.09)
+        PA.hand_stroke(d, [(660, 470), (660, 150), (730, 118), (1150, 118),
+                           (1220, 150), (1220, 470)], INK, 6, closed=True,
+                       seed=311, wavelength=140.0)
+        for k in range(6):   # fringe tassels along the canopy
+            tx = 700 + k * 88
+            PA.hand_stroke(d, [(tx, 150), (tx, 186)], GOLD, 5, closed=False,
+                           seed=312 + k, wavelength=40.0)
+        _throne(d, 940, 730, 560, 296)
+        # ornament on the throne back: two carved roundels and a bead band
+        for rx in (860, 1020):
+            PA.hand_stroke(d, PA.arc_pts(rx, 300, 42, 42, 0, 360, n=28),
+                           GOLD, 6, closed=False, seed=320 + rx,
+                           wavelength=70.0)
+            PA.hand_stroke(d, PA.arc_pts(rx, 300, 24, 24, 0, 360, n=24),
+                           GOLD, 4, closed=False, seed=330 + rx,
+                           wavelength=60.0)
+        for bx in range(770, 1130, 36):
+            PA.fill_poly(tile, PA.ellipse_pts(bx, 430, 7, 7, n=10), GOLD,
+                         seed=340 + bx, value=0.06, edge=0.6)
+        # the dais the throne stands on, stepped
+        PA.fill_poly(tile, [(640, 720), (1300, 720), (1230, 660), (700, 660)],
+                     (86, 64, 50), seed=299, value=0.10)
+        PA.fill_poly(tile, [(690, 720), (1250, 720), (1215, 700), (720, 700)],
+                     (70, 52, 42), seed=301, value=0.10)
+        PA.hand_stroke(d, [(640, 720), (1300, 720), (1230, 660), (700, 660)],
+                       INK, 6, closed=True, seed=300, wavelength=150.0)
         SC.closeup(d, 400, 330, 175, 'deadpan', 297)
-        D.draw_bubble(tile, 'himself', (930, 200), tail_to=(830, 380),
+        D.draw_bubble(tile, 'himself', (940, 200), tail_to=(840, 380),
                       font_size=34, max_w=260)
     els.append(SC.layer(clock, 16, c_throne, j=17, kind='bg',
                         eid='c_throne'))

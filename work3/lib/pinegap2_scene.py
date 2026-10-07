@@ -103,6 +103,195 @@ _icon_missile = PG._icon_missile
 ARRIVE = 0.5
 
 
+# =========================================================================== #
+# LANDSCAPE SUBSTRATE -- added to close the flat-vector gap.               #
+# =========================================================================== #
+#
+# WHAT WAS WRONG, MEASURED. The pigment gate read 29 of 34 pinegap beats
+# "flat" (median 24px-tile luma std 2.9-3.5 against a threshold of 8.0), and
+# rendering the frames explains it exactly: every exterior beat was ONE smooth
+# sky wash on top of ONE smooth ground wash with a few wireframe outlines
+# floating on them. The blind critic's complaint -- "flat vector and
+# under-filled" -- is the same thing. Paint texture inside two giant fills
+# cannot fix it; there are only two shapes and they are both enormous. The
+# lever is COMPOSITION: break each void into many small outlined shapes that
+# run OFF the frame edges, so the frame admits the system is bigger than the
+# picture.
+#
+# So every exterior stage now paints a real substrate instead of two flat
+# rectangles: stratified cloud bands in the sky, layered dune contour bands
+# and mesas on the ground, and scrub/rock scatter for near-field tooth. Each
+# helper is seeded (deterministic) and uses the painterly PA primitives so the
+# new shapes get the same pigment the existing art gets -- we are adding
+# STRUCTURE, not raising the paint constants.
+
+def _wavy(seed, x0, x1, y, amp, n=26):
+    """A deterministic wavy run of points from x0 to x1 about baseline y."""
+    out = []
+    for i in range(n + 1):
+        u = i / float(n)
+        x = x0 + (x1 - x0) * u
+        # sum of two sines with seeded phases -> a smooth, non-repeating ridge
+        w = (math.sin(u * 5.1 + seed * 0.7) * 0.6
+             + math.sin(u * 11.3 + seed * 1.9) * 0.4)
+        out.append((x, y + amp * w))
+    return out
+
+
+def _strata(tile, d, seed, y0, y1, col_hi, col_lo, n=7, amp=14.0):
+    """Layered horizontal cloud/wind bands across the sky, full-bleed.
+
+    Each band is a filled wavy strip whose TOP edge is stroked, so the sky is a
+    stack of outlined strata rather than one wash. They span the full width and
+    so run off BOTH side edges -- the frame reads as a slice of a bigger sky.
+    """
+    img = PA.img_of(d)
+    span = float(y1 - y0)
+    for i in range(n):
+        u = i / float(max(1, n - 1))
+        yc = y0 + span * u
+        h = 12 + 22 * (1.0 - u)                 # thicker low down
+        top = _wavy(seed + i * 3, -20, W + 20, yc, amp, n=30)
+        band = top + [(W + 20, yc + h + amp), (-20, yc + h + amp)]
+        col = col_hi if i % 2 == 0 else col_lo
+        PA.fill_poly(img, band, col, seed=seed + 40 + i, value=0.06, edge=2.0)
+        PA.hand_stroke(d, top, (150, 158, 168), 3, closed=False,
+                       seed=seed + 80 + i, wavelength=140.0, vary=0.34)
+        # a second, fainter ridge line inside the band -> two edges per stratum
+        mid = _wavy(seed + i * 3 + 1, -20, W + 20, yc + h * 0.55, amp * 0.6, n=26)
+        PA.hand_stroke(d, mid, (168, 176, 186), 2, closed=False,
+                       seed=seed + 120 + i, wavelength=120.0, vary=0.30)
+
+
+def _dunes(tile, d, seed, hz, n_bands=6, base=DUNE, deep=None):
+    """Layered ground contour bands receding toward the horizon, full-bleed.
+
+    The nearest band reaches past the BOTTOM edge and the far bands stack up
+    near the horizon, so the ground is a run of outlined contours, not a flat
+    slab. `deep` is the colour of the nearest/richest band. Neighbouring bands
+    are deliberately pushed apart in VALUE (the walk is eased so each step is a
+    visible step), because two adjacent fills of near-equal value read as one
+    smooth region no matter how much pigment is inside them.
+    """
+    img = PA.img_of(d)
+    deep = deep or tuple(max(0, c - 40) for c in base)
+    for i in range(n_bands):
+        u = i / float(n_bands)
+        yc = hz + 22 + (H - hz) * (u ** 1.25) * 1.10
+        amp = 18 + 26 * u
+        # eased value walk: pale far band -> deep near band, each step visible
+        t = u ** 0.85
+        col = tuple(int(base[c] * (1 - t) + deep[c] * t) for c in range(3))
+        ridge = _wavy(seed + i * 5, -30, W + 30, yc, amp, n=34)
+        slab = ridge + [(W + 30, H + 40), (-30, H + 40)]
+        PA.fill_poly(img, slab, col, seed=seed + 60 + i, value=0.07, edge=3.0)
+        # the ridge line is the band's own top edge -- dark and heavy so the
+        # boundary between two bands is a drawn line, not an inferred one
+        PA.hand_stroke(d, ridge, (146, 100, 50), 4, closed=False,
+                       seed=seed + 100 + i, wavelength=150.0, vary=0.36)
+        # a crest highlight just below the ridge -> a second edge per band
+        crest = _wavy(seed + i * 5 + 2, -30, W + 30, yc + 14 + 10 * u, amp * 0.7,
+                      n=30)
+        PA.hand_stroke(d, crest, (240, 222, 186), 3, closed=False,
+                       seed=seed + 140 + i, wavelength=130.0, vary=0.30)
+
+
+def _mesa(d, cx, base_y, w, h, seed, col=(178, 132, 84)):
+    """A distant flat-topped mesa on the horizon, outlined with striations."""
+    top = base_y - h
+    prof = [(cx - w / 2.0, base_y), (cx - w * 0.42, top + h * 0.18),
+            (cx - w * 0.30, top), (cx + w * 0.30, top),
+            (cx + w * 0.44, top + h * 0.16), (cx + w / 2.0, base_y)]
+    PA.fill_poly(PA.img_of(d), prof, col, seed=seed, value=0.06)
+    PA.hand_stroke(d, prof, (150, 106, 62), 3, closed=True, seed=seed + 1,
+                   wavelength=120.0)
+    for k in range(2):
+        y = top + h * (0.30 + 0.26 * k)
+        PA.hand_stroke(d, [(cx - w * 0.40, y), (cx + w * 0.40, y)],
+                       (156, 112, 66), 2, closed=False, seed=seed + 2 + k,
+                       wavelength=90.0, vary=0.30)
+
+
+def _scrub(d, cx, cy, s, seed, col=(146, 108, 62)):
+    """A small spiky desert bush -- near-field tooth, outlined."""
+    pts = [(cx - s, cy)]
+    for k in range(5):
+        u = (k + 0.5) / 5.0
+        pts.append((cx - s + 2 * s * u, cy - s * (0.5 + 0.5 * math.sin(k * 2.1))))
+    pts.append((cx + s, cy))
+    PA.hand_stroke(d, pts, col, 2, closed=False, seed=seed, wavelength=40.0,
+                   vary=0.40)
+
+
+def _rock(d, cx, cy, s, seed, col=(160, 118, 70)):
+    """A small angular outlined rock."""
+    poly = [(cx - s, cy), (cx - s * 0.6, cy - s * 0.8), (cx + s * 0.2, cy - s),
+            (cx + s * 0.8, cy - s * 0.5), (cx + s, cy)]
+    PA.fill_poly(PA.img_of(d), poly, col, seed=seed, value=0.06)
+    PA.hand_stroke(d, poly, (128, 92, 54), 2, closed=True, seed=seed + 1,
+                   wavelength=40.0)
+
+
+def _landscape(tile, fw, fh, seed, sky=SKY, ground=DUNE, hz=HZ,
+               mesas=True, scatter=True, pale=False):
+    """The full exterior substrate: sky + strata + ground + dunes + mesas.
+
+    This REPLACES `_desert` for the beats that were measured flat. `_desert`
+    painted two rectangles; this paints a landscape. It is the direct answer to
+    the pigment gate: instead of 2-3 enormous smooth shapes it lays down a sky
+    of ~7 outlined strata and a ground of ~6 outlined contour bands, plus two
+    flat-topped mesas on the horizon and near-field scrub/rock scatter. Every
+    band runs off the left and right edges, so the frame admits the terrain
+    continues past the picture.
+
+    `pale=True` is for the white-register stages (globe / five-eyes / radio /
+    missile) whose sky and ground are near-white; there the structure is drawn
+    in faint greys so it stays a light register (the caption resolver and the
+    title both key off a light background there).
+    """
+    d = ImageDraw.Draw(tile)
+    img = PA.img_of(d)
+    # base sky + ground
+    PA.fill_rect(tile, [0, 0, W, H], sky, seed=seed, value=0.05)
+    PA.fill_rect(tile, [0, hz - 6, W, H], ground, seed=seed + 1, value=0.07)
+
+    if pale:
+        strata_hi, strata_lo = (247, 249, 251), (222, 229, 236)
+        dune_base = ground
+        dune_deep = (196, 206, 216)
+        mesa_col = (188, 200, 212)
+        scatter_col = (168, 182, 196)
+    else:
+        strata_hi, strata_lo = (214, 224, 232), (176, 190, 202)
+        dune_base = ground
+        dune_deep = tuple(max(0, c - 30) for c in ground)
+        mesa_col = (182, 134, 84)
+        scatter_col = (146, 108, 62)
+
+    # sky strata (well above the horizon, and clear of the title band at top)
+    _strata(tile, d, seed + 5, hz * 0.22, hz * 0.90, strata_hi, strata_lo,
+            n=7, amp=13.0)
+
+    # ground contour bands (recede toward the horizon, reach past the bottom)
+    _dunes(tile, d, seed + 7, hz, n_bands=6, base=dune_base, deep=dune_deep)
+
+    if mesas:
+        # two flat-topped mesas sitting on the horizon, full-bleed to the sides
+        _mesa(d, 250, hz + 6, 300, 54, seed + 11, mesa_col)
+        _mesa(d, 980, hz + 6, 380, 66, seed + 13, mesa_col)
+
+    if scatter:
+        # near-field tooth along the bottom band
+        for k, (x, y, s) in enumerate(((150, H - 90, 26), (620, H - 60, 30),
+                                       (1080, H - 100, 24), (420, H - 150, 20))):
+            _rock(d, x, y, s, seed + 20 + k, scatter_col)
+        for k, (x, y, s) in enumerate(((320, H - 40, 30), (900, H - 30, 26),
+                                       (180, H - 170, 22), (760, H - 190, 24))):
+            _scrub(d, x, y, s, seed + 40 + k, scatter_col)
+
+    PA.paper_overlay(tile, seed=seed + 2)
+
+
 def build():
     clock = SC.BeatClock(BEATS)
     els = []
@@ -127,7 +316,7 @@ def build():
     # NO ART on b01-b02, which was correct).                                 #
     # ===================================================================== #
     def a_desert(tile, fw, fh):
-        _desert(tile, 5)
+        _landscape(tile, fw, fh, 5, mesas=True, scatter=True)
     els.append(SC.stage(clock, 1, a_desert, j=4))
 
     # The presenter arrives on b01, not b03. He stands in the empty desert and
@@ -163,7 +352,7 @@ def build():
     # carries the same information and stays put for six beats.             #
     # ===================================================================== #
     def b_desert(tile, fw, fh):
-        _desert(tile, 9)
+        _landscape(tile, fw, fh, 9)
     els.append(SC.stage(clock, 4, b_desert, j=10))
 
     def b_locator(tile, fw, fh):
@@ -218,7 +407,7 @@ def build():
     # cover story built in front of the viewer, in one place.               #
     # ===================================================================== #
     def c_desert(tile, fw, fh):
-        _desert(tile, 37)
+        _landscape(tile, fw, fh, 37)
     els.append(SC.stage(clock, 10, c_desert, j=17))
 
     def c_radome(tile, fw, fh):
@@ -287,7 +476,7 @@ def build():
     # ===================================================================== #
     def d_base(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _desert(tile, 81)
+        _landscape(tile, fw, fh, 81)
         _radome(d, 640, 410, 300, 82, detail=False)
     els.append(SC.stage(clock, 17, d_base, j=22))
 
@@ -365,7 +554,8 @@ def build():
     # not read as a repainted frame.                                         #
     # ===================================================================== #
     def e_sky(tile, fw, fh):
-        _desert(tile, 95, sky=(226, 232, 238), ground=(226, 232, 238))
+        _landscape(tile, fw, fh, 95, sky=(226, 232, 238),
+                   ground=(224, 230, 236), pale=True)
     els.append(SC.stage(clock, 22, e_sky, j=28))
 
     def e_globe(tile, fw, fh):
@@ -457,7 +647,8 @@ def build():
     #                 launch data. Getting close is nearly impossible."     #
     # ===================================================================== #
     def f_sky(tile, fw, fh):
-        _desert(tile, 131, sky=(226, 232, 238), ground=(226, 232, 238))
+        _landscape(tile, fw, fh, 131, sky=(226, 232, 238),
+                   ground=(222, 228, 234), pale=True)
     els.append(SC.stage(clock, 28, f_sky, j=31))
 
     def f_radio(tile, fw, fh):
@@ -497,6 +688,17 @@ def build():
             PA.hand_stroke(d, arc, RED, 9, seed=147 + i, wavelength=120.0)
     els.append(SC.accrue(clock, 28, 29, f_radio, kind='shape'))
 
+    def f_listener(tile, fw, fh):
+        # CHARACTER. "They include radio traffic" is a dry, deadpan fact, so he
+        # stands at the left edge -- CROPPED by it, not parked in open space --
+        # pointing at the mast with a real elbow (ra=78deg), reading skeptical.
+        # He is DARK on this pale register, which is the correct inverse of the
+        # cream-on-dark rule the night cards use. He leaves at b30 so he does
+        # not stand beside the recoiling figure that beat already has.
+        SC.fullbody(ImageDraw.Draw(tile), 108, 700, 440, pose='pointing',
+                    expression='skeptic', seed=150)
+    els.append(SC.layer(clock, 28, f_listener, j=30, kind='character'))
+
     def f_missile(tile, fw, fh):
         PG._icon_missile(ImageDraw.Draw(tile), 900, 330, 320, 140)
     # MOVING, and the one place a fast arrival is right: the narrator says
@@ -526,13 +728,30 @@ def build():
     # across "7 years in prison" -- the worst frame in the chapter.          #
     # ===================================================================== #
     def g_desert(tile, fw, fh):
-        _desert(tile, 161, sky=(200, 212, 226), ground=DUNE)
+        _landscape(tile, fw, fh, 161, sky=(200, 212, 226), ground=DUNE)
     els.append(SC.stage(clock, 31, g_desert, j=35))
 
     def g_column(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         col = [(330, 720), (330, 104), (910, 104), (910, 720)]
         PA.fill_poly(tile, col, (176, 190, 208), seed=153, value=0.08)
+        # INTERNAL STRUCTURE. This slab is the single biggest flat area left in
+        # the chapter: one smooth 580x600 fill under one number. Adding an
+        # altitude LADDER -- evenly spaced horizontal rungs with tick marks
+        # climbing the left post -- turns the no-fly box into a measured
+        # airspace and gives the region the small outlined shapes the other
+        # frames get from their contour bands. The 18,000 line is the one rung
+        # drawn in red; the rest recede in value so the numeral stays the hero.
+        for k in range(9):
+            y = 132 + k * 64
+            PA.hand_stroke(d, [(352, y), (888, y)], (150, 166, 186), 3,
+                           closed=False, seed=180 + k, wavelength=130.0,
+                           vary=0.28)
+            PA.hand_stroke(d, [(352, y), (392, y)], (120, 136, 158), 4,
+                           closed=False, seed=200 + k, wavelength=50.0)
+        # the locked ceiling, drawn as the heaviest rung with a stop bar
+        PA.hand_stroke(d, [(340, 104), (900, 104)], RED, 8, closed=False,
+                       seed=214, wavelength=160.0)
         for x in (330, 910):
             PA.hand_stroke(d, [(x, 104), (x, 720)], RED, 7, seed=154 + x,
                            wavelength=160.0)

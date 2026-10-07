@@ -164,8 +164,40 @@ import engine3 as E3
 import scene_common as SC
 import v2paint as PA
 import v2draw as D
+import character3 as C3
 
 import area51_scene as A51     # art primitives + palette, reused not copied
+
+
+# --------------------------------------------------------------------------- #
+# TWO POSES, REGISTERED LOCALLY.                                             #
+#                                                                             #
+# character3.POSES['pointing'] is ra=(78, 12) and that 12 is the FOREARM BEND #
+# -- the elbow angle, per character3's own convention note. At ship size a 12 #
+# degree bend renders as a straight bar and the arm reads as a T-arm, which #
+# is this project's most recurrent character defect (see the two memory notes #
+# on the stickman T-arm and on elbow existence not being elbow visibility).   #
+#                                                                            #
+# These are REGISTERED here rather than edited into character3 because        #
+# character3 is shared by all nine chapters: changing 'pointing' in place     #
+# would silently move the arm on every other chapter's beats. Adding two       #
+# prefixed entries touches nothing else. `draw_character` takes a pose NAME     #
+# and there is no override parameter, so registration is the only lever that   #
+# leaves the shared module alone.                                            #
+#                                                                            #
+# a51_pointing_e: same arm as 'pointing' (raised, out to the right) with the #
+# elbow bend raised 12 -> 38, so the forearm visibly folds. The upper arm is  #
+# 70 and the forearm comes back to 108 absolute: the hand ends up higher and  #
+# further out than the stock pose, which is what "pointing at the rule above  #
+# you" looks like.                                                            #
+# a51_shield: both forearms up across the face, elbows hard out -- the read   #
+# for a man putting his hands up in front of a red ceiling. Both bends are   #
+# above 60, so both elbows are unmistakable at playback size.                 #
+# --------------------------------------------------------------------------- #
+C3.POSES.setdefault('a51_pointing_e', dict(
+    la=(16, 24), ra=(70, 38), ll=(-12, 0), rl=(11, 0), lean=-3))
+C3.POSES.setdefault('a51_shield', dict(
+    la=(58, 78), ra=(58, 78), ll=(-10, 0), rl=(12, 0), lean=2))
 
 # --- what the engine needs, taken straight from v1 -------------------------- #
 SEG = A51.SEG
@@ -241,6 +273,308 @@ FENCE_TOP = 286
 FENCE_BASE = 462
 
 
+# =========================================================================== #
+# EDGE-DENSITY HELPERS.                                                       #
+#                                                                            #
+# WHY THESE EXIST. The per-beat pigment measurement renders every beat's     #
+# midpoint and takes the median luma std over 24px tiles (threshold 8.0).     #
+# Measured on this file before the work below:                                   #
+#                                                                            #
+#     b14  11.38   <- fence mesh + second fence + pole + bunkers + tower      #
+#     b12   9.38   <- two fences + crack net                                   #
+#     b16   3.08   <- a jet, a red line, and empty night                      #
+#     b21   2.90   <- a calendar and a balloon on a bare playa                #
+#     b26   2.90   <- a document and an empty room                            #
+#                                                                            #
+# The ranks are not about PAINT -- every one of those fills goes through      #
+# PA.fill_rect/PA.fill_poly with the same value drift, and b16/b21/b26 come   #
+# back at 2.9-3.1, i.e. flat-vector. The ranks track ONE thing: how many      #
+# OUTLINED EDGES cross a given tile. b14 wins because a 24px tile of b14 has  #
+# a fence wire and a post and a crack in it; a tile of b21 has a sky gradient  #
+# and nothing else. So the fix is to put more small outlined shapes into the  #
+# EMPTY parts of each frame -- which is also, not coincidentally, what the    #
+# reference does: it fills the frame with a system bigger than the picture.  #
+#                                                                            #
+# Every helper here is seeded and every one draws STRUCTURE (contour bands,   #
+# ribs, panels, scrub, blocks), not noise. Noise would move the metric without #
+# moving the picture and the orchestrator judges pixels by eye.              #
+# =========================================================================== #
+
+
+def _contour_bands(d, y0, y1, col, seed, n=7, lw=4, x0=-60, x1=W + 60,
+                   wobble=0.55):
+    """Layered terrain/ground contour bands between y0 and y1.
+
+    A dry lake bed and a scrub plain are not one fill; they are bands of
+    slightly different value running roughly parallel to the horizon, each one
+    OUTLINED, so the eye reads distance. `n` bands over the span, each a
+    hand-stroke polyline rather than a straight rule.
+    """
+    for i in range(n):
+        u = (i + 0.5) / float(n)
+        y = y0 + (y1 - y0) * u
+        amp = wobble * (10.0 + 16.0 * u)
+        pts = []
+        k = 14
+        for j in range(k + 1):
+            t = j / float(k)
+            xx = x0 + (x1 - x0) * t
+            pts.append((xx, y + amp * math.sin(t * 5.3 + i * 1.9 + seed * 0.11)))
+        PA.hand_stroke(d, pts, col, lw, seed=seed + i * 7,
+                       wavelength=120.0 + 20.0 * i)
+
+
+def _scrub(d, y0, y1, col, seed, n=26, s0=0.5, s1=1.5):
+    """Scatter of small outlined desert scrub/clusters across a ground band.
+
+    Density is what matters: each one is 3 short strokes meeting at a point, so
+    a 24px tile that lands on one gets two edges instead of a gradient.
+    Deterministic -- the position of clump i is a closed-form hash of i and the
+    seed, not a running RNG, so the same render always draws the same clumps in
+    the same order.
+    """
+    for i in range(n):
+        u = ((i * 37) % 101) / 101.0
+        v = ((i * 61) % 97) / 97.0
+        x = -40 + (W + 80) * u
+        y = y0 + (y1 - y0) * v
+        s = s0 + (s1 - s0) * v
+        sd = seed + i * 3
+        for a in range(3):
+            ang = math.radians(200 + a * 46 + 11 * i)
+            PA.hand_stroke(d, [(x, y),
+                               (x + s * 9.0 * math.cos(ang),
+                                y + s * 13.0 * math.sin(ang))],
+                           col, max(2, int(3 * s)), seed=sd + a,
+                       wavelength=34.0)
+
+
+def _crust(d, y0, y1, col, seed, rows=5, lw=4, jitter=0.5, cross=0.55):
+    """A cracked-mud polygon net: irregular cells, NOT horizontal grain.
+
+    WHY THIS IS NOT `_contour_bands`. A dry lake bed reads as a net of
+    irregular POLYGONS -- mud that dried and lifted in plates -- and the first
+    pass at the lake bed used near-horizontal parallel bands, which the eye
+    read as wood grain or sediment, not as cracked ground. A cell net has
+    edges running in many directions, so it reads as broken ground.
+
+    Built as a jittered grid of node rows: each row has its own node count and
+    each node's x is offset by a per-cell hash, then consecutive rows are
+    joined by short strokes. That produces irregular quadrilateral-ish cells
+    with vertical-ish seams between them and only gently varying horizontal
+    ones, which is the correct read for perspective on a flat crust.
+
+    `jitter` scales the x-offsets (0.5 default); the row spacing stays roughly
+    even so perspective still reads.
+
+    `cross` (0.55 default) is how many of the cell interiors get a diagonal
+    hairline. A quad's interior is otherwise a smooth fill -- and the pigment
+    metric reads a SMOOTH FILL AS FLAT no matter how many seams bound it,
+    because the contrast lives only on the seam pixels and a 24px tile that
+    straddles one line still has near-zero internal spread. The diagonals put a
+    second, differently-angled edge through the middle of most cells, so the
+    detail is distributed across the plate instead of sitting on its border.
+    This is the same lesson as the fortknox gold-slab frame (tile_std 53 by
+    stacking ~40 small outlined slabs): local detail throughout the subject,
+    not a few big shapes with dead space between them.
+    """
+    nodes = []
+    for r in range(rows + 1):
+        u = r / float(rows)
+        y = y0 + (y1 - y0) * u
+        # row spacing compresses with distance (perspective on the flat)
+        yy = y0 + (y1 - y0) * (u ** 0.86)
+        count = 6 + r                       # more, wider cells near the viewer
+        row = []
+        for c in range(count + 1):
+            base = -40 + (W + 80) * (c / float(count))
+            # closed-form per-node offset, so it's deterministic
+            k = (r * 131 + c * 17 + seed) % 41
+            row.append((base + (k - 20) * 18.0 * jitter, yy))
+        nodes.append(row)
+
+    # horizontal-ish edges within each row
+    for r in range(rows + 1):
+        row = nodes[r]
+        for c in range(len(row) - 1):
+            x0, y0_ = row[c]
+            x1, y1_ = row[c + 1]
+            PA.hand_stroke(d, [(x0, y0_), (x1, y1_)], col, lw,
+                           seed=seed + r * 50 + c, wavelength=90.0)
+    # vertical-ish seams between rows
+    for r in range(rows):
+        up, dn = nodes[r], nodes[r + 1]
+        for c in range(len(up)):
+            k = (r * 29 + c * 7 + seed) % 23
+            jx = (k - 11) * 12.0 * jitter
+            PA.hand_stroke(d, [(up[c][0], up[c][1]),
+                               (dn[c][0] + jx, dn[c][1])], col, lw,
+                           seed=seed + 200 + r * 40 + c, wavelength=70.0)
+    # diagonal hairlines across the cell interiors (see `cross` above)
+    for r in range(rows):
+        up, dn = nodes[r], nodes[r + 1]
+        for c in range(len(up) - 1):
+            if ((r * 11 + c * 3 + seed) % 100) / 100.0 >= cross:
+                continue
+            a = up[c] if ((r + c + seed) % 2 == 0) else dn[c]
+            b = dn[c + 1] if ((r + c + seed) % 2 == 0) else up[c + 1]
+            PA.hand_stroke(d, [a, b], col, max(2, lw - 2),
+                           seed=seed + 400 + r * 30 + c, wavelength=52.0)
+
+
+def _tufts(d, y0, y1, col, seed, n=40):
+    """LOW desert tufts: clusters of 4-5 short upright blades off one root.
+
+    The first scatter (`_scrub`) drew its blades RADIATING from a point at
+    spread angles, which at ship size reads as a scatter of arrowheads rather
+    than as vegetation -- the eye sees the silhouette, and a three-armed
+    asterisk is not a plant. This one draws a rooted fan: the blades are short,
+    near-vertical, packed tight, and clustered into groups so the ground has
+    tufts in it instead of marks on it. Blades are also only a couple of values
+    off the ground, which is what makes them read as texture rather than as
+    ink.
+    """
+    for i in range(n):
+        # clump centre, clustered: 9 clumps of 4-5 blades
+        ci = i // 5
+        bx = -30 + (W + 60) * (((ci * 71) % 97) / 97.0)
+        by = y0 + (y1 - y0) * (((ci * 43) % 89) / 89.0)
+        nb = 4 + (i % 2)
+        for a in range(nb):
+            ox = ((a * 17) % 13) - 6.0
+            oy = (((a * 11) % 7) - 3.0) * 0.9
+            h = 12.0 + ((i * 7 + a * 5) % 11)
+            tipx = bx + ox + (((a * 23) % 9) - 4.0) * 0.7
+            PA.hand_stroke(d, [(bx + ox, by + oy), (tipx, by + oy - h)],
+                           col, 3, seed=seed + i * 5 + a, wavelength=26.0)
+
+
+def _cloud_bands(d, y0, y1, seed, n=5, col=(214, 220, 226)):
+    """Soft outlined cloud strata across a sky.
+
+    A bleached sky is the single largest void in the day cards. These are wide,
+    shallow, gently-wobbling outlined strata -- value only a few levels off the
+    sky so they read as high cloud, but each one is a real edge so a 24px tile
+    crossing it has structure.
+
+    THE FIRST PASS AT 5 STRATA READ AS STRIPES, not cloud: the bands were
+    evenly spaced, evenly thick and parallel, and the eye reads that as a
+    gradient ramp rather than as weather. Two changes. They are now spaced on a
+    widening geometric progression so they bunch near the horizon and thin out
+    overhead, and each band's thickness is a function of its own index rather
+    than a fixed ladder. Both are how real stratus looks from below.
+    """
+    for i in range(n):
+        u = (i + 0.5) / float(n)
+        y = y0 + (y1 - y0) * (u ** 1.7)
+        amp = 14.0 + 22.0 * (1.0 - u)
+        thick = 14 + 26 * (i / float(max(1, n - 1)))
+        top = []
+        for j in range(15):
+            t = j / 14.0
+            top.append((-60 + (W + 120) * t,
+                        y + amp * math.sin(t * 3.1 + i * 2.2)))
+        band = top + [(x, yy + thick) for (x, yy) in reversed(top)]
+        PA.fill_poly(PA.img_of(d), band, col, seed=seed + i, value=0.03,
+                     edge=2.0)
+        PA.hand_stroke(d, top, (200, 208, 216), 3, closed=False,
+                       seed=seed + 40 + i, wavelength=180.0)
+
+
+def _boulder(d, cx, cy, r, col, seed, lw=4):
+    """One outlined rock: an irregular closed blob with a highlight facet."""
+    pts = PA.ellipse_pts(cx, cy, r, r * 0.72, n=11, rot=0.3)
+    PA.fill_poly(PA.img_of(d), pts, col, seed=seed, value=0.09, edge=2.0)
+    PA.hand_stroke(d, pts, INK, lw, closed=True, seed=seed + 1,
+                   wavelength=44.0)
+    PA.hand_stroke(d, [(cx - r * 0.45, cy - r * 0.12),
+                       (cx + r * 0.30, cy - r * 0.26)],
+                   (246, 244, 238), max(2, lw - 2), seed=seed + 2,
+                   wavelength=30.0)
+
+
+def _stars(d, x0, y0, x1, y1, seed, n=54, col=(226, 232, 244)):
+    """A star field. Night stages are the emptiest frames in the chapter and a
+    night sky with nothing in it is the single biggest void in the film.
+
+    Deterministic placement from a closed-form hash so no RNG state leaks
+    between calls, and sizes vary so it does not read as a dot grid.
+    """
+    for i in range(n):
+        u = ((i * 53) % 103) / 103.0
+        v = ((i * 29) % 89) / 89.0
+        v = v * v                      # bias toward the top of the band
+        x = x0 + (x1 - x0) * u
+        y = y0 + (y1 - y0) * v
+        r = 1.6 + 2.6 * (((i * 17) % 13) / 13.0)
+        PA.fill_poly(PA.img_of(d), PA.ellipse_pts(x, y, r, n=9),
+                     col, seed=seed + i, value=0.05, edge=0.6)
+
+
+def _stars_spark(d, x, y, seed, r=9.0, col=(240, 244, 252)):
+    """One four-point star flare -- the accent that keeps a star field from
+    reading as scattered dust. Drawn as two crossing outlined strokes."""
+    for a, b in (((-r, 0), (r, 0)), ((0, -r), (0, r))):
+        PA.hand_stroke(d, [(x + a[0], y + a[1]), (x + b[0], y + b[1])],
+                       col, 3, seed=seed, wavelength=20.0)
+    PA.hand_stroke(d, [(-r * 0.42, -r * 0.42), (r * 0.42, r * 0.42)],
+                   col, 2, seed=seed + 1, wavelength=14.0)
+
+
+def _panel_grid(d, x0, y0, x1, y1, col, seed, nx=6, ny=4, lw=4):
+    """A riveted panel grid -- the read for any large flat wall.
+
+    Used on the hangar, the office wall and the gatehouse. Vertical ribs and
+    horizontal joints only: at a 24px tile a single crossing rib is already
+    enough local detail, and a checkerboard of both would read as tile, not
+    metal.
+    """
+    for i in range(1, nx):
+        x = x0 + (x1 - x0) * i / float(nx)
+        PA.hand_stroke(d, [(x, y0), (x + 3, y1)], col, lw,
+                       seed=seed + i * 5, wavelength=110.0)
+    for j in range(1, ny):
+        y = y0 + (y1 - y0) * j / float(ny)
+        PA.hand_stroke(d, [(x0, y), (x1, y - 2)], col, lw,
+                       seed=seed + 40 + j * 5, wavelength=130.0)
+    # rivets along the top rib -- small dark dots on a light wall
+    for i in range(nx):
+        x = x0 + (x1 - x0) * i / float(nx)
+        PA.fill_poly(PA.img_of(d), PA.ellipse_pts(x + 8, y0 + 16, 5, n=8),
+                     INK, seed=seed + 80 + i, value=0.05, edge=0.6)
+
+
+def _tread(d, x0, x1, y0, y1, col, seed, n=6, lw=5):
+    """A flight of steps / stair treads seen in perspective.
+
+    The recurring edge-density read for a built structure where the wall alone
+    would be a void. Each tread is an outlined L; at a 24px tile that lands on
+    one you get two edges.
+    """
+    for i in range(n):
+        u = i / float(n)
+        v = (i + 1) / float(n)
+        y = y0 + (y1 - y0) * v
+        xa = x0 + (x1 - x0) * u * 0.62
+        xb = x0 + (x1 - x0) * v
+        PA.hand_stroke(d, [(xa, y - (y1 - y0) * 0.055), (xb, y)], col, lw,
+                       seed=seed + i * 4, wavelength=70.0)
+        PA.hand_stroke(d, [(xb, y), (xb, y + (y1 - y0) * 0.03)], col, lw,
+                       seed=seed + 60 + i * 4, wavelength=40.0)
+
+
+def _fence_run_off_edge(d, y_base, height, seed, col, n_posts=9,
+                        x0=-120, x1=W + 120, mesh=True):
+    """A fence that starts and ends OFF the frame.
+
+    The frame-fill canon's idiom, applied to the chapter's own signature object:
+    a fence whose ends are visible is a prop, a fence whose ends are past the
+    edges is a perimeter. Returns nothing; draws.
+    """
+    _fence(d, x0, y_base, x1, height, seed, n_posts=n_posts, mesh=mesh,
+           post_col=col, rail_col=col)
+
+
 def build():
     clock = SC.BeatClock(BEATS)
     els = []
@@ -280,6 +614,32 @@ def build():
         # lit course under the title band, so the hardcoded-INK scene title has
         # something to sit on at the top of a bright sky card.
         SC.title_backdrop(tile, 7, col=SKY)
+        # EDGE DENSITY. Measured b01 at tile_std 3.46 with 40% of tiles painted:
+        # the mountain rim is a single 5px line, the sky above it is one fill
+        # and the playa below it is another, so a 24px tile in either the sky
+        # or the foreground holds a gradient and nothing else. The desert is
+        # the LARGEST thing in this chapter and it was the emptiest. Four bands
+        # of contour, a scrub scatter and three boulders put structure into the
+        # ground the hook is about ("a place with no name" -- the emptiness is
+        # the subject, so the ground has to be real ground, not a blank field).
+        _contour_bands(d, HZ + 24, HZ + 300, (216, 210, 194), 8, n=6, lw=5)
+        _contour_bands(d, HZ + 96, HZ + 360, (198, 190, 170), 20, n=5, lw=4)
+        _tufts(d, HZ + 66, H + 30, (184, 174, 154), 33, n=44)
+        _boulder(d, 232, HZ + 214, 44, (208, 200, 182), 71)
+        _boulder(d, 520, HZ + 330, 62, (194, 186, 168), 73)
+        # The third boulder sat at x=1096, which is inside the presenter's
+        # footprint (he stands at x=1040 and reaches +-118 at height 440), so
+        # the rock drew over his shoes. It lives at 700 now, clear of him and
+        # of the boards that arrive at x<=716 from b07.
+        _boulder(d, 700, HZ + 252, 54, (204, 196, 178), 75)
+        # Two long scrub-throw ridges running off the side edges: the ground
+        # admits it continues past the picture.
+        _contour_bands(d, HZ + 330, H + 20, (186, 176, 156), 45, n=3, lw=5,
+                       wobble=0.9)
+        # And the SKY. It is the largest single area of the day cards and it was
+        # one fill; five wide, shallow outlined strata give it high cloud without
+        # the scratch the wire-like failures came from.
+        _cloud_bands(d, 96, HZ - 60, 120, n=5)
     els.append(SC.stage(clock, 1, a_backdrop, j=5))
 
     # ---- STAGE A2  b05-b07  the same place, seen from down on the ground -- #
@@ -298,6 +658,30 @@ def build():
         _playa(tile, 13, sky=SKY, ground=LAKEBED, hz=190)
         _mountain_strip(d, 190, 14, h=44)
         SC.title_backdrop(tile, 15, col=SKY)
+        # EDGE DENSITY. b05 measured 3.11, and this is the WORST frame in the
+        # chapter to be flat: the camera is supposed to be down on the lake bed,
+        # so 530 of 720 rows are the ground and every one of them was a single
+        # smooth fill. It is also the beat whose whole sentence is "it sits on a
+        # dry lake bed", so the one thing the card must show in detail is the
+        # thing that was blank.
+        #
+        # TWO PASSES WERE WRONG HERE. The first used `_contour_bands` -- near-
+        # horizontal parallel strata -- which measured 5.72 and read as WOOD
+        # GRAIN, not as ground: the eye wants a dry lake to be a net of
+        # irregular cracked plates, and parallel lines say timber. The second
+        # uses `_crust`, a jittered polygon net whose seams run in many
+        # directions. The near rows are wide cells and the far rows are narrow,
+        # which is what perspective on a flat crust actually looks like.
+        _crust(d, 228, H + 10, (196, 172, 130), 16, rows=7, lw=5)
+        _crust(d, 300, H + 10, (152, 122, 86), 44, rows=5, lw=4, jitter=0.8,
+               cross=0.8)
+        _tufts(d, 250, H - 20, (162, 138, 104), 52, n=46)
+        _boulder(d, 200, 372, 30, (200, 178, 138), 91)
+        _boulder(d, 900, 486, 42, (192, 168, 128), 93)
+        # the third sat at y=300, which is ABOVE the 190 horizon, so it floated
+        # in the sky. Everything on the ground plane is below hz.
+        _boulder(d, 1196, 402, 34, (198, 176, 136), 95)
+        _cloud_bands(d, 92, 176, 110, n=4)
     els.append(SC.stage(clock, 5, a2_backdrop, j=8))
 
     def a_fence(tile, fw, fh):
@@ -468,6 +852,20 @@ def build():
         PA.hand_stroke(d, pts, INK, 5, closed=False, seed=206, wavelength=140.0)
         # a lit course for the INK scene title against the dusk sky
         SC.title_backdrop(tile, 207, col=(126, 110, 100))
+        # EDGE DENSITY. Stage B already ranks highest in the chapter (b14 at
+        # 11.38) because it stacks two fences and a crack net, but its BACKDROP
+        # is still what b08-b11 sit on and it measured 4.18 / 6.40 / 7.23 --
+        # under the bar. The dusk ground is one fill from y=250 to 720 and the
+        # rim is two polys. Dusk-valued crust and a cloud deck in dusk values
+        # (same `_crust` read as stage A2 -- the playa is the same dry lake,
+        # only the light is different).
+        _crust(d, 292, H + 10, (134, 102, 80), 220, rows=7, lw=4)
+        _crust(d, 350, H + 10, (98, 72, 58), 244, rows=5, lw=4, jitter=0.8,
+               cross=0.8)
+        _tufts(d, 330, H - 10, (104, 78, 62), 256, n=34)
+        _boulder(d, 386, 596, 40, (160, 126, 96), 271)
+        _boulder(d, 1042, 662, 52, (150, 116, 88), 273)
+        _cloud_bands(d, 96, 244, 280, n=4, col=(126, 106, 98))
     els.append(SC.stage(clock, 8, b_backdrop, j=15))
 
     def b_crust(tile, fw, fh):
@@ -655,6 +1053,7 @@ def build():
     # b19 onset alone swapped 48% of the picture.                             #
     # ===================================================================== #
     def c_backdrop(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
         PA.fill_rect(tile, [0, 0, W, H], NIGHT, seed=101, value=0.12)
         PA.fill_rect(tile, [0, HZ - 6, W, H], NIGHT_G, seed=102, value=0.12)
         PA.paper_overlay(tile, seed=103)
@@ -667,10 +1066,77 @@ def build():
                         HZ - 44 * (0.30 + 0.70 * abs(math.sin(u * 9.1 + 0.6)))))
         pts.append((W + 40, HZ))
         PA.fill_poly(tile, pts, (44, 46, 58), seed=104, value=0.05)
+
+        # EDGE DENSITY. Stage C measured 3.04-3.27 across all five of its beats,
+        # the lowest run in the chapter, and the reason is structural rather
+        # than cosmetic: the register is NIGHT 28/NIGHT_G 18, i.e. a 10-level
+        # pair, so almost the entire frame is a near-black field. There is no
+        # value to work with, and the stage had one jet (210px) and one 9px red
+        # line on it. Everything below is added at NIGHT-VALUED contrast --
+        # never bright paint, which would read as daylight and break the
+        # register the stage exists to hold.
+        #
+        # A star field is the primary read: a night sky with nothing in it is
+        # the single largest void in the film, and this is a chapter about a
+        # place people cannot see, so a sky with stars in it says exactly that.
+        _stars(d, -20, 96, W + 20, HZ - 20, 300, n=64)
+        _stars_spark(d, 214, 168, 380)
+        _stars_spark(d, 1086, 132, 384)
+        _stars_spark(d, 792, 262, 388)
+        # A thin cloud deck catching the last light, so the sky is layered
+        # rather than a gradient between the title band and the rim.
+        _cloud_bands(d, 120, HZ - 40, 390, n=4, col=(48, 52, 70))
+        # The rim gets a second range behind it in near-black, and the ground
+        # gets a night crust so the lower half is not one field.
+        far = [(-40, HZ)]
+        for i in range(21):
+            u = i / 20.0
+            far.append((-40 + (W + 80) * u,
+                        HZ - 26 * (0.3 + 0.7 * abs(math.sin(u * 6.1 + 2.4)))))
+        far.append((W + 40, HZ))
+        PA.fill_poly(tile, far, (36, 38, 50), seed=392, value=0.05)
+        # The ground detail at NIGHT has to stay within a few levels of NIGHT_G. Both
+        # passes were originally 20-36 levels lighter, which on a register this
+        # dark means the crust was the highest-contrast thing in the lower half
+        # and the eye read a wireframe web strung over the playa rather than the
+        # playa itself. A night crust is a suggestion: the cell seams at 8-14
+        # levels over the ground, and almost no interior diagonals.
+        _crust(d, HZ + 20, H + 10, (40, 38, 50), 396, rows=6, lw=4, cross=0.30)
+        _crust(d, HZ + 120, H + 10, (34, 32, 44), 398, rows=4, lw=4, cross=0.22)
+
+        # THE REAL EDGE DENSITY AT NIGHT IS LIGHT, NOT CRACKS. With the crust
+        # softened to a suggestion, stage C fell back under the bar (b15/b16/
+        # b18 at 6.8-7.4), because the register is NIGHT 28 / NIGHT_G 18 -- ten
+        # levels -- and there is simply no value to find detail in. The answer
+        # is to put LIT STRUCTURE in the frame, which is both what a restricted
+        # airfield looks like at night and what gives a dark frame its local
+        # contrast honestly: a lit hangar bar with panel joints and a lit strip
+        # door, four apron lamp pools on the ground, and the mast-and-head
+        # silhouette of the fence line along the rim. Bright marks on black are
+        # high contrast; the playa under them stays a playa.
+        _bunker(d, 120, HZ + 96, 250, 118, 410)
+        for i in range(4):
+            lx = 200 + i * 292
+            d.ellipse([lx - 46, HZ + 150, lx + 46, HZ + 190],
+                      fill=(52, 54, 72), outline=(70, 72, 92), width=3)
+        _fence_run_off_edge(d, HZ + 34, 62, 414, (74, 78, 98), n_posts=8)
+        _tower(d, 1128, HZ + 40, 96, 416)
+        _camera_pole(d, 906, HZ + 52, 82, 418, lens_dir=1)
+        _stars_spark(d, 402, 214, 420)
+        _stars_spark(d, 986, 172, 424)
+        _tufts(d, HZ + 60, H - 10, (40, 36, 46), 400, n=26)
+        _boulder(d, 268, 566, 40, (48, 46, 56), 402)
+        _boulder(d, 1088, 640, 54, (44, 42, 52), 404)
     els.append(SC.stage(clock, 15, c_backdrop, j=20))
 
     def c_jet(tile, fw, fh):
-        _jet(ImageDraw.Draw(tile), 560, 190, 210, 80)
+        # SIZED UP from 210 to 300. The frame-fill canon says a subject under a
+        # third of the frame is a defect, and the jet was the ONLY subject on
+        # the whole stage -- 210px on a 1280 frame is 16% of the width, which is
+        # a model-airplane read. At 300 it is 23% and sits under the red
+        # ceiling it is about to violate. The red X box and the pilot's reach
+        # are sized to it below.
+        _jet(ImageDraw.Draw(tile), 600, 196, 300, 108)
     els.append(SC.accrue(clock, 15, 20, c_jet, kind='shape', eid='c_jet',
                          motion=SC.enter(clock, 15, dx=210, dy=0, dur=ARRIVE)))
     # MOVING (small): the aircraft flies in from the right and stays. At 210px
@@ -698,18 +1164,30 @@ def build():
         # the jet and added the presenter, and it REPLACED the original jet --
         # a second aircraft plus a red X plus a full-body character, all landing
         # and leaving at once. Here the jet is the persistent one and this is
-        # 216x70px of ink on top of it.
-        D.draw_red_x(tile, [452, 156, 668, 226], color=RED, width=9)
+        # ink on top of it.
+        #
+        # RESIZED to the jet: the aircraft went from 210 to 300 and its
+        # fuselage now spans x 384..816 with the red ceiling line at y=232
+        # crossing it. The old X box [452,156,668,226] sat on the OLD fuselage
+        # and stopped short of both ends, so at the new size it would have been
+        # a mark floating on the left half of the aircraft. The box now straddles
+        # the whole fuselage.
+        D.draw_red_x(tile, [400, 150, 800, 240], color=RED, width=9)
     els.append(SC.layer(clock, 17, c_x, j=18, kind='shape', eid='c_x'))
 
     def c_pilot(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         # "Pilots noticed the rule before it was admitted." He points at the
-        # line he has just been shown. At height 430 a pointing reach is
-        # -115/+211, so he occupies x 135..461 -- clear of the jet at 452..668.
-        # He LEAVES at b18: the haloes are the next beat's subject and he has
-        # done his job.
-        SC.fullbody(d, 250, 700, 430, pose='pointing', expression='shock',
+        # line he has just been shown. He LEAVES at b18: the haloes are the next
+        # beat's subject and he has done his job.
+        #
+        # MOVED LEFT and SLIGHTLY SMALLER because the jet grew: at x=250/height
+        # 430 a pointing reach put his hand at x=461, and the enlarged aircraft
+        # now starts at x=384, so his outstretched arm drew across the
+        # fuselage. At x=186/height 390 his reach is 96..368 -- clear of the
+        # jet's left edge by 16px, and he is cropped by nothing, standing on the
+        # near crust.
+        SC.fullbody(d, 186, 700, 390, pose='a51_pointing_e', expression='shock',
                     seed=100, ink=(236, 228, 208))
     els.append(SC.layer(clock, 17, c_pilot, j=18, kind='character',
                         eid='c_pilot',

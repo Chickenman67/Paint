@@ -36,6 +36,10 @@ import v2draw as D
 # The v1 baseline: art primitives + palette, reused not copied.
 import cheyenne_scene as CH
 
+# The density kit. See cheyenne_structure's docstring for why the composition
+# (not the paint constants) is the lever for this chapter's flat beats.
+import cheyenne_structure as KS
+
 SEG = CH.SEG
 TITLE = CH.TITLE
 BEATS = CH.BEATS
@@ -83,6 +87,47 @@ ARRIVE = 0.5
 # deliberate move; longer and it becomes the picture changing every sample,
 # which is the churn this rebuild exists to remove.
 
+# ---------------------------------------------------------------------------
+# DENSITY HELPERS.
+# WHY THESE EXIST. A per-beat pigment measurement on rendered pixels called 36
+# of 38 beats here "flat" (median 24px-tile luma std 2.3-7.5 against a bar of
+# 8.0), and the label-blind critic named the same gap on five of six clean
+# losses: flat vector, under-filled. Inspected at full resolution the frames are
+# not under-painted -- they are UNDER-BUILT. A big smooth field with five
+# outlines in it is exactly what the metric calls flat, and v2paint cannot fix
+# it: the gate's own selftest scores a PA.fill_rect + paper_overlay frame at
+# 3.29, below the bar. What clears the bar is structure -- many small outlined
+# shapes so a 24px sample tile usually straddles an edge.
+#
+# So these helpers add texture and detail to a region WITHOUT repainting it.
+# They draw on top of whatever is already there, which keeps every stage
+# change well under the 30% reframe budget the cadence gate enforces -- a stage
+# wrapper is not a stage conversion, and this file has to stay a stage.
+#
+# Seeds are explicit integers and nothing reads the clock or global random
+# state, so render_frame(scene, t) stays a pure function of (scene, t)
+# (scene_common invariant 5).
+# ---------------------------------------------------------------------------
+
+def rock_face(tile, poly, seed, n=380, col=(152, 150, 154), rmin=14, rmax=42):
+    """Fractured-rock texture inside a mountain/rock silhouette."""
+    KS.shards_in_poly(ImageDraw.Draw(tile), poly, seed=seed, n=n, col=col,
+                      rmin=rmin, rmax=rmax)
+
+
+def talus(tile, x0, x1, y0, y1, seed, n=30):
+    """Scree + broken blocks along the foot of a slope or the frame bottom."""
+    d = ImageDraw.Draw(tile)
+    KS.scree(d, x0, x1, y0, y1, seed=seed, n=n, col=(140, 138, 142))
+    KS.rubble(d, x0, x1, y1 + 6, seed=seed + 1, n=max(8, n // 2))
+
+
+def bedding(tile, x0, x1, y0, y1, seed, n=18, col=(150, 146, 150),
+            ink=(74, 70, 74), wob=13.0):
+    """Sedimentary bedding across a rock or ground band."""
+    KS.strata(ImageDraw.Draw(tile), x0, x1, y0, y1, seed=seed, n=n, col=col,
+              ink=ink, wob=wob)
+
 def build():
     clock = SC.BeatClock(BEATS)
     els = []
@@ -116,7 +161,17 @@ def build():
     def a_site(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _sky(tile, 5, ground=(170, 170, 174))
-        _massif(d, 640, HZ + 30, 900, 112, 6)
+        mp = _massif(d, 640, HZ + 30, 900, 112, 6)
+        # FRAME-FILL + EDGE DENSITY. Two enormous smooth fills used to hold the
+        # whole stage: the granite massif and the grey ground plane below it.
+        # Together they were ~90% of the picture carrying five black strokes,
+        # which is what "flat and under-filled" means. The massif silhouette is
+        # kept (it is the subject) and now CROPS past both side edges, and both
+        # masses get real surface: fractured rock inside the silhouette, bedding
+        # and talus across the ground.
+        rock_face(tile, mp, seed=5001, n=430)
+        bedding(tile, -30, W + 30, HZ + 26, H + 20, seed=5002, n=15)
+        talus(tile, -20, W + 20, HZ + 60, H - 4, seed=5003, n=34)
     els.append(SC.stage(clock, 1, a_site, j=7))
 
     def a_scratch(tile, fw, fh):

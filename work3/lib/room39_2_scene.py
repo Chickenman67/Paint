@@ -141,6 +141,281 @@ _switch_bank = R39._switch_bank
 _keypad = R39._keypad
 _figure = R39._figure
 
+# ---------------------------------------------------------------------------
+# STRUCTURE PRIMITIVES  (the flat-vector fix)
+#
+# WHY THESE EXIST HERE. The label-blind critic scored this film 5/18 and across
+# five of six clean losses named ONE gap: our frames read as flat vector and
+# under-filled. A per-beat pigment measurement put 34 of this chapter's 37 beats
+# under the paint threshold, worst 2.11 against an eye-calibrated bar of 8.0.
+#
+# Looking at the rendered frames says what the number cannot: the "flat" is not
+# the paint engine (PA.fill_* already lays down value drift + brush banding) and
+# it is not missing tooth. It is COMPOSITION. A chamber interior is one smooth
+# 900x300 trapezoid in DARK; a corridor is eight thin lines on a smooth field; a
+# street is three grey bands under a blank sky. Few large smooth shapes, with
+# dead space around them, is exactly what "flat" means in this project's
+# vocabulary.
+#
+# The reference frames that score do so by STACKING MANY SMALL OUTLINED SHAPES
+# -- fortknox's gold wall scores because it is ~40 little slabs, not because it
+# is noisier. So the lever is structure, not paint constants: do NOT raise
+# PA.VALUE / PAPER_GRAIN (that is the road the last two rounds walked, and it
+# moves the number without moving the picture), and do NOT rewrite v2paint.
+#
+# Every helper here is a small outlined component that stacks. They all take an
+# explicit integer seed so a re-render is byte-identical.
+# ---------------------------------------------------------------------------
+
+def _slab_floor(tile, d, y_far, y_near, half_far, half_near, vpx, seed,
+                col=CONCRETE_D, col_lit=CONCRETE, joint=STEEL_D, n=7,
+                slabs=4, w=4, x_off=0.0):
+    """A floor of slabs in one-point perspective, courses deepening forward.
+
+    This is the single highest-yield primitive here: it converts a smooth
+    trapezoid floor into n courses x `slabs` outlined quads, and because the
+    courses get TALLER as they come forward it reads as depth rather than as a
+    chequered rug. Rows are value-stepped (far rows darker, near rows catching
+    the lamp) so the eye gets a light gradient as a by-product of the structure.
+
+    `half_far`/`half_near` are the floor's half-width at the far and near edges,
+    centred on `vpx` -- the vanishing point, which is also what staggers the
+    vertical joints when cols do not divide evenly.
+    """
+    img = PA.img_of(d)
+    rows = []
+    for k in range(n + 1):
+        u = (k / float(n)) ** 1.85
+        y = y_far + (y_near - y_far) * u
+        half = half_far + (half_near - half_far) * u
+        rows.append((y, half))
+    for k in range(n):
+        y0, h0 = rows[k]
+        y1, h1 = rows[k + 1]
+        if y1 - y0 < 5:
+            continue
+        # courses nearer the viewer catch more light
+        t = k / float(max(1, n - 1))
+        c = _mix(col_lit, col, t)
+        # vertical joints, staggered course to course so the pattern does not
+        # line up into columns
+        cuts = [0.0]
+        step = 1.0 / slabs
+        off = (k % 2) * step * 0.5
+        j = 0
+        while j < slabs + 1:
+            cuts.append((j * step + off) % 1.0)
+            j += 1
+        cuts = sorted(set(round(c, 4) for c in cuts if 0.0 <= c <= 1.0))
+        for a, b in zip(cuts[:-1], cuts[1:]):
+            if b - a < 0.04:
+                continue
+            q = []
+            for tt, yy, hh in ((a, y0, h0), (b, y0, h0),
+                               (b, y1, h1), (a, y1, h1)):
+                q.append((vpx + x_off - hh + 2.0 * hh * tt, yy))
+            PA.fill_poly(img, q, c, seed=seed + k * 31 + int(a * 97),
+                         value=0.08)
+            PA.hand_stroke(d, q, joint, w, closed=True,
+                           seed=seed + k * 37 + int(a * 89),
+                           wavelength=110.0, vary=0.35)
+    # the near lip of the floor, a lit nosing so the ground plane terminates
+    PA.hand_stroke(d, [(vpx + x_off - half_near, y_near),
+                       (vpx + x_off + half_near, y_near)], INK, 6,
+                   closed=False, seed=seed + 7, wavelength=180.0)
+
+
+def _mix(c0, c1, t):
+    """Blend two RGB tuples; t=0 -> c0. Deterministic, no rounding drift."""
+    t = max(0.0, min(1.0, t))
+    return (int(round(c0[0] + (c1[0] - c0[0]) * t)),
+            int(round(c0[1] + (c1[1] - c0[1]) * t)),
+            int(round(c0[2] + (c1[2] - c0[2]) * t)))
+
+
+def _rib_wall(tile, d, x0, x1, y_top, y_bot, n, seed, col=CONCRETE,
+              col_dk=STEEL_D, w=5, taper=0.0, y_top_far=None, rivet=True):
+    """A run of vertical structural ribs -- columns, wall studs, pilasters.
+
+    Each rib is a three-face block (lit face, front, shadowed side) rather than a
+    rectangle, because a flat bar reads as a stripe and a three-face block reads
+    as a thing with an edge. `taper` shrinks the ribs toward the vanishing
+    point, which is what turns a flat wall into a receding one.
+    """
+    img = PA.img_of(d)
+    step = (x1 - x0) / float(n)
+    for k in range(n):
+        cx = x0 + step * (k + 0.5)
+        bw = step * (0.42 - 0.16 * taper)
+        if bw < 3:
+            continue
+        ytf = y_top if y_top_far is None else (y_top + (y_top_far - y_top) * taper)
+        ybf = y_bot - (y_bot - ytf) * 0.18 * taper
+        f = [(cx - bw, ytf), (cx + bw, ytf), (cx + bw * 0.86, ybf),
+             (cx - bw * 0.86, ybf)]
+        PA.fill_poly(img, f, col, seed=seed + k * 11, value=0.09)
+        PA.hand_stroke(d, f, INK, w, closed=True, seed=seed + k * 13,
+                       wavelength=130.0, vary=0.38)
+        # the shadowed return face, offset toward the far side
+        off = bw * 0.55
+        s = [(cx + bw, ytf), (cx + bw + off, ytf + 4),
+             (cx + bw * 0.86 + off, ybf), (cx + bw * 0.86, ybf)]
+        PA.fill_poly(img, s, col_dk, seed=seed + k * 17, value=0.07)
+        PA.hand_stroke(d, [(cx + bw, ytf), (cx + bw * 0.86, ybf)], INK, 3,
+                       closed=False, seed=seed + k * 19, wavelength=110.0,
+                       vary=0.4)
+        if rivet:
+            _rivet_row(d, cx - bw * 0.5, ytf + 12, cx - bw * 0.5,
+                       ytf + 12, 1, seed + k * 23, colour=col_dk, r=4)
+
+
+def _panel_wall(tile, d, x0, y0, x1, y1, cols, rows, seed, col,
+                col_seam=STEEL_D, w=4, rivet=True, seam=(0, 0, 0)):
+    """A wall of bolted panels -- the surface that says "built", not "painted".
+
+    Seams alone are nearly invisible at ship size; seams PLUS a rivet at each
+    seam crossing is what reads as a fabricated wall at 1280x720. `seam` lets a
+    caller pass a second colour to every other course so the courses separate.
+    """
+    img = PA.img_of(d)
+    for r in range(rows):
+        ya = y0 + (y1 - y0) * r / float(rows)
+        yb = y0 + (y1 - y0) * (r + 1) / float(rows)
+        for c in range(cols):
+            xa = x0 + (x1 - x0) * c / float(cols)
+            xb = x0 + (x1 - x0) * (c + 1) / float(cols)
+            q = [(xa, ya), (xb, ya), (xb, yb), (xa, yb)]
+            cc = col if (r + c) % 2 == 0 else _mix(col, seam, 0.30)
+            PA.fill_poly(img, q, cc, seed=seed + r * 53 + c * 7, value=0.08)
+            PA.hand_stroke(d, q, INK, w, closed=True,
+                           seed=seed + r * 59 + c * 11, wavelength=120.0,
+                           vary=0.35)
+            if rivet and (c + r) % 2 == 0:
+                for k, (px, py) in enumerate(((xa + 9, ya + 9),
+                                               (xb - 9, ya + 9),
+                                               (xa + 9, yb - 9),
+                                               (xb - 9, yb - 9))):
+                    # int(k) in the seed: px is a float and v2paint XORs the
+                    # seed, so a float seed is a TypeError, not a wobble.
+                    PA.fill_poly(img, PA.ellipse_pts(px, py, 4, 4, n=8),
+                                 col_seam, seed=seed + r * 61 + c * 13 + k,
+                                 value=0.05)
+
+
+def _brick_bond(d, x0, y0, x1, y1, seed, col=BRICK, col_m=(140, 106, 90),
+                mortar=(176, 176, 172), bw=92, bh=34, w=3):
+    """A running-bond brick wall: courses of offset bricks with mortar lines.
+
+    The old f_wall drew NINE full-width horizontal lines on one flat field --
+    nine strokes across 1280px of one colour. A bond gives ~8 courses x ~14
+    bricks of individually valued brick, which is the fortknox density the
+    gold-slab frame gets from its bullion, for the price of one loop.
+    """
+    img = PA.img_of(d)
+    row = 0
+    y = y0
+    while y < y1:
+        yb = min(y + bh, y1)
+        off = (row % 2) * (bw * 0.5)
+        x = x0 - off - bw
+        k = 0
+        while x < x1:
+            xa = max(x, x0 - 2)
+            xb = min(x + bw - 4, x1 + 2)
+            if xb - xa > 6:
+                c = _mix(col, col_m, ((row * 7 + k * 13) % 5) / 4.0)
+                q = [(xa, y + 2), (xb, y + 2), (xb, yb - 2), (xa, yb - 2)]
+                PA.fill_poly(img, q, c, seed=seed + row * 71 + k * 17,
+                             value=0.10)
+                PA.hand_stroke(d, q, mortar, w, closed=True,
+                               seed=seed + row * 73 + k * 19,
+                               wavelength=90.0, vary=0.4)
+            x += bw
+            k += 1
+        y += bh
+        row += 1
+
+
+def _crate_stack(tile, d, x0, base_y, seed, col=(122, 106, 82),
+                 col_dk=(94, 80, 60), n=3, w_=104, h_=62, gap=6, lid=True):
+    """A short stack of banded crates -- furniture for a chamber floor.
+
+    Chamber interiors in this chapter were empty because nothing was ever put
+    IN them. A crate stack is the cheapest honest way to say 'this room is
+    used', and it stacks three outlined boxes per stack.
+    """
+    img = PA.img_of(d)
+    for k in range(n):
+        y1 = base_y - k * (h_ + gap)
+        y0 = y1 - h_
+        xa = x0 + (k % 2) * 10
+        xb = xa + w_
+        q = [(xa, y0), (xb, y0), (xb, y1), (xa, y1)]
+        PA.fill_poly(img, q, col if k % 2 == 0 else col_dk, seed=seed + k * 9,
+                     value=0.09)
+        PA.hand_stroke(d, q, INK, 5, closed=True, seed=seed + k * 11,
+                       wavelength=110.0, vary=0.38)
+        # the banding strap across the lid
+        PA.hand_stroke(d, [(xa + 6, y0 + h_ * 0.34), (xb - 6, y0 + h_ * 0.34)],
+                       col_dk, 7, closed=False, seed=seed + k * 13,
+                       wavelength=80.0, vary=0.4)
+        if lid:
+            PA.hand_stroke(d, [(xa + 6, y0 + 9), (xb - 6, y0 + 9)], INK, 3,
+                           closed=False, seed=seed + k * 15, wavelength=70.0)
+
+
+def _cable_tray(d, pts, seed, col=STEEL_D, w=7, rungs=9, sag=0.0):
+    """A cable tray with visible rungs, run along a wall or ceiling.
+
+    Horizontal runs are the cheapest way to break a long smooth band: a tray
+    crossing the chamber at two heights reads as services, and its rungs are
+    ~9 more small outlined shapes for almost no code.
+    """
+    img = PA.img_of(d)
+    PA.hand_stroke(d, pts, INK, w + 4, closed=False, seed=seed,
+                   wavelength=150.0, vary=0.3)
+    PA.hand_stroke(d, pts, col, w, closed=False, seed=seed + 1,
+                   wavelength=150.0, vary=0.35)
+    (x0, y0), (x1, y1) = pts[0], pts[-1]
+    for k in range(1, rungs):
+        t = k / float(rungs)
+        x = x0 + (x1 - x0) * t
+        y = y0 + (y1 - y0) * t + sag * math.sin(math.pi * t)
+        PA.hand_stroke(d, [(x, y - 9), (x, y + 9)], col, 4, closed=False,
+                       seed=seed + k * 5, wavelength=50.0, vary=0.4)
+
+
+def _window_grid(d, x0, y0, x1, y1, cols, rows, seed, col=(46, 52, 66),
+                 frame=INK, lit_col=None, lit_every=4, w=4):
+    """A facade of windows -- the thing that makes a flat block a BUILDING.
+
+    Stage E's street had a blank 300px sky band with four trees in front of it.
+    Every window is a small outlined rect and every lit window is the only
+    warm note in a cold register, so this both densifies and lights.
+    """
+    img = PA.img_of(d)
+    cw = (x1 - x0) / float(cols)
+    chh = (y1 - y0) / float(rows)
+    k = 0
+    for r in range(rows):
+        for c in range(cols):
+            xa = x0 + cw * c + cw * 0.24
+            xb = x0 + cw * (c + 1) - cw * 0.24
+            ya = y0 + chh * r + chh * 0.22
+            yb = y0 + chh * (r + 1) - chh * 0.22
+            lit = (k % lit_every == 0)
+            cc = lit_col if (lit and lit_col) else col
+            q = [(xa, ya), (xb, ya), (xb, yb), (xa, yb)]
+            PA.fill_poly(img, q, cc, seed=seed + k * 7, value=0.07)
+            PA.hand_stroke(d, q, frame, w, closed=True, seed=seed + k * 11,
+                           wavelength=80.0, vary=0.35)
+            # a mullion, so each window is two panes rather than one tile
+            PA.hand_stroke(d, [(xa + (xb - xa) * 0.5, ya),
+                               (xa + (xb - xa) * 0.5, yb)], frame, 3,
+                           closed=False, seed=seed + k * 13, wavelength=60.0,
+                           vary=0.4)
+            k += 1
+
 # The arrival duration used by every moving element. 0.45-0.55s reads as a
 # deliberate move; longer and it becomes the picture changing every sample,
 # which is the defect this whole rebuild exists to remove.
@@ -219,6 +494,24 @@ def build():
                      value=0.08)
         PA.fill_poly(PA.img_of(d), [(300, 458), (450, 458), (482, 504),
                                     (268, 504)], LAMP, seed=182, value=0.05)
+        # ---- THE CHAMBER INTERIOR (the flat-vector fix) -------------------- #
+        # Everything below used to be one 900x300 DARK trapezoid with a tan
+        # lamp cone on it and nothing else -- a large smooth shape with dead
+        # space, which is exactly the composition the critic named. The chamber
+        # is the SUBJECT of stage A, so it now gets built: a ribbed back wall,
+        # a slab floor in perspective, a cable tray and two crate stacks. Each
+        # is a stack of small outlined shapes, and together they fill the lower
+        # half of the frame with local detail instead of one void. All seeded,
+        # all persistent -- they accrue with the stage, so b01-b06 gain this.
+        _rib_wall(tile, d, 300, 1180, 402, 604, 7, 300, col=(84, 88, 98),
+                  col_dk=(50, 53, 61), w=5, taper=0.10, y_top_far=396)
+        _slab_floor(tile, d, 604, 720, 430, 560, 700, 320, n=6, slabs=5,
+                    col=(62, 66, 76), col_lit=(92, 96, 106), joint=(44, 47, 55),
+                    w=4)
+        _cable_tray(d, [(318, 470), (1170, 458)], 340, col=(88, 92, 102),
+                    w=7, rungs=11, sag=10)
+        _crate_stack(tile, d, 344, 616, 360, n=3, w_=104, h_=58)
+        _crate_stack(tile, d, 1006, 610, 380, n=2, w_=96, h_=54)
         # NO in-art label here. v1 printed "under the park" at (660,384) on
         # every frame of this stage, and the b01 and b06 captions both say the
         # same thing -- three copies of one fact. The caption carries it once.
@@ -696,11 +989,80 @@ def build():
         PA.fill_poly(PA.img_of(d), room, (58, 60, 70), seed=702, value=0.07)
         PA.hand_stroke(d, [(-40, 210), (760, 190)], (86, 88, 98), 6,
                        closed=False, seed=703, wavelength=200.0)
+        # ---- ROOM STRUCTURE (the flat-vector fix) -------------------------- #
+        # This stage is the darkest in the chapter and it measured 2.11 -- the
+        # worst frame in the film. The cause was not darkness: it was that the
+        # darkness was EMPTY. Two thirds of the frame were one smooth fill with
+        # nothing in it. Darkness stays the subject; it just stops being a void.
+        # Every value below sits within a few steps of its ground so the frame
+        # still reads as unlit -- the structure is legibility at low contrast,
+        # not a second light source.
+        #
+        # Back wall: panel courses + rivet columns, in a value only ~8 up off
+        # the fill. Enough edge to break the plane, not enough to lift it.
+        _panel_wall(tile, d, -40, 232, 452, 592, 6, 5, 760, col=(68, 70, 80),
+                    col_seam=(44, 46, 54), w=3, seam=(86, 88, 98))
+        # Floor: courses running away from the viewer toward the console, each
+        # stepping up in value so the plane reads as a floor and not a wedge.
+        # y_near is H (720), not the 596 wall foot: the old floor stopped at the
+        # wall line and left a 124px dead band across the bottom of the frame,
+        # which is 17% of the picture doing nothing.
+        _slab_floor(tile, d, 470, H, 400, 560, 640, 790, n=7, slabs=6,
+                    col=(64, 66, 76), col_lit=(88, 90, 100), joint=(40, 42, 50),
+                    w=3, x_off=0.0)
+        # Services down the left wall: a pipe run and a cable tray, the two
+        # things that are always in a real plant room and always missing here.
+        PA.hand_stroke(d, [(38, 246), (38, 592)], (86, 88, 100), 9,
+                       closed=False, seed=764, wavelength=150.0)
+        PA.hand_stroke(d, [(74, 252), (74, 592)], (72, 74, 86), 6,
+                       closed=False, seed=765, wavelength=150.0)
+        for _i, _y in enumerate((272, 330, 388, 446, 504, 562)):
+            PA.fill_rect(PA.img_of(d), [30, _y - 6, 82, _y + 6],
+                         (100, 102, 114), seed=766 + _i, value=0.07)
+        _cable_tray(d, [(96, 262), (470, 250)], 772, col=(74, 76, 88), w=6,
+                    rungs=8, sag=7)
+        # A crate + drum pair in the near-left dark, cropped by the frame edge.
+        # Dead space is what made this frame flat; something has to sit in it.
+        _crate_stack(tile, d, 96, 594, 780, n=2, w_=96, h_=54)
+        # Ceiling services across the top band: two downstand beams and a duct
+        # run. Rows 10-73 belong to TITLE_BACKDROP, so this starts at row 78 and
+        # the band above it stays uniform -- memory
+        # verify-a-remedy-does-not-trip-the-gate-that-flags-it, the backdrop's
+        # own seam is what the intrusion gate catches.
+        PA.fill_rect(PA.img_of(d), [0, 78, W, 128], (40, 42, 50), seed=790,
+                     value=0.06)
+        for _i, _bx in enumerate((0, 300, 640, 980, 1240)):
+            PA.fill_rect(PA.img_of(d), [_bx, 128, _bx + 62, 176],
+                         (58, 60, 70), seed=792 + _i, value=0.07)
+            PA.hand_stroke(d, [(_bx, 128), (_bx + 62, 128)], (96, 98, 110), 4,
+                           closed=False, seed=796 + _i, wavelength=70.0)
+        _cable_tray(d, [(-20, 92), (1300, 86)], 798, col=(66, 68, 80), w=6,
+                    rungs=14, sag=6)
+        # Duct + hangers down the upper right, the dark quarter of the frame.
+        PA.fill_rect(PA.img_of(d), [880, 176, 1280, 232], (52, 54, 64),
+                     seed=802, value=0.07)
+        PA.hand_stroke(d, [(880, 176), (1280, 176)], (84, 86, 98), 5,
+                       closed=False, seed=803, wavelength=110.0)
+        for _i, _hx in enumerate((930, 1050, 1170, 1270)):
+            PA.hand_stroke(d, [(_hx, 128), (_hx, 176)], (78, 80, 92), 4,
+                           closed=False, seed=806 + _i, wavelength=60.0)
+        # The right-hand wall, cropped by the frame edge: a doorway jamb with a
+        # recessed leaf and its own rivets. The presenter stands here from b17
+        # on, so this is what he is standing in front of -- before it he was a
+        # cream figure on an unmodulated field.
+        _rib_wall(tile, d, 900, 1280, 200, 590, 4, 810, col=(64, 66, 76),
+                  col_dk=(42, 44, 52), w=5, taper=0.06, y_top_far=196)
+        PA.fill_rect(PA.img_of(d), [1010, 250, 1180, 590], (38, 40, 48),
+                     seed=814, value=0.06)
+        PA.hand_stroke(d, [(1010, 250), (1180, 250), (1180, 590), (1010, 590)],
+                       (92, 94, 106), 6, closed=True, seed=815, wavelength=120.0)
+        _rivet_row(d, 1010, 1018, 1180, 272, 8, seed=816)
+        _rivet_row(d, 1010, 1018, 1180, 568, 6, seed=817)
         # ONE lamp cone. Two cones were drawn first and they flattened the
         # room into a lit box; a single cone leaves the dark legible.
         PA.fill_poly(PA.img_of(d),
                      [(520, 104), (700, 104), (900, 300), (320, 300)],
-                     (206, 200, 168), seed=704, value=0.05)
+                     (176, 172, 146), seed=704, value=0.05)
         SC.title_backdrop(tile, 1521, col=(96, 98, 110))
     els.append(SC.stage(clock, 17, d_room, j=22))
 
@@ -709,7 +1071,49 @@ def build():
         # _console takes a trailing seed; omitting it silently shifted every
         # later positional arg, which is how the first pass drew the console
         # with no screen and no rivets.
-        _console(d, 610, 470, 380, 200, 710)
+        #
+        # SCALED. 380x200 in a 1280x720 frame is a prop, not a subject, and the
+        # brief's frame-fill rule says anything under a third of the frame width
+        # is a defect. 460x250 at base_y 520 puts its lit crown in the lamp cone
+        # and its foot on the near floor course, so the console is the largest
+        # object in the composition instead of one of three small grey shapes.
+        _console(d, 600, 520, 460, 250, 710)
+        # ---- CONSOLE FACE (the flat-vector fix) --------------------------- #
+        # _console draws one smooth 460x250 wedge. Scaled up it now dominates
+        # the frame, which means its flatness dominates too -- the metric went
+        # UP while the middle of the picture got worse. So articulate it the
+        # way a real desk is: a kicked plinth, three ribs across the slope, a
+        # knee recess, a louvred vent and a rivet line at each cheek.
+        _cx, _by, _cw, _ch = 600, 520, 460, 250
+        _top = _by - _ch
+        PA.fill_rect(PA.img_of(d), [_cx - _cw * 0.50, _by - 26, _cx + _cw * 0.50,
+                                     _by + 6], (56, 58, 68), seed=730,
+                     value=0.07)
+        PA.hand_stroke(d, [(_cx - _cw * 0.50, _by - 26), (_cx + _cw * 0.50,
+                                                           _by - 26)],
+                       INK, 5, closed=False, seed=731, wavelength=100.0)
+        # Knee recess: the dark notch a desk has where a person sits.
+        PA.fill_rect(PA.img_of(d), [_cx - 66, _by - 96, _cx + 66, _by - 24],
+                     (44, 46, 54), seed=732, value=0.06)
+        PA.hand_stroke(d, [(_cx - 66, _by - 96), (_cx + 66, _by - 96)], INK, 5,
+                       closed=False, seed=733, wavelength=80.0)
+        # Ribs across the slope, following its rake.
+        for _i, _u in enumerate((0.26, 0.50, 0.74)):
+            _xa = _cx - _cw * 0.40 + _cw * 0.80 * _u
+            _xb = _cx - _cw * 0.50 + _cw * 1.00 * _u
+            PA.hand_stroke(d, [(_xa, _top + 4), (_xb, _by - 30)], (72, 74, 86), 6,
+                           closed=False, seed=736 + _i, wavelength=90.0)
+            PA.hand_stroke(d, [(_xa + 7, _top + 4), (_xb + 7, _by - 30)],
+                           (122, 124, 136), 3, closed=False, seed=740 + _i,
+                           wavelength=90.0)
+        # Louvre slots on the left cheek of the slope.
+        for _i in range(4):
+            _y = _top + 54 + _i * 30
+            PA.fill_rect(PA.img_of(d), [_cx - _cw * 0.44, _y,
+                                         _cx - _cw * 0.44 + 96, _y + 12],
+                         (38, 40, 48), seed=744 + _i, value=0.05)
+        _rivet_row(d, _cx - _cw * 0.44, _top + 26, _cx + _cw * 0.44,
+                   _top + 26, 7, seed=750, r=6)
         # "said to exist" -- v1 set this in INK on this dark ground, which
         # measures 1.32:1 and is invisible. SNOW is the fix.
         D.draw_label(tile, 'said to exist', center=(610, 268), color=SNOW,
@@ -720,25 +1124,40 @@ def build():
     def d_warm(tile, fw, fh):
         # The lamp actually pooling on the console at b19. No caption: the
         # light finding the console is the sentence.
+        # Value dropped 222->186: at 222 the pool was brighter than the console
+        # it is supposed to be revealing, so the screen and the switch bank
+        # vanished into their own light. A lamp that erases its subject is the
+        # opposite of "the light finds the console".
         d = ImageDraw.Draw(tile)
         PA.fill_poly(PA.img_of(d),
                      [(520, 120), (700, 120), (860, 430), (360, 430)],
-                     (222, 214, 176), seed=710, value=0.04)
+                     (186, 180, 150), seed=710, value=0.04)
     els.append(SC.accrue(clock, 19, 22, d_warm, kind='bg'))
 
     def d_switches(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        _switch_bank(d, 275, 388, 585, 448, 586, n=5, big_at=3)
-        d.ellipse([560, 386, 580, 406], fill=RED)
+        # Bank re-spanned to sit ON the scaled console (cx 600, w 460 -> 370..830,
+        # top row y ~300). The old 380..800 overhung a 460-wide console by a
+        # pixel each side and read as a separate shelf floating in the light.
+        _switch_bank(d, 404, 352, 796, 424, 586, n=5, big_at=3)
+        d.ellipse([768, 348, 794, 374], fill=RED)
     els.append(SC.accrue(clock, 20, 22, d_switches, kind='shape',
                          motion=SC.enter(clock, 20, dx=0, dy=-46, dur=0.45)))
 
     def d_presenter_a(tile, fw, fh):
-        SC.fullbody(ImageDraw.Draw(tile), 1120, 594, 330, 'pointing',
-                    'awed', 590)
+        # CREAM on dark. The default ink is INK (24,24,28); against this room
+        # (48,50,58) that is a 1.4:1 read and he was a silhouette with a pale
+        # head, not a character. ink=(238,236,228) is the STYLE_CANON rule for
+        # the space register.
+        # x 1120 -> 1076 with height 330 -> 372: at the old x his pointing arm
+        # ran off the right edge, and memory resize-figure-check-neighbors says
+        # check the neighbours after every bump, so the taller figure is pulled
+        # back inboard to keep the whole gesture inside the frame.
+        SC.fullbody(ImageDraw.Draw(tile), 1076, 600, 372, 'pointing',
+                    'awed', 590, ink=(238, 236, 228))
     def d_presenter_b(tile, fw, fh):
-        SC.fullbody(ImageDraw.Draw(tile), 1120, 594, 330, 'pointing',
-                    'worried', 590)
+        SC.fullbody(ImageDraw.Draw(tile), 1076, 600, 372, 'pointing',
+                    'worried', 590, ink=(238, 236, 228))
     _bu, _aa, _au = SC.expr_swap(clock, 20, 'awed', 'worried', until_j=22)
     els.append(E3.E('d_presenter_a', 'character', d_presenter_a,
                     at=clock.at('b17', 0), until=_bu))
@@ -941,6 +1360,23 @@ def build():
                      value=0.07)
         PA.hand_stroke(d, [(120, 486), (1160, 486)], INK, 6, closed=False,
                        seed=1019, wavelength=200.0)
+        # ---- CHAMBER INTERIOR (the flat-vector fix) ------------------------ #
+        # The chamber was scaled up to fill the lower 60% and it stayed flat,
+        # because filling a frame with one smooth trapezoid is the defect the
+        # frame-fill rule warns about, not the cure for it. Stage D's cure
+        # applies here too, in the cold night register: rib the side walls,
+        # slab the floor, run the services. The chamber now holds the eye.
+        _rib_wall(tile, d, 60, 470, 486, 690, 5, 1020, col=(66, 70, 80),
+                  col_dk=(44, 47, 55), w=5, taper=0.08, y_top_far=482)
+        _rib_wall(tile, d, 810, 1240, 482, 690, 5, 1030, col=(66, 70, 80),
+                  col_dk=(44, 47, 55), w=5, taper=0.08, y_top_far=482)
+        _slab_floor(tile, d, 500, H, 420, 520, 640, 800, n=6, slabs=5,
+                    col=(58, 61, 71), col_lit=(84, 88, 100), joint=(38, 40, 48),
+                    w=4)
+        _cable_tray(d, [(120, 500), (1180, 494)], 1040, col=(70, 74, 86), w=7,
+                    rungs=12, sag=9)
+        _crate_stack(tile, d, 210, 660, 1050, n=2, w_=92, h_=52)
+        _crate_stack(tile, d, 940, 654, 1060, n=2, w_=88, h_=50)
     els.append(SC.stage(clock, 30, g_park_night, j=38))
 
     def g_system(tile, fw, fh):
@@ -1039,6 +1475,20 @@ def build():
         D.draw_label(tile, 'no one in decades', center=(640, 646), color=SNOW,
                      size=26)
     els.append(SC.layer(clock, 36, g_chair, j=37))
+
+    def g_presenter(tile, fw, fh):
+        # The FIRST character in this stage. b30-b37 is eight beats -- a third
+        # of the chapter and the whole night cross-section -- with no presenter
+        # at all, so every one of those frames was pure diagram. He arrives on
+        # the "no one in decades" beat, which is the emptiest line in the
+        # chapter and the one a surrogate is for.
+        # Cropped into the RIGHT so he does not sit on the chair or the 'no one
+        # in decades' label at (640,646); cream because the chamber is dark.
+        # pose 'shrug' because the line is a shrug of the room.
+        SC.fullbody(ImageDraw.Draw(tile), 1030, 660, 380, 'shrug',
+                    'deadpan', 1112, ink=(238, 236, 228))
+    els.append(SC.accrue(clock, 36, 38, g_presenter, kind='character',
+                         motion=SC.enter(clock, 36, dx=90, dy=0, dur=0.50)))
 
     def g_final_door(tile, fw, fh):
         # The finale. One door filling the frame, the way the chapter opened

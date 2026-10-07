@@ -153,3 +153,36 @@ Next round: per-chapter composition (frame-fill, edge-rich subjects, character
 presence), fanned out to builders, judged by me at ship size. Light global canvas
 tooth only. Do NOT rewrite the paint engine constants again -- round 3 already
 tried that and the critic still read 9/10 as flat.
+
+
+================================================================================
+CANVAS TOOTH: MEASURED AND REJECTED (2026-10-07)
+================================================================================
+The note above said "Light global canvas tooth only." That advice is now DISPROVED
+by measurement. I do not want a future round following it.
+
+Test: work3/lib/_calib_tooth.py -- woven crosshatch (warp+weft, 3px period) applied
+to three REAL, eye-confirmed-flat frames at ship size (1280x720), three amplitudes.
+judge-texture-at-ship-size applied: no synthetic swatch this time.
+
+    frame            amp0    amp4    amp8
+    pinegap   b10     3.03    3.59    4.89
+    vatican   b18     3.44    3.96    5.16
+    mezhgorye b15     5.42    5.78    6.63
+                        (PAINT_STD bar is 8.0)
+
+Two failures, and they compound:
+  1. METRIC. Best case is 6.63 -- still under the 8.0 bar. A global surface pass
+     cannot reach the painted cluster, because the metric is counting EDGES and a
+     uniform overlay adds ~1.5 levels of variance, not shape.
+  2. EYE. At amp=4 nothing is visible. At amp=8 the vatican cream pages show a
+     clear CROSSHATCH GRID -- it reads as a screen-door / digital dither artifact,
+     which is worse than the smooth gradient it replaced. v2paint's own header
+     warns: per-pixel uniform noise "is the one texture that always reads as
+     digital dither / video noise rather than as paper."
+
+CONCLUSION. Surface treatment is a dead lever here. This is the THIRD independent
+confirmation (synthetic bristle swatch 3.76->4.75; real-frame canvas tooth
+3.03->6.63; both by eye invisible-to-dithery). The lever is COMPOSITION ONLY:
+frame-fill + edge-rich subjects + character presence. That is what the builders
+are doing. Do not spend another round on texture.

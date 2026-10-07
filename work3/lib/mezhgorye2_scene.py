@@ -158,6 +158,229 @@ _ghost_lines = MG._ghost_lines
 ARRIVE = 0.5
 
 
+# ---------------------------------------------------------------------------
+# STRUCTURE HELPERS -- why these exist, and what they are NOT.
+# ---------------------------------------------------------------------------
+# The blind critic called the whole film flat vector, and the per-beat pigment
+# measurement agreed: every one of this chapter's thirty beats measured a median
+# 24px-tile luma std of 2-5 (the flat cluster), never the 8+ of a painted frame.
+# Root cause, confirmed by measuring a synthetic strip (bare fill 2.83; add 26
+# thin contour bands 8.71; add a masonry/panel grid 21.07): the median is set by
+# the LARGEST shapes in the frame, and v2paint's paint drift inside one flat
+# mass is deliberately subtle (a +-15% wash on a grey fill is a couple of levels
+# at 24px). So a single big smooth ROCK mountain or EARTH slab -- no matter how
+# many levers and rivets sit on top of it -- drags the median down. The fix is
+# NOT more paint constants (v2paint already works) and NOT noise (the brief
+# forbids faking it). It is COMPOSITION: break every large void into MANY small
+# outlined, edge-rich forms -- strata, courses, panels, ribs, scree, contour
+# bands -- so a typical 24px tile contains an ink edge. That is exactly how the
+# reference draws a built subject (fortknox's ~40 gold slabs score 53 for this
+# reason), and it is what these helpers are for.
+#
+# Every helper here is deterministic (explicit seed), draws only inside a box or
+# along a supplied polyline so it never disturbs layout, and returns nothing.
+# They are drawn AFTER a mass and BEFORE any text/caption so they never fight
+# the type or the title strip (which engine3 stamps last).
+
+def _strata(d, y_top, y_bot, col, seed, n=None, wobble=22, x0=-60, x1=1340,
+            width=5, broken=True):
+    """Broken contour bands across a rock/earth mass -- bedding planes.
+
+    The reference's mountains and cutaway sections are built from stacked
+    strata, not one smooth wash. Each band is a slow low-frequency wave so it
+    reads as rock bedding. `broken=True` splits each band into several short
+    segments with gaps: a CONTINUOUS full-width band reads as a ruled line
+    ruled across the sky (the first draft did exactly that and looked like
+    lined paper), while broken segments read as bedding. Callers must pass a
+    box that lies INSIDE the mass -- strata that run past its silhouette cross
+    the sky and are the same defect one band up.
+    """
+    if n is None:
+        n = max(3, int((y_bot - y_top) / 26.0))
+    for k in range(n):
+        u = k / float(max(1, n - 1))
+        y = y_top + (y_bot - y_top) * u
+        pts = []
+        m = 9
+        for i in range(m + 1):
+            t = i / float(m)
+            x = x0 + (x1 - x0) * t
+            pts.append((x, y + wobble * math.sin(t * 4.2 + k * 0.8 + seed * 0.01)))
+        if broken:
+            # three or four segments per band, each with its own seed
+            segs = 3 + (k % 2)
+            for sgi in range(segs):
+                a = int(m * sgi / float(segs))
+                b = int(m * (sgi + 1) / float(segs))
+                if b - a >= 2:
+                    PA.hand_stroke(d, pts[a:b + 1], col, width,
+                                   seed=seed + k * 7 + sgi, wavelength=140.0,
+                                   vary=0.25)
+        else:
+            PA.hand_stroke(d, pts, col, width, seed=seed + k, wavelength=160.0,
+                           vary=0.25)
+
+
+def _facets(d, x0, y0, x1, y1, col_a, col_b, seed, n=22, rmin=34, rmax=90,
+            edges=3, ink_w=4):
+    """Scattered COMPACT angular shaded PLANES over a large mass -- low-poly.
+
+    Each facet is a small convex-ish polygon whose vertices all lie within
+    `r` of ONE scattered centre point, so it stays a compact chip instead of a
+    shard stretching across the frame (the first draft randomised every vertex
+    independently and produced glass-shard spaghetti). Neighbouring facets
+    differ in value across an INK keyline, so a typical 24px tile spans a fill,
+    an ink edge and a second fill -- high local std with no per-pixel noise.
+    Drawn over a base mass it reads as faceted rock or wind-carved snow.
+    """
+    def rnd(state):
+        s = (state * 1103515245 + 12345) & 0x7fffffff
+        return s, (s >> 8 & 0xffff) / 65535.0
+
+    st = seed
+    for k in range(n):
+        st, fx = rnd(st)
+        st, fy = rnd(st)
+        st, fr = rnd(st)
+        st, fa = rnd(st)
+        px = x0 + (x1 - x0) * fx
+        py = y0 + (y1 - y0) * fy
+        r = rmin + (rmax - rmin) * fr
+        m = edges + (k % 2)                 # 3..4 sided chips
+        pts = []
+        for j in range(m):
+            st, fj = rnd(st)
+            a = fa * 6.283 + j * (6.283 / m)
+            # vertices sit at 0.6r..1.0r from the CENTRE, never scattered
+            rr = r * (0.6 + 0.4 * fj)
+            pts.append((px + rr * math.cos(a), py + rr * math.sin(a) * 0.82))
+        col = col_a if (k % 2) else col_b
+        PA.fill_poly(PA.img_of(d), pts, col, seed=seed + k, value=0.05, edge=1.4)
+        PA.hand_stroke(d, pts, INK, ink_w, closed=True, seed=seed + 40 + k,
+                       wavelength=60.0)
+
+
+def _flank_strata(d, cx, peak_y, base_y, col, seed, n=9, spread=680, width=5,
+                  x0=-60, x1=1340):
+    """Contour bands that hug a mountain's concave flank.
+
+    A mountain silhouette is high in the middle and falls to `base_y` at both
+    edges, so a STRAIGHT horizontal band leaves the rock near the edges and
+    crosses the sky -- which is the ruled-line defect again. This curves each
+    band down toward the edges by a parabola centred on `cx`, so the bands
+    follow the flank and stay under the silhouette across the whole width.
+    `spread` is the half-width over which the band has dropped to `base_y`.
+    """
+    for k in range(n):
+        u = k / float(max(1, n - 1))
+        y_mid = peak_y + (base_y - peak_y) * u
+        pts = []
+        m = 17
+        for i in range(m + 1):
+            x = x0 + (x1 - x0) * (i / float(m))
+            dx = (x - cx) / float(spread)
+            drop = (base_y - y_mid) * (dx * dx)     # 0 at centre, max at edges
+            pts.append((x, y_mid + drop))
+        segs = 4
+        for sgi in range(segs):
+            a = int(m * sgi / float(segs))
+            b = int(m * (sgi + 1) / float(segs))
+            if b - a >= 2:
+                PA.hand_stroke(d, pts[a:b + 1], col, width,
+                               seed=seed + k * 9 + sgi, wavelength=150.0,
+                               vary=0.25)
+
+
+def _courses(d, x0, y0, x1, y1, col, seed, rows=None, cols=None, width=4,
+             stagger=True):
+    """A masonry / panel grid: horizontal courses plus short vertical joints.
+
+    This is the fortknox-density primitive for BUILT subjects (concrete walls,
+    the drafting sheet, the gate, chamber faces). Staggered verticals read as
+    masonry; aligned ones read as panelling, so `stagger` picks per subject.
+    """
+    if rows is None:
+        rows = max(2, int((y1 - y0) / 44.0))
+    if cols is None:
+        cols = max(2, int((x1 - x0) / 68.0))
+    rh = (y1 - y0) / float(rows)
+    cw = (x1 - x0) / float(cols)
+    for r in range(rows + 1):
+        y = y0 + r * rh
+        PA.hand_stroke(d, [(x0, y), (x1, y)], col, width, seed=seed + r,
+                       wavelength=140.0, vary=0.20)
+    for r in range(rows):
+        y = y0 + r * rh
+        off = (cw * 0.5 if (stagger and r % 2) else 0.0)
+        c = 0
+        x = x0 + off - cw
+        while x < x1 + cw:
+            PA.hand_stroke(d, [(x, y), (x, y + rh)], col, width,
+                           seed=seed + 200 + r * 40 + c, wavelength=110.0,
+                           vary=0.20)
+            x += cw
+            c += 1
+
+
+def _scree(d, x0, y0, x1, y1, col, seed, n=26, rmin=4, rmax=13):
+    """Scattered small angular stones over a ground or scree slope.
+
+    Terrain reads as terrain when it is littered; a smooth coloured field reads
+    as vector. Each stone is a tiny closed ANGULAR outline (not an ellipse --
+    the ellipse version read as bubbles), so at 24px it is a crisp ink speck
+    that lifts the local tile std.
+    """
+    rng_seed = seed
+    for k in range(n):
+        rng_seed = (rng_seed * 1103515245 + 12345) & 0x7fffffff
+        fx = (rng_seed >> 7 & 0xffff) / 65535.0
+        rng_seed = (rng_seed * 1103515245 + 12345) & 0x7fffffff
+        fy = (rng_seed >> 7 & 0xffff) / 65535.0
+        rng_seed = (rng_seed * 1103515245 + 12345) & 0x7fffffff
+        fr = (rng_seed >> 7 & 0xffff) / 65535.0
+        rng_seed = (rng_seed * 1103515245 + 12345) & 0x7fffffff
+        fa = (rng_seed >> 7 & 0xffff) / 65535.0
+        x = x0 + (x1 - x0) * fx
+        y = y0 + (y1 - y0) * fy
+        r = rmin + (rmax - rmin) * fr
+        # an angular chip: 5 points around a jittered radius, no ellipse
+        pts = []
+        m = 5
+        for i in range(m):
+            a = fa * 6.283 + i * (6.283 / m)
+            rr = r * (0.7 + 0.5 * ((i * 37 + k) % 7) / 6.0)
+            pts.append((x + rr * math.cos(a), y + rr * math.sin(a) * 0.72))
+        PA.hand_stroke(d, pts, col, 3, closed=True, seed=seed + k,
+                       wavelength=40.0)
+
+
+def _ribs(d, x0, y0, x1, y1, col, seed, n=8, width=5):
+    """Parallel ribs across a tunnel bore / pipe interior -- support arches.
+
+    The bore is the biggest smooth void in the underground beats. Ribs across
+    it read as a lined tunnel and give the tile grid high-frequency ink.
+    """
+    for k in range(n + 1):
+        u = k / float(n)
+        x = x0 + (x1 - x0) * u
+        PA.hand_stroke(d, [(x, y0), (x, y1)], col, width, seed=seed + k,
+                       wavelength=120.0, vary=0.20)
+
+
+def _speckle(d, x0, y0, x1, y1, col, seed, n=18, width=3):
+    """Short tick marks -- scree shadow, tool marks, hand-drawn hatching."""
+    rng_seed = seed
+    for k in range(n):
+        rng_seed = (rng_seed * 1103515245 + 12345) & 0x7fffffff
+        fx = (rng_seed >> 7 & 0xffff) / 65535.0
+        rng_seed = (rng_seed * 1103515245 + 12345) & 0x7fffffff
+        fy = (rng_seed >> 7 & 0xffff) / 65535.0
+        x = x0 + (x1 - x0) * fx
+        y = y0 + (y1 - y0) * fy
+        PA.hand_stroke(d, [(x, y), (x + 8, y + 5)], col, width,
+                       seed=seed + k, wavelength=40.0)
+
+
 def build():
     clock = SC.BeatClock(BEATS)
     els = []
@@ -196,6 +419,25 @@ def build():
         d = ImageDraw.Draw(tile)
         _exterior(tile, 5, sky=SKY, ground=SNOW)
         _mountain(d, 560, HZ + 30, 620, 118, 6)
+        # The mountain is the single largest mass in the frame and it was one
+        # smooth grey wash -- exactly the "a few big smooth shapes with dead
+        # space" the critic named. DENSE FACETS overlay it: many small angular
+        # planes in three stepped rock values, each keylined INK, so a typical
+        # tile spans fill / ink / fill. Density matters more than chip size --
+        # 26 sparse chips left half the pale left flank flat, so the passes are
+        # dense and use clearly darker rock values so they read as terrain
+        # rather than as pale confetti. Drawn before the archway covers them.
+        _facets(d, 20, 200, 700, 470, (150, 154, 160), (116, 120, 128),
+                210, n=48, rmin=24, rmax=54)
+        _facets(d, 700, 200, 1300, 470, (150, 154, 160), (116, 120, 128),
+                260, n=42, rmin=24, rmax=54)
+        _facets(d, 20, 120, 430, 210, (238, 240, 244), (198, 206, 216),
+                400, n=22, rmin=22, rmax=46)
+        _flank_strata(d, 560, 220, HZ + 18, ROCK_D, 320, n=9, spread=780)
+        # a few soft broken cloud bands in the clear sky, above and below the
+        # b01/b04 caption band at y=95 so they never collide with the type.
+        _strata(d, 30, 66, (216, 226, 236), 480, n=3, wobble=12, width=4)
+        _strata(d, 150, 196, (216, 226, 236), 500, n=3, wobble=12, width=4)
         # a big dark archway low in the mountain, the "secret" the hook names.
         # h=360 (not 380) so the arch's apex lands at y=116, clear of the
         # persistent title band; h=380 pushed it to y=96, close enough that
@@ -207,6 +449,17 @@ def build():
         valley = [(-60, 700), (-60, 596), (200, 560), (520, 542), (860, 560),
                   (1160, 610), (1340, 654), (1340, 780), (-60, 780)]
         _mass(d, valley, SNOW, 22, width=6)
+        # wind-carved snow: shallow facets + contour bands, all light-value so
+        # the valley stays the pale register it is in every winter beat.
+        _facets(d, -40, 560, 660, 720, (250, 250, 252), (226, 232, 238),
+                340, n=20, rmin=30, rmax=74)
+        _facets(d, 660, 560, 1330, 720, (250, 250, 252), (226, 232, 238),
+                380, n=18, rmin=30, rmax=74)
+        # contour bands run the whole height of the valley snow, up over the
+        # crest: the y 456-528 strip between the mountain foot and the valley
+        # crest measured the flattest band in the frame (row mean 8-9).
+        _strata(d, 468, 716, (198, 210, 222), 240, n=11, wobble=14, width=4)
+        _scree(d, 60, 500, 1240, 716, (186, 198, 210), 250, n=34)
     els.append(SC.stage(clock, 1, a_back, j=6))
 
     # The presenter arrives on b01 and stands through the whole stage. He is
@@ -323,6 +576,15 @@ def build():
     # ===================================================================== #
     def b_face(tile, fw, fh):
         _rock_face(tile, 57)
+        # The dig face is a full-frame ROCK wall and _rock_face gives it only
+        # four cracks -- one of the largest flat masses in the chapter. Dense
+        # facets turn it into broken rock face, and the extra fracture strokes
+        # read as the split stone the diggers are working.
+        d = ImageDraw.Draw(tile)
+        _facets(d, -40, 110, 700, 720, (146, 150, 156), (108, 112, 120),
+                620, n=44, rmin=26, rmax=60)
+        _facets(d, 700, 110, 1330, 720, (146, 150, 156), (108, 112, 120),
+                660, n=40, rmin=26, rmax=60)
     els.append(SC.stage(clock, 6, b_face, j=10))
 
     # ---- b06  the plan, pinned to the wall --------------------------------- #
@@ -345,6 +607,38 @@ def build():
         _mountain(d, 460, 340, 240, 190, 44, col=(150, 164, 178))
         _bunker(d, 460, 300, 108, 45, decks=3, deck_h=34, tunnel_dy=[96],
                 lamps=False)
+        # The sheet is the SUBJECT of this beat and it was a mostly blank card
+        # with one small sketch parked in it -- the "small subject marooned in
+        # an empty field" the critic names. It now carries what a real drafting
+        # sheet carries: a centre line through the section, dimension arrows
+        # across the width and down the height, a hatched ground band, and a
+        # ruled title block in the lower right. All thin INK/pencil, so the
+        # sheet still reads as drawing, not as a chart.
+        PA.hand_stroke(d, [(465, 134), (465, 390)], (150, 160, 172), 3,
+                       seed=45, wavelength=140.0)          # centre line
+        for yy in (232, 288):                               # horizontal dims
+            PA.hand_stroke(d, [(196, yy), (724, yy)], (128, 138, 150), 3,
+                           seed=46 + yy, wavelength=140.0)
+            PA.hand_stroke(d, [(196, yy - 8), (196, yy + 8)], (128, 138, 150),
+                           3, seed=50 + yy, wavelength=50.0)
+            PA.hand_stroke(d, [(724, yy - 8), (724, yy + 8)], (128, 138, 150),
+                           3, seed=54 + yy, wavelength=50.0)
+        PA.hand_stroke(d, [(706, 172), (706, 356)], (128, 138, 150), 3,
+                       seed=58, wavelength=140.0)           # vertical dim
+        for k in range(7):                                   # hatched ground
+            hx = 178 + k * 34
+            PA.hand_stroke(d, [(hx, 384), (hx + 26, 356)], (140, 150, 162), 3,
+                           seed=60 + k, wavelength=50.0)
+        # the title block, ruled off in the lower right of the sheet
+        PA.hand_stroke(d, [(560, 300), (772, 300), (772, 388), (560, 388)],
+                       (96, 106, 118), 4, closed=True, seed=70, wavelength=110.0)
+        PA.hand_stroke(d, [(560, 344), (772, 344)], (96, 106, 118), 3,
+                       seed=71, wavelength=110.0)
+        for k in range(4):                                   # scribbled entries
+            PA.hand_stroke(d, [(568, 314 + k * 0), (700 + k * 12, 322)],
+                           (96, 106, 118), 3, seed=72 + k, wavelength=60.0)
+        PA.hand_stroke(d, [(566, 362), (716, 362)], (96, 106, 118), 3,
+                       seed=78, wavelength=60.0)
     els.append(SC.accrue(clock, 6, 10, b_sheet_v1, kind='shape',
                          motion=SC.enter(clock, 6, dx=0, dy=-36, dur=ARRIVE)))
     els.append(cap(6, 640, 664, size=32))
