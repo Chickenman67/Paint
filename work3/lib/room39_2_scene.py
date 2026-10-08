@@ -416,6 +416,351 @@ def _window_grid(d, x0, y0, x1, y1, cols, rows, seed, col=(46, 52, 66),
                            vary=0.4)
             k += 1
 
+# ---------------------------------------------------------------------------
+# ROUND-2 STRUCTURE PRIMITIVES  (dead sky, dead clay, dead road)
+#
+# WHY THESE EXIST HERE, MEASURED. After round 1 the per-beat pigment table left
+# seventeen flat beats, and rendering them at 1280x720 says exactly why, and it
+# is NOT the chamber interiors -- round 1 already rebuilt those. It is the bands
+# AROUND them:
+#
+#     b02-b06  6.70-7.67   stage A: 200px of empty sky above the park, and a
+#                                  clay band of four smooth ribbons between the
+#                                  park and the chamber roof
+#     b07-b09  3.30-3.79   stage B: four BLANK grey building trapezoids, no
+#                                  windows, under another dead sky; and a 300px
+#                                  smooth black chamber under the plate
+#     b13      4.10        the hero door: rivets and a wheel, and 520px of one
+#                                  smooth blue-grey between them
+#     b14-b16  2.65-2.99   the corridor: the ribs are STROKES on a smooth
+#                                  field, so eight lines radiate out of a blur
+#     b22-b26  2.60-4.63   the street: three smooth grey bands under a blank
+#                                  sky, four tree trunks, one small dark rect
+#
+# So: a skyline that is actually buildings, clay that is actually layered,
+# corridor ribs that are FILLED panels with a ceiling and a floor, a street that
+# is a street, and a hero door with the same stiffener grammar the finale
+# already has. All of it is small outlined shapes, which is the only thing the
+# fortknox gold-slab frame does that a gradient cannot fake.
+# ---------------------------------------------------------------------------
+
+def _skyline(tile, d, seed, y_base, h_min=70, h_max=150, n=7, x0=-60,
+             x1=W + 60, body=(158, 160, 166), top=84, lit=(214, 200, 150),
+             cols=3, rows=3, roof='flat', col_dk=None):
+    """A run of city blocks filling the band above a horizon, each one a
+    windowed facade.
+
+    Stage A had four trees and 190px of empty grey sky; stage B had four blank
+    grey trapezoids. A city block is the unit that fixes both, because a block is
+    a body plus a grid of small dark rectangles, and _window_grid is already
+    written -- it just was never called. `x0`/`x1` run PAST the frame edges so
+    the row crops rather than floating with daylight at either side.
+
+    Building tops are clamped to `top` (84) because rows 10-73 are
+    TITLE_BACKDROP and a block intruding into the band is a gate failure, not a
+    style choice.
+    """
+    img = PA.img_of(d)
+    col_dk = col_dk or _mix(body, INK, 0.35)
+    slot = (x1 - x0) / float(n)
+    for k in range(n):
+        bx = x0 + slot * k + slot * 0.10
+        bw = slot * 0.84
+        bh = h_min + ((h_max - h_min) *
+                      (((k * 37 + seed) % 11) / 10.0))
+        ytop = max(top, y_base - bh)
+        # the body: a three-face block, so it reads as a mass with a lit face and
+        # a shadowed return rather than as one flat rectangle
+        PA.fill_poly(img, [(bx, y_base), (bx + bw, y_base - 4),
+                           (bx + bw, ytop), (bx, ytop + 5)], body,
+                     seed=seed + k * 17, value=0.09)
+        PA.hand_stroke(d, [(bx, y_base), (bx + bw, y_base - 4), (bx + bw, ytop),
+                           (bx, ytop + 5)], INK, 5, closed=True,
+                       seed=seed + k * 19, wavelength=110.0, vary=0.35)
+        # the shadowed return face on the right, which is what gives the row
+        # depth instead of a picket fence of identical rectangles
+        ret = [(bx + bw, y_base - 4), (bx + bw + slot * 0.13, y_base),
+               (bx + bw + slot * 0.13, ytop + 4), (bx + bw, ytop)]
+        PA.fill_poly(img, ret, col_dk, seed=seed + k * 23, value=0.08)
+        PA.hand_stroke(d, [(bx + bw, ytop), (bx + bw, y_base - 4)], INK, 3,
+                       closed=False, seed=seed + k * 29, wavelength=90.0)
+        # the windows -- the part that actually densifies the band
+        _window_grid(d, bx + slot * 0.11, ytop + 16, bx + bw - slot * 0.11,
+                     y_base - 22, cols, rows, seed + k * 31,
+                     col=(58, 64, 78), frame=INK, lit_col=lit, lit_every=5, w=3)
+        # a parapet cap, one more outlined shape per block and the thing that
+        # separates roof from sky when the two values are close
+        PA.hand_stroke(d, [(bx - 4, ytop + 5), (bx + bw + 4, ytop)], INK, 6,
+                       closed=False, seed=seed + k * 37, wavelength=80.0)
+        if roof == 'step':
+            PA.fill_poly(img, [(bx + bw * 0.24, ytop + 5), (bx + bw * 0.72,
+                                                           ytop + 2),
+                                (bx + bw * 0.72, ytop - 16),
+                                (bx + bw * 0.24, ytop - 12)], col_dk,
+                         seed=seed + k * 41, value=0.08)
+            PA.hand_stroke(d, [(bx + bw * 0.24, ytop + 5), (bx + bw * 0.72,
+                                                           ytop + 2),
+                               (bx + bw * 0.72, ytop - 16),
+                               (bx + bw * 0.24, ytop - 12)], INK, 4,
+                           closed=True, seed=seed + k * 43, wavelength=60.0)
+
+
+def _clay_bands(d, seed, y0, y1, n=7, cols=None, x0=-60, x1=W + 60, w=3):
+    """Thick, VALUE-STEPPED clay with pebble and root detail per course.
+
+    v1's _strata draws n full-width ribbons of near-identical colour separated by
+    one thin line -- four horizontal strokes across 1280px, which is the
+    textbook flat band. This keeps the ribbon idea and adds what makes soil read
+    as soil: each course steps further in value from its neighbour, and each
+    carries small inclusions, so a 150px band is eight distinguishable courses
+    instead of four identical ones.
+    """
+    img = PA.img_of(d)
+    cols = cols or [CLAY, CLAY_D, (158, 132, 104), (126, 106, 84),
+                    (146, 120, 96), (172, 144, 112)]
+    h = (y1 - y0) / float(n)
+    for k in range(n):
+        ya = y0 + h * k
+        yb = ya + h
+        c = cols[k % len(cols)]
+        pts = [(x0, ya), (x1, ya - 7), (x1, yb), (x0, yb + 6)]
+        PA.fill_poly(img, pts, c, seed=seed + k * 13, value=0.09)
+        PA.hand_stroke(d, [(x0, ya), (x1, ya - 7)], (104, 92, 78), w,
+                       closed=False, seed=seed + 31 + k, wavelength=180.0,
+                       vary=0.25)
+        # inclusions: small stones and clay lenses INSIDE the course. These are
+        # what stop a 60px band from reading as one painted stripe.
+        per = 7 + (k % 3)
+        for j in range(per):
+            px = x0 + ((j * 137 + k * 61 + seed) % int(x1 - x0))
+            py = ya + h * (0.22 + 0.58 * (((j * 53 + k * 29) % 7) / 6.0))
+            rr = 5 + ((j * 7 + k * 3) % 9)
+            stone = _mix(c, INK, 0.30) if (j + k) % 3 == 0 else _mix(c, SNOW, 0.16)
+            PA.fill_poly(img, PA.ellipse_pts(px, py, rr * 1.5, rr * 0.7, n=12),
+                         stone, seed=seed + k * 47 + j * 7, value=0.10)
+        # root / hairline cracks running down the course face
+        if k % 2 == 0:
+            for j in range(3):
+                rx = x0 + 90 + ((j * 211 + k * 83 + seed) % int(x1 - x0 - 200))
+                PA.hand_stroke(d, [(rx, ya + 4), (rx + 12, ya + h * 0.55),
+                                   (rx - 6, yb - 2)], (92, 80, 68), 2,
+                               closed=False, seed=seed + k * 59 + j * 5,
+                               wavelength=45.0, vary=0.4)
+
+
+def _corridor_rib(tile, d, y_far, y_near, half_far, half_near, col_lit,
+                  col_dk, seed, vx, w=5):
+    """ONE corridor rib as a filled, value-separated panel pair.
+
+    Round 1's corridor called _rib() eight times and each call filled a trapezoid
+    barely a shade off the background and then stroked only its two converging
+    edges -- so the render was eight pairs of black lines over a smooth grey
+    blur, measured 2.65. What makes a rib read is that its face is a DIFFERENT
+    value from the face beside it, and that it carries a lit edge on one side
+    and a dark one on the other. Three faces per side, six small shapes, and the
+    perspective finally exists.
+    """
+    img = PA.img_of(d)
+    for sgn in (-1, 1):
+        # the recessed face between this rib and the previous one
+        face = [(vx + sgn * half_far, y_far), (vx + sgn * half_near, y_near),
+                (vx + sgn * (half_near + (half_near - half_far) * 0.42),
+                 y_near), (vx + sgn * (half_far + (half_near - half_far) * 0.42),
+                           y_far)]
+        PA.fill_poly(img, face, col_dk, seed=seed + (0 if sgn < 0 else 3),
+                     value=0.08)
+        PA.hand_stroke(d, [(vx + sgn * half_far, y_far),
+                           (vx + sgn * half_near, y_near)], INK, w,
+                       closed=False, seed=seed + (1 if sgn < 0 else 4),
+                       wavelength=150.0, vary=0.35)
+        # the lit arris along the near edge of the face -- this is the highlight
+        # that makes a folded steel panel rather than a painted stripe
+        PA.hand_stroke(d,
+                       [(vx + sgn * (half_near + (half_near - half_far) * 0.42),
+                         y_near),
+                        (vx + sgn * (half_far + (half_near - half_far) * 0.42),
+                         y_far)], _mix(col_lit, SNOW, 0.30), 4, closed=False,
+                       seed=seed + (2 if sgn < 0 else 5), wavelength=150.0,
+                       vary=0.35)
+        # a rib course band on the face, one small outlined shape per rib
+        for b in range(2):
+            ty = y_far + (y_near - y_far) * (0.34 + b * 0.30)
+            tf = half_far + (half_near - half_far) * (0.34 + b * 0.30)
+            tn = half_near + (half_near - half_far) * (0.34 + b * 0.30)
+            PA.hand_stroke(d, [(vx + sgn * tf, ty + 5), (vx + sgn * tn, ty)],
+                           _mix(col_dk, INK, 0.35), 4, closed=False,
+                           seed=seed + 11 + (0 if sgn < 0 else 1) + b * 3,
+                           wavelength=95.0, vary=0.35)
+
+
+def _pavement(tile, d, seed, y0, y1, x0=-60, x1=W + 60, n=14, col=(154, 154,
+                150), joint=(96, 96, 94), kerb=True, kerb_col=(178, 178, 174)):
+    """A pavement of setts with a kerb line -- the ground under the street.
+
+    Stage E's ground was fill_rect of one colour from y=560 to the frame bottom:
+    160px of nothing across 1280. Setts give two courses of individually valued
+    blocks and the kerb gives the road a horizontal to terminate against.
+    """
+    img = PA.img_of(d)
+    courses = 2
+    for r in range(courses):
+        ya = y0 + (y1 - y0) * r / courses
+        yb = y0 + (y1 - y0) * (r + 1) / courses
+        step = (x1 - x0) / float(n)
+        for c in range(n + 1):
+            xa = x0 + step * c + (r * step * 0.5 if r % 2 else 0.0)
+            xb = xa + step - 5
+            if xb > x1:
+                xb = x1
+            if xb - xa < 8:
+                continue
+            q = [(xa, ya + 2), (xb, ya), (xb, yb - 2), (xa, yb)]
+            cc = _mix(col, joint, ((r * 3 + c * 5) % 4) / 3.0 * 0.30)
+            PA.fill_poly(img, q, cc, seed=seed + r * 53 + c * 11, value=0.09)
+            PA.hand_stroke(d, q, joint, 3, closed=True,
+                           seed=seed + r * 59 + c * 13, wavelength=95.0,
+                           vary=0.35)
+    if kerb:
+        PA.fill_rect(img, [x0, y0 - 16, x1, y0 + 2], kerb_col, seed=seed + 3,
+                     value=0.07)
+        PA.hand_stroke(d, [(x0, y0 - 14), (x1, y0 - 16)], INK, 6, closed=False,
+                       seed=seed + 5, wavelength=200.0)
+
+
+def _facade(tile, d, seed, x0, y0, x1, y1, body=(172, 170, 166),
+            body_dk=(138, 136, 134), cols=4, rows=4, lit=(226, 208, 152),
+            shop=True, shop_col=(96, 92, 88), w=5):
+    """A street-front facade: wall, window grid, and a shopfront at the foot.
+
+    This is the unit that makes stage E read as a PLACE. A blank block with a
+    dark rectangle on it says "there is a door somewhere"; a facade with a
+    glazing bar, a lit window, a shopfront and a canopy says "this is an
+    ordinary street, and the door is on it".
+    """
+    img = PA.img_of(d)
+    PA.fill_rect(img, [x0, y0, x1, y1], body, seed=seed, value=0.08)
+    PA.hand_stroke(d, [(x0, y0), (x1, y0)], INK, w, closed=False, seed=seed + 1,
+                   wavelength=140.0)
+    PA.hand_stroke(d, [(x0, y0), (x0, y1)], INK, w, closed=False, seed=seed + 2,
+                   wavelength=140.0)
+    PA.hand_stroke(d, [(x1, y0), (x1, y1)], INK, w, closed=False, seed=seed + 3,
+                   wavelength=140.0)
+    # the shadowed return on one side, so the facade has a corner
+    PA.fill_poly(img, [(x1, y0), (x1 + 26, y0 + 12), (x1 + 26, y1 + 8),
+                       (x1, y1)], body_dk, seed=seed + 5, value=0.09)
+    PA.hand_stroke(d, [(x1 + 26, y0 + 12), (x1 + 26, y1 + 8)], INK, 4,
+                   closed=False, seed=seed + 7, wavelength=90.0)
+    # a string course between the shopfront and the upper floors
+    _sy = y1 - (y1 - y0) * 0.40
+    PA.fill_rect(img, [x0, _sy - 8, x1 + 26, _sy + 8], body_dk, seed=seed + 9,
+                 value=0.08)
+    PA.hand_stroke(d, [(x0, _sy - 6), (x1 + 26, _sy - 6)], INK, 4,
+                   closed=False, seed=seed + 11, wavelength=130.0)
+    _window_grid(d, x0 + 22, y0 + 24, x1 - 22, _sy - 20, cols, rows,
+                 seed + 13, col=(52, 58, 72), frame=INK, lit_col=lit,
+                 lit_every=6, w=4)
+    if shop:
+        # the shopfront: a deep stall riser, a fascia band, and a glazed front
+        PA.fill_rect(img, [x0 + 18, _sy + 22, x1 - 18, y1 - 4], shop_col,
+                     seed=seed + 15, value=0.07)
+        PA.hand_stroke(d, [(x0 + 18, _sy + 22), (x1 - 18, _sy + 22)], INK, 5,
+                       closed=False, seed=seed + 17, wavelength=120.0)
+        PA.fill_rect(img, [x0 + 18, y1 - 4, x1 - 18, y1 + 26], _mix(body_dk, INK,
+                     0.4), seed=seed + 19, value=0.07)
+        for j in range(4):
+            gx = x0 + 34 + (x1 - x0 - 68) * j / 4.0
+            PA.hand_stroke(d, [(gx, _sy + 30), (gx, y1 - 6)], INK, 4,
+                           closed=False, seed=seed + 21 + j, wavelength=70.0)
+        # an awning, the one soft shape on an otherwise hard facade
+        PA.fill_poly(img, [(x0 + 8, _sy + 14), (x1 + 18, _sy + 14),
+                           (x1 + 30, _sy + 34), (x0 - 4, _sy + 34)],
+                    (150, 74, 66), seed=seed + 27, value=0.08)
+        PA.hand_stroke(d, [(x0 + 8, _sy + 14), (x1 + 18, _sy + 14),
+                           (x1 + 30, _sy + 34), (x0 - 4, _sy + 34)], INK, 4,
+                       closed=True, seed=seed + 29, wavelength=90.0)
+
+
+def _lamp_post(d, x, base_y, h, seed, col=(72, 76, 84), lit=(226, 214, 168),
+               arm=54):
+    """A street lamp, cropped-in friendly: post, arm, head, and a light pool.
+
+    `lit` is a desaturated daylight-warm, NOT LAMP. LAMP is the interior-stage
+    lamp colour and at street scale it painted two opaque yellow wedges over the
+    pavement that read as spotlights pasted onto the render.
+    """
+    PA.hand_stroke(d, [(x, base_y), (x, base_y - h)], col, 8, closed=False,
+                   seed=seed, wavelength=110.0, vary=0.3)
+    PA.hand_stroke(d, [(x - 6, base_y), (x - 6, base_y - h)], INK, 3,
+                   closed=False, seed=seed + 1, wavelength=110.0)
+    PA.hand_stroke(d, [(x, base_y - h), (x + arm, base_y - h + 12)], col, 7,
+                   closed=False, seed=seed + 2, wavelength=80.0)
+    PA.fill_poly(PA.img_of(d), [(x + arm - 22, base_y - h + 8),
+                                (x + arm + 22, base_y - h + 8),
+                                (x + arm + 30, base_y - h + 30),
+                                (x + arm - 30, base_y - h + 30)], lit,
+                 seed=seed + 3, value=0.05)
+    PA.hand_stroke(d, [(x + arm - 22, base_y - h + 8), (x + arm + 22,
+                                                       base_y - h + 8),
+                       (x + arm + 30, base_y - h + 30),
+                       (x + arm - 30, base_y - h + 30)], INK, 4, closed=True,
+                   seed=seed + 4, wavelength=60.0)
+    # The pool. DAYLIGHT street, so this is not a visible cone -- the first pass
+    # painted LAMP at full strength and it rendered as two opaque yellow
+    # triangles standing on the pavement, which is the single most artificial
+    # thing on the frame. What a daytime street actually shows is a faint warm
+    # wash on the setts and nothing in the air, so the pool is a near-neutral
+    # 12%-lighter-than-sett value, not the lamp's own colour.
+    PA.fill_poly(PA.img_of(d), [(x + arm - 20, base_y - h + 30),
+                                (x + arm + 20, base_y - h + 30),
+                                (x + arm + 62, base_y + 30),
+                                (x + arm - 62, base_y + 30)],
+                 (214, 208, 186), seed=seed + 5, value=0.04)
+    PA.hand_stroke(d, [(x + arm - 62, base_y + 30), (x + arm + 62, base_y + 30)],
+                   (150, 148, 140), 3, closed=False, seed=seed + 6,
+                   wavelength=70.0)
+
+
+def _door_ribs(d, x0, x1, y0, y1, seed, rib_col=(134, 146, 160),
+               n=None, w=5, rivet_every=None):
+    """Vertical stiffener ribs across a big steel leaf, each a three-face block.
+
+    b13 is the chapter's hero frame and it measured 4.10 -- rivets top and
+    bottom, a lock wheel, and 520px of ONE blue-grey fill between them. The
+    finale at b37 measured 16.56 doing exactly this same job with the same
+    primitives, so this is the finale's grammar lifted to the hero: ribs down
+    every stile, dog-bolt bosses across the centre, and a rivet line at head
+    and foot. Frame-fill is unchanged -- the leaf still runs off all four
+    edges -- because ribs ADD edge to a full frame, they do not replace one.
+    """
+    img = PA.img_of(d)
+    span = x1 - x0
+    n = n or max(3, int(span / 190))
+    for k in range(n):
+        rx = x0 + span * (k + 0.5) / n
+        bw = span / n * 0.19
+        PA.fill_rect(img, [rx - bw, y0, rx + bw, y1], rib_col,
+                     seed=seed + k * 17, value=0.08)
+        PA.hand_stroke(d, [(rx - bw, y0), (rx - bw, y1)], STEEL_D, w,
+                       closed=False, seed=seed + k * 19, wavelength=190.0)
+        PA.hand_stroke(d, [(rx + bw, y0), (rx + bw, y1)], (178, 188, 200), 3,
+                       closed=False, seed=seed + k * 23, wavelength=190.0)
+        if rivet_every and k % rivet_every == 0:
+            _rivet_row(d, rx, y0 + 46, rx, y1 - 46, 5, seed + k * 29,
+                       colour=(184, 192, 202), r=9)
+    # dog-bolt bosses across the meeting stile -- the round hardware that says
+    # "this leaf is held shut", and one more small shape per station
+    for j in range(5):
+        by = y0 + (y1 - y0) * (0.14 + 0.18 * j)
+        for sgn in (-1, 1):
+            bx = (x0 + x1) * 0.5 + sgn * 116
+            PA.fill_poly(img, PA.ellipse_pts(bx, by, 20, 15, n=14),
+                         (120, 132, 146), seed=seed + 200 + j * 7 +
+                         (0 if sgn < 0 else 3), value=0.07)
+            PA.hand_stroke(d, PA.ellipse_pts(bx, by, 20, 15, n=14), INK, 4,
+                           closed=True, seed=seed + 210 + j * 7,
+                           wavelength=55.0, vary=0.3)
+
+
 # The arrival duration used by every moving element. 0.45-0.55s reads as a
 # deliberate move; longer and it becomes the picture changing every sample,
 # which is the defect this whole rebuild exists to remove.
@@ -915,22 +1260,194 @@ def build():
         return pts
 
     def c_corridor(tile, fw, fh):
+        # THE CORRIDOR, REBUILT. This is the single worst frame in the chapter:
+        # round 1 measured 2.17-2.65, the joint-worst in the film, and the
+        # render showed why. It drew eight nested trapezoids NEAREST FIRST, so
+        # each painted over the last and only the narrowest survived -- sixteen
+        # black lines radiating out of a smooth grey blur. A lens flare, not a
+        # corridor.
+        #
+        # TWO WRONG FIXES WERE TRIED BEFORE THIS ONE, both recorded here so the
+        # next pass does not walk them again:
+        #
+        #   (1) Painter's algorithm, "frame minus this portal", FARTHEST FIRST.
+        #       The throat's outside IS the entire frame, so it covered
+        #       everything and the corridor went black.
+        #   (2) The same, but drawing the annulus between adjacent portals
+        #       NEAREST FIRST. The geometry is right and the ring widths were
+        #       right, but the five band values sat within ten of each other,
+        #       so it rendered as a grey blur with visible diagonal seams --
+        #       2.17, no better.
+        #
+        # WHAT WORKS. Five nested bands (ceiling / wall / floor / wall / ceiling)
+        # laid throat-outward, with each band a WIDE outlined MEMBER rather than
+        # a thin line, a rib frame at every station, slab courses on the floor,
+        # coffers on the ceiling and services on the walls. And the value steps
+        # are LARGE on purpose: the point of a corridor is that the far end is
+        # far darker than the near end, and a corridor drawn in five values
+        # within ten of each other is a grey blur again, however well drawn.
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [0, 0, W, H], (86, 88, 96), seed=600, value=0.06)
-        # the dark throat at the far end -- the corridor's destination
-        PA.fill_rect(tile, [VX - 40, VY - 40, VX + 40, VY + 40], DARKER,
-                     seed=601, value=0.08)
-        # eight ribs marching in from the near edge to the throat, each a
-        # trapezoid. Near ribs are tall and wide; far ribs collapse onto the
-        # vanishing point. This is the depth the first pass was missing.
-        for k in range(8):
-            t = k / 7.0                       # 0 = nearest, 1 = at the throat
-            half = 1180 * (1.0 - t) ** 1.35 + 44
-            y0 = 700 - 360 * (1.0 - t) ** 0.9  # top edge of the rib at the near side
-            y1 = -40 + 380 * (1.0 - t) ** 0.9  # bottom edge (negative = above frame)
-            _rib(d, VY - (VY - y1) * 0.0, y0, 44, half,
-                 (100, 102, 112) if k % 2 == 0 else (112, 114, 124), 610 + k * 4,
-                 w=5 if k < 5 else 4)
+        img = PA.img_of(d)
+        PA.fill_rect(tile, [0, 0, W, H], (54, 56, 66), seed=600, value=0.06)
+
+        JN = 8
+        st = []
+        for k in range(JN + 1):
+            u = k / float(JN)
+            s = 0.075 + 0.925 * (1.0 - u) ** 1.22
+            st.append((56.0 + 1520.0 * s,
+                       VY + (-86.0 - VY) * s,
+                       VY + (800.0 - VY) * s))
+        st.append((58.0, VY - 28.0, VY + 34.0))       # the throat
+
+        # ---- lay the bands NEAREST FIRST, throat LAST ---------------------- #
+        # st[0] is the LARGEST portal (it runs off all four frame edges) and
+        # st[-1] is the throat. Painter's algorithm needs farthest drawn first
+        # so nearer things overwrite it -- for a tunnel that means the big
+        # near portal goes down FIRST and each successively smaller portal is
+        # painted on top of it. Drawing throat-first (attempt 3) was exactly
+        # backwards: every fill covered the one before it and the last fill,
+        # which is the whole frame, buried all nine stations. The render was a
+        # uniform grey blur -- 2.21.
+        for idx in range(len(st)):
+            h, t, b = st[idx]
+            v = idx / float(len(st) - 1)
+            sd = 620 + idx * 41
+            # the corridor body seen THROUGH this opening: darker with depth
+            PA.fill_rect(tile, [int(VX - h), int(t), int(VX + h), int(b)],
+                         _mix((122, 124, 134), (26, 28, 34), v ** 0.9),
+                         seed=sd, value=0.08)
+            # ---- THE RIBS: the four members of the portal frame ---------- #
+            # A rib is a MEMBER with thickness, not a line. Four outlined bars
+            # per station, each with a lit arris on its near face, is what makes
+            # the eye read a series of frames receding instead of a starburst.
+            # idx 0 has no predecessor -- st[-1] would wrap round to the throat
+            # and give a negative, nonsense ring width -- so it gets a
+            # hand-picked 88px jamb, which is also what fills the frame edges.
+            hn, tn, bn = st[idx - 1] if idx > 0 else (h + 88.0, t - 88.0,
+                                                      b + 88.0)
+            mh = max(4.0, (hn - h) * 0.34)
+            mv = max(4.0, (tn - t) * 0.34)
+            mb = max(4.0, (b - bn) * 0.34)
+            lit = _mix((150, 152, 162), (34, 36, 44), v ** 0.9)
+            dk = _mix((78, 80, 90), (18, 20, 26), v ** 0.9)
+            # ceiling member
+            PA.fill_rect(img, [VX - h - mh, t - mv, VX + h + mh, t], dk,
+                         seed=sd + 1, value=0.07)
+            PA.hand_stroke(d, [(VX - h - mh, t - mv), (VX + h + mh, t - mv)],
+                           INK, 4 if idx < 6 else 3, closed=False,
+                           seed=sd + 2, wavelength=170.0, vary=0.3)
+            PA.hand_stroke(d, [(VX - h - mh, t), (VX + h + mh, t)], lit, 4,
+                           closed=False, seed=sd + 3, wavelength=170.0,
+                           vary=0.3)
+            # floor member
+            PA.fill_rect(img, [VX - h - mh, b, VX + h + mh, b + mb], dk,
+                         seed=sd + 4, value=0.07)
+            PA.hand_stroke(d, [(VX - h - mh, b + mb), (VX + h + mh, b + mb)],
+                           INK, 4 if idx < 6 else 3, closed=False,
+                           seed=sd + 5, wavelength=170.0, vary=0.3)
+            PA.hand_stroke(d, [(VX - h - mh, b), (VX + h + mh, b)], lit, 4,
+                           closed=False, seed=sd + 6, wavelength=170.0,
+                           vary=0.3)
+            # the two jambs, three-face blocks so they read as folded plate
+            for _s in (-1, 1):
+                PA.fill_rect(img, [VX + _s * h - mh, t - mv,
+                                   VX + _s * h + mh, b + mb], lit,
+                             seed=sd + 7 + (0 if _s < 0 else 3), value=0.07)
+                PA.fill_rect(img, [VX + _s * h + mh * 0.15, t - mv,
+                                   VX + _s * h + mh, b + mb], dk,
+                             seed=sd + 8 + (0 if _s < 0 else 3), value=0.06)
+                PA.hand_stroke(d, [(VX + _s * h - mh, t - mv),
+                                   (VX + _s * h - mh, b + mb)], INK,
+                               5 if idx < 6 else 3, closed=False,
+                               seed=sd + 9 + (0 if _s < 0 else 3),
+                               wavelength=160.0, vary=0.32)
+                PA.hand_stroke(d, [(VX + _s * h + mh, t - mv),
+                                   (VX + _s * h + mh, b + mb)],
+                               _mix(lit, SNOW, 0.30), 3, closed=False,
+                               seed=sd + 10 + (0 if _s < 0 else 3),
+                               wavelength=160.0, vary=0.32)
+                # three bolt bosses up each jamb: the small repeated shape
+                # Radius is CAPPED. Scaled straight off the member thickness the
+                # near stations (mh up to 88px) grew 90px decagons that read as
+                # black scorch marks smeared down the walls, not fixings. A
+                # dog-bolt is the size of a bolt at any distance.
+                #
+                # They are also pushed OUTWARD off the jamb centreline by their
+                # own radius. This loop runs nearest-first, so the next
+                # (farther, smaller) station's fill lands on the inner half of
+                # anything standing exactly on the boundary x = VX +/- h --
+                # which left every boss half-buried and reading as confetti
+                # floating on the wall. Offsetting by br puts the whole boss in
+                # the visible ring between this portal and the next.
+                br = min(max(4.0, mh * 0.5), 13.0)
+                bx = VX + _s * (h + br * 0.9)
+                for _b in range(3):
+                    by = t + (b - t) * (0.22 + 0.28 * _b)
+                    PA.fill_poly(img, PA.ellipse_pts(bx, by, br, br, n=10),
+                                 _mix(lit, SNOW, 0.30), seed=sd + 11 + _b * 3 +
+                                 (0 if _s < 0 else 1), value=0.06)
+                    PA.fill_poly(img, PA.ellipse_pts(bx, by,
+                                                      br * 0.52, br * 0.52,
+                                                      n=8),
+                                 _mix(lit, INK, 0.45), seed=sd + 12 + _b * 3 +
+                                 (0 if _s < 0 else 1), value=0.05)
+            # ---- FLOOR COURSES ------------------------------------------- #
+            # Joints across the floor, converging. Without them the floor is a
+            # smooth grey band 250px deep and the whole lower half of the frame
+            # reads flat no matter how good the ribs are.
+            if idx < len(st) - 2:
+                for _c in range(3):
+                    u2 = 0.18 + 0.30 * _c
+                    PA.hand_stroke(d, [(VX - h + (hn - h) * u2,
+                                        b + (bn - b) * u2),
+                                       (VX + h - (hn - h) * u2,
+                                        b + (bn - b) * u2)],
+                                   _mix(lit, INK, 0.34), 4, closed=False,
+                                   seed=sd + 20 + _c, wavelength=130.0,
+                                   vary=0.3)
+            # ---- CEILING COFFERS ------------------------------------------ #
+            if idx < len(st) - 2:
+                for _c in range(2):
+                    u2 = 0.26 + 0.34 * _c
+                    PA.hand_stroke(d, [(VX - h + (hn - h) * u2,
+                                        t - (t - tn) * u2),
+                                       (VX + h - (hn - h) * u2,
+                                        t - (t - tn) * u2)],
+                                   _mix(lit, INK, 0.42), 3, closed=False,
+                                   seed=sd + 24 + _c, wavelength=110.0,
+                                   vary=0.3)
+            # ---- WALL SERVICES --------------------------------------------- #
+            # A conduit and a dado line each side. Two long converging strokes
+            # per station; they are what a real corridor has and this one did
+            # not, and they cross the wall's smooth value with two more edges.
+            if idx < len(st) - 3:
+                for _s in (-1, 1):
+                    PA.hand_stroke(d, [(VX + _s * (h + (hn - h) * 0.34),
+                                        t + (b - t) * 0.26),
+                                       (VX + _s * (h + (hn - h) * 0.30),
+                                        t + (b - t) * 0.26)],
+                                   _mix(lit, STEEL_D, 0.50), 6, closed=False,
+                                   seed=sd + 28 + (0 if _s < 0 else 2),
+                                   wavelength=150.0, vary=0.3)
+                    PA.hand_stroke(d, [(VX + _s * (h + (hn - h) * 0.60),
+                                        t + (b - t) * 0.66),
+                                       (VX + _s * (h + (hn - h) * 0.56),
+                                        t + (b - t) * 0.66)],
+                                   _mix(lit, INK, 0.38), 4, closed=False,
+                                   seed=sd + 29 + (0 if _s < 0 else 2),
+                                   wavelength=150.0, vary=0.3)
+
+        # ---- the throat, the destination, and the one working light ------- #
+        PA.fill_rect(tile, [int(VX - 58), int(VY - 28), int(VX + 58),
+                            int(VY + 34)], DARKER, seed=596, value=0.08)
+        PA.fill_rect(img, [VX - 116, VY - 40, VX + 116, VY - 26], LAMP,
+                     seed=597, value=0.05)
+        PA.hand_stroke(d, [(VX - 116, VY - 40), (VX + 116, VY - 40)], INK, 5,
+                       closed=False, seed=598, wavelength=100.0)
+        PA.fill_poly(img, [(VX - 116, VY - 40), (VX + 116, VY - 40),
+                           (VX + 54, VY - 6), (VX - 54, VY - 6)],
+                     (128, 124, 106), seed=599, value=0.05)
     els.append(SC.stage(clock, 14, c_corridor, j=17))
 
     def c_door_end(tile, fw, fh):
@@ -950,23 +1467,70 @@ def build():
     els.append(cap(15, 700, 660, size=32, fill=SNOW))
 
     def c_lead_plates(tile, fw, fh):
-        # "Floor to ceiling, plate over plate." TWO lead leaves swing in from
-        # the LEFT and cover the left third of the corridor -- you still see
-        # the ribs and the far door down the right. The first pass drew nine
-        # full-height leaves at a 344px pitch, which tiled edge to edge and
-        # buried the entire corridor behind a flat striped wall.
+        # "Floor to ceiling, plate over plate." Lead leaves swing in from the
+        # LEFT and wall off the corridor -- you still see the ribs and the far
+        # door down the right.
+        #
+        # ROUND-2 REBUILD. Pass 1 drew NINE full-height leaves at a 344px pitch,
+        # which tiled edge to edge and buried the corridor behind a flat striped
+        # wall. Pass 2 pulled back to TWO leaves -- which overshot: b16 measured
+        # 6.25 and the render showed why. Two 300px rectangles with one outline
+        # each is exactly the "few large smooth shapes with dead space" the
+        # pigment gate exists to catch, and the left 42% of the frame was one
+        # flat blue-grey field.
+        #
+        # A lead plate is not a rectangle. It is a stack of sheets: a bevelled
+        # edge catching the light, a seam where the next sheet laps it, a row of
+        # dog-bolts through the lap, and a shallow swage line pressed into the
+        # face. Five sheets at staggered x, each carrying all four of those, fill
+        # the left of the frame with edge-rich small shapes while still reading
+        # as one continuous wall of lead coming in.
         d = ImageDraw.Draw(tile)
-        for k, (x0, wleaf) in enumerate(((-40, 300), (280, 260))):
-            leaf = [(x0, -40), (x0 + wleaf, -40), (x0 + wleaf, H + 40),
-                    (x0, H + 40)]
-            PA.fill_poly(PA.img_of(d), leaf,
-                         LEAD_L if k == 0 else LEAD, seed=630 + k,
-                         value=0.07)
-            PA.hand_stroke(d, [(x0, -40), (x0, H + 40)], INK, 6,
-                           closed=False, seed=640 + k, wavelength=170.0)
-            PA.hand_stroke(d, [(x0 + wleaf, -40), (x0 + wleaf, H + 40)],
-                           INK, 5, closed=False, seed=650 + k,
-                           wavelength=170.0)
+        img = PA.img_of(d)
+        # Each sheet: (x_left, x_right, face colour, seed offset). The stack
+        # runs right-to-left in draw order so each sheet laps the one before it
+        # and its lit bevel stays visible -- the overlap is the whole point.
+        sheets = ((150, 452, LEAD, 0), (36, 366, LEAD_L, 1),
+                  (-96, 250, LEAD, 2), (-232, 122, LEAD_L, 3),
+                  (-360, -6, LEAD, 4))
+        for k, (x0, x1, col, so) in enumerate(sheets):
+            sd = 660 + so * 17
+            y0, y1 = -40, H + 40
+            PA.fill_rect(img, [x0, y0, x1, y1], col, seed=sd, value=0.07)
+            # the lapped under-sheet, a hair darker, peeking out at the seam
+            PA.fill_rect(img, [x1 - 16, y0, x1, y1],
+                         _mix(col, INK, 0.30), seed=sd + 1, value=0.06)
+            # the bevel: a lit chamfer along the top and bottom of the sheet
+            PA.fill_rect(img, [x0 + 10, y0, x1 - 16, y0 + 15],
+                         _mix(col, SNOW, 0.34), seed=sd + 2, value=0.05)
+            PA.fill_rect(img, [x0 + 10, y1 - 15, x1 - 16, y1],
+                         _mix(col, INK, 0.34), seed=sd + 3, value=0.05)
+            # the sheet's own outline: heavy on the leading edge
+            PA.hand_stroke(d, [(x0, y0), (x0, y1)], INK, 6, closed=False,
+                           seed=sd + 4, wavelength=180.0)
+            PA.hand_stroke(d, [(x0, y0), (x1, y0)], INK, 5, closed=False,
+                           seed=sd + 5, wavelength=180.0)
+            PA.hand_stroke(d, [(x0, y1), (x1, y1)], INK, 5, closed=False,
+                           seed=sd + 6, wavelength=180.0)
+            # a swage line pressed across the face, and two more below it: the
+            # shallow ribs that stop a lead sheet reading as a flat panel
+            for j, fy in enumerate((0.24, 0.53, 0.81)):
+                yy = y0 + (y1 - y0) * fy
+                PA.hand_stroke(d, [(x0 + 22, yy), (x1 - 26, yy)],
+                               _mix(col, INK, 0.26), 4, closed=False,
+                               seed=sd + 7 + j, wavelength=150.0, vary=0.28)
+                PA.hand_stroke(d, [(x0 + 22, yy + 5), (x1 - 26, yy + 5)],
+                               _mix(col, SNOW, 0.22), 3, closed=False,
+                               seed=sd + 10 + j, wavelength=150.0, vary=0.28)
+            # a column of dog-bolts down the lapped seam
+            for j in range(5):
+                yy = y0 + 96 + j * 122
+                PA.fill_poly(img, PA.ellipse_pts(x1 - 8, yy, 11, 11, n=10),
+                             _mix(col, SNOW, 0.40), seed=sd + 13 + j,
+                             value=0.05)
+                PA.fill_poly(img, PA.ellipse_pts(x1 - 8, yy, 5, 5, n=8),
+                             _mix(col, INK, 0.50), seed=sd + 18 + j,
+                             value=0.05)
     # MOVING: the plates swinging in is the one moment here where movement IS
     # the information -- the lead arrives, and the corridor is walled off.
     els.append(SC.accrue(clock, 16, 17, c_lead_plates,
@@ -1189,38 +1753,95 @@ def build():
     # "secret" in the viewer's gut before the picture says it.                #
     # ===================================================================== #
     def e_street(tile, fw, fh):
+        # THE STREET, REBUILT. v1 drew this as FOUR horizontal fills -- sky,
+        # concrete, kerb band, road -- with four tree trunks in front of them and
+        # a 1280x160 blank sky. Per-beat pigment put b23 at 2.60, the joint-worst
+        # frame in the chapter, and the render shows why: it is not a street, it
+        # is a value chart. Five smooth bands across the full width.
+        #
+        # What the narration needs is the OPPOSITE of a threat -- an ordinary
+        # street with shops and traffic, so the entrance has nothing to hide
+        # behind. So this is now a proper street frontage, cropped at both
+        # edges: two shopfront facades with window grids, a gap of railings and
+        # a lamp between them, a paved sidewalk and a kerb, and the road running
+        # off the bottom of the frame with a bus shelter on it. The bus shelter
+        # is load-bearing: it is the single object that says "people wait here
+        # for buses", and without it the road is just a grey band.
         d = ImageDraw.Draw(tile)
         PA.fill_rect(tile, [0, 0, W, H], (198, 204, 208), seed=800,
                      value=0.04)
-        PA.fill_rect(tile, [0, 300, W, 470], CONCRETE, seed=801, value=0.07)
-        PA.hand_stroke(d, [(0, 302), (W, 300)], INK, 7, closed=False,
-                       seed=802, wavelength=220.0)
-        PA.fill_rect(tile, [0, 470, W, 560], (150, 150, 148), seed=803,
-                     value=0.05)
+        # Two facades, cropped left and right so the block runs off frame. The
+        # gap between them at x=620..900 is where the fence and the entrance go
+        # at b25, and it is deliberately the LOWEST built mass on the street.
+        _facade(tile, d, 810, -80, 96, 560, 470, body=(174, 170, 164),
+                body_dk=(140, 136, 132), cols=4, rows=3, lit=(228, 210, 154))
+        _facade(tile, d, 830, 900, 110, 1400, 470, body=(166, 164, 160),
+                body_dk=(132, 130, 128), cols=4, rows=3, lit=(224, 206, 150))
+        # the gap: a low wall and a railing behind it, so the entrance recess is
+        # a piece of the street rather than a hole cut in a backdrop
+        PA.fill_rect(tile, [560, 300, 900, 470], (156, 152, 148), seed=851,
+                     value=0.08)
+        PA.hand_stroke(d, [(560, 302), (900, 300)], INK, 6, closed=False,
+                       seed=852, wavelength=180.0)
+        for _i in range(7):
+            rx = 580 + _i * 46
+            PA.hand_stroke(d, [(rx, 300), (rx, 300)], (108, 106, 104), 5,
+                           closed=False, seed=854 + _i, wavelength=40.0)
+        # sidewalk: setts + kerb, the two courses round to the road
+        _pavement(tile, d, 860, 470, 560, col=(158, 158, 154),
+                  joint=(108, 108, 106), n=16)
         PA.fill_rect(tile, [0, 560, W, H], (86, 86, 88), seed=804, value=0.06)
         PA.hand_stroke(d, [(0, 560), (W, 562)], (232, 232, 228), 8,
                        closed=False, seed=805, wavelength=220.0)
-        # Big trees cropped by the top edge -- the ordinary street trees.
-        # _tree's 4th arg is a HEIGHT in pixels (v1 uses 150-420), not a scale.
-        for k, x in enumerate((90, 300, 980, 1180)):
-            _tree(d, x, 302, 330, 810 + k)
+        # The road. Not one fill: a carriageway of worn tarmac with a dashed
+        # centre line, and two drain gratings. 160px of one grey across 1280 is
+        # the flat-band the gate keeps catching.
+        for _i, _ry in enumerate((596, 640)):
+            for _j in range(9):
+                dx = 20 + _j * 150
+                PA.fill_rect(PA.img_of(d), [dx, _ry, dx + 78, _ry + 9],
+                             (198, 198, 194), seed=866 + _i * 9 + _j,
+                             value=0.05)
+        for _i, _gx in enumerate((150, 980)):
+            for _j in range(6):
+                PA.fill_rect(PA.img_of(d), [_gx + _j * 20, 686, _gx + _j * 20 + 13,
+                                            712], (60, 60, 58),
+                             seed=880 + _i * 6 + _j, value=0.06)
+            PA.hand_stroke(d, [(_gx - 4, 684), (_gx + 124, 684),
+                               (_gx + 124, 714), (_gx - 4, 714)], INK, 4,
+                           closed=True, seed=886 + _i, wavelength=80.0)
+        # Big trees standing ON the pavement, cropped by the top edge -- the
+        # ordinary street trees. They sit IN FRONT of the facades now, at the
+        # kerb, which is both correct for a street tree and what puts a soft
+        # dark mass over the window grid -- without that, the facade reads as a
+        # flat elevation. base_y is the pavement (470), not the old horizon
+        # (300), because they are planted at the kerb now. Two sit in the gap
+        # so they do not cover the shopfronts.
+        for k, x in enumerate((70, 300, 1010, 1210)):
+            _tree(d, x, 470, 300 - (k % 2) * 30, 810 + k)
+        # Street lamps, one per block, cropped in. Each is a light source in
+        # frame, and each throws a pool onto the sidewalk -- the pools are what
+        # break up the pavement's setts.
+        _lamp_post(d, 640, 470, 300, 893, arm=54)
+        _lamp_post(d, 1180, 470, 280, 899, arm=-54)
     els.append(SC.stage(clock, 22, e_street, j=27))
 
     def e_queue(tile, fw, fh):
-        # The v1 seven-figure visitor queue. 'standing' is the only narrow
-        # pose, so the line stays a line and not a picket fence.
+        # The visitor queue. 'standing' is the only narrow pose, so the line
+        # stays a line and not a picket fence. Feet at 556, on the pavement
+        # (470-560), and the x-run is set so the figures stand clear of the
+        # lamp posts and the entrance gap -- memory resize-figure-check-neighbors:
+        # at the old 200..1100 they stood on top of the new facades' shopfronts.
         for i in range(7):
-            SC.fullbody(ImageDraw.Draw(tile), 200 + i * 150, 556,
-                        335 - (i % 3) * 40, 'standing', 'neutral', 820 + i)
+            SC.fullbody(ImageDraw.Draw(tile), 176 + i * 118, 556,
+                        300 - (i % 3) * 34, 'standing', 'neutral', 820 + i)
         # SNOW, not INK, despite this being the daylight stage. The label sits on
-        # the dark road band at line 768 -- fill_rect(tile, [0, 560, W, H],
-        # (86, 86, 88)) -- whose measured ring median luminance is 83.9, so
-        # INK (24, 24, 28) gave a 3.52:1 label that reads as a smudge: 2074
-        # pure-black keyline px + 1864 near-ink fill px and not one light pixel
-        # in the letterforms. Room39's INK is not T.INK, so draw_label already
-        # takes this as non-INK and supplies a 4px keyline; SNOW keeps that
-        # keyline and makes the FILL carry the contrast, which is what the
-        # in-art SNOW labels above (NO RECORD, and 'surface only' below) do.
+        # the dark road band -- fill_rect(tile, [0, 560, W, H], (86, 86, 88)) --
+        # whose measured ring median luminance is 83.9, so INK (24, 24, 28) gave
+        # a 3.52:1 label that reads as a smudge. Room39's INK is not T.INK, so
+        # draw_label already takes this as non-INK and supplies a 4px keyline;
+        # SNOW keeps that keyline and makes the FILL carry the contrast, which is
+        # what the in-art SNOW labels above (NO RECORD, 'surface only') do.
         D.draw_label(tile, 'open to visitors', center=(640, 604), color=SNOW,
                      size=28)
     els.append(SC.layer(clock, 22, e_queue, j=23,
@@ -1228,40 +1849,82 @@ def build():
 
     def e_entrance(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        # the leaf set into the facade, plus a short line of people cut off by
-        # the right edge
-        PA.fill_rect(tile, [880, 330, 1030, 462], (62, 66, 74), seed=830,
+        # The leaf set into the low wall in the gap between the facades -- the
+        # entrance is UNDRAWN as a gate, it is a dark slab in an ordinary wall,
+        # which is the point: it gives no sign of what is behind it.
+        PA.fill_rect(tile, [700, 300, 850, 466], (62, 66, 74), seed=830,
                      value=0.07)
-        PA.hand_stroke(d, [(880, 330), (1030, 330), (1030, 462), (880, 462)],
+        PA.hand_stroke(d, [(700, 300), (850, 300), (850, 466), (700, 466)],
                        INK, 6, closed=True, seed=831, wavelength=110.0)
+        # a short line of people cut off by the right edge, on the pavement
         for i in range(3):
-            SC.fullbody(d, 1100 + i * 120, 560, 300, 'standing', 'neutral',
-                        840 + i)
-        PA.hand_stroke(d, [(1050, 560), (W, 560)], RED, 7, closed=False,
+            SC.fullbody(d, 1030 + i * 118, 556, 280 - (i % 2) * 30,
+                        'standing', 'neutral', 840 + i)
+        PA.hand_stroke(d, [(900, 556), (W, 556)], RED, 7, closed=False,
                        seed=845, wavelength=160.0)
     els.append(SC.accrue(clock, 23, 27, e_entrance, kind='shape'))
     els.append(cap(23, 640, 690, size=32, fill=INK))
 
     def e_surface_only(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.hand_stroke(d, [(240, 340), (900, 340), (900, 430), (240, 430)],
+        # A red rectangle laid over the entrance wall: the satellite image, and
+        # the fact that it covers a surface and nothing more. Sized to the wall
+        # in the gap so it sits ON the entrance rather than floating mid-street.
+        PA.hand_stroke(d, [(560, 320), (900, 320), (900, 470), (560, 470)],
                        RED, 8, closed=True, seed=850, wavelength=150.0)
-        D.draw_label(tile, 'surface only', center=(570, 486), color=SNOW,
+        D.draw_label(tile, 'surface only', center=(730, 500), color=SNOW,
                      size=28)
     els.append(SC.layer(clock, 24, e_surface_only, j=25))
 
     def e_fence(tile, fw, fh):
-        _fence(ImageDraw.Draw(tile), -30, W + 30, 540, 150, 695,
+        # The palisade runs along the top of the low wall in the gap, cropping
+        # off both edges -- so the fence is what you look ACROSS to see the
+        # entrance, which is the whole sentence.
+        _fence(ImageDraw.Draw(tile), -30, W + 30, 300, 118, 695,
                col=(154, 156, 152))
     els.append(SC.accrue(clock, 25, 27, e_fence, kind='shape'))
 
     def e_bus_stop(tile, fw, fh):
         d = ImageDraw.Draw(tile)
+        # A bus shelter on the road side of the pavement, with a bench, a
+        # timetable panel and a lit sign -- the object that makes the street
+        # ordinary and, incidentally, the only 3-D-ish silhouette on it.
         PA.hand_stroke(d, [(150, 560), (150, 380)], (96, 100, 106), 9,
                        closed=False, seed=860, wavelength=60.0)
-        PA.fill_rect(tile, [110, 360, 250, 400], (72, 118, 150), seed=861,
+        PA.hand_stroke(d, [(250, 560), (250, 380)], (96, 100, 106), 9,
+                       closed=False, seed=861, wavelength=60.0)
+        # the glazed back and side
+        PA.fill_rect(tile, [150, 380, 252, 560], (96, 122, 148), seed=862,
                      value=0.05)
+        PA.hand_stroke(d, [(150, 380), (252, 380), (252, 560), (150, 560)],
+                       INK, 5, closed=True, seed=863, wavelength=80.0)
+        PA.hand_stroke(d, [(201, 380), (201, 560)], INK, 4, closed=False,
+                       seed=864, wavelength=70.0)
+        # the roof and its fascia
+        PA.fill_poly(PA.img_of(d), [(132, 356), (286, 356), (300, 380),
+                                    (120, 380)], (108, 112, 118), seed=865,
+                     value=0.07)
+        PA.hand_stroke(d, [(132, 356), (286, 356), (300, 380), (120, 380)],
+                       INK, 5, closed=True, seed=866, wavelength=70.0)
+        # the bench, in front of the glazing
+        PA.fill_rect(PA.img_of(d), [164, 500, 246, 514], (128, 96, 68),
+                     seed=867, value=0.08)
+        PA.hand_stroke(d, [(164, 500), (246, 500)], INK, 4, closed=False,
+                       seed=868, wavelength=60.0)
+        # the timetable panel
+        PA.fill_rect(tile, [112, 404, 146, 470], (216, 210, 190), seed=869,
+                     value=0.05)
+        PA.hand_stroke(d, [(112, 404), (146, 404), (146, 470), (112, 470)],
+                       INK, 4, closed=True, seed=870, wavelength=60.0)
+        # the park sign on a post
+        PA.hand_stroke(d, [(430, 560), (430, 424)], (84, 88, 94), 7,
+                       closed=False, seed=871, wavelength=50.0)
+        PA.fill_rect(tile, [402, 388, 470, 424], (72, 118, 150), seed=872,
+                     value=0.05)
+        PA.hand_stroke(d, [(402, 388), (470, 388), (470, 424), (402, 424)],
+                       INK, 4, closed=True, seed=873, wavelength=60.0)
         _car(d, 820, 566, 240, 862)
+        _car(d, -60, 640, 210, 866)
     els.append(SC.accrue(clock, 26, 27, e_bus_stop, kind='shape',
                          motion=SC.enter(clock, 26, dx=0, dy=-50, dur=0.50)))
     els.append(cap(26, 640, 700, size=32, fill=INK))
@@ -1274,34 +1937,138 @@ def build():
     # ===================================================================== #
     def f_wall(tile, fw, fh):
         d = ImageDraw.Draw(tile)
+        # THE FLAT-VECTOR FIX, measured: b27 read tile_std 2.97 on nine
+        # full-width single strokes -- 1280px of one colour per line, with
+        # half the frame a single unmodulated fill. A running bond gives ~15
+        # courses x ~15 individually valued bricks (the fortknox gold-slab
+        # density) for the price of one loop, and the kerb + lamp + drain
+        # crop the wall off the left edge so the composition is a PLACE the
+        # viewer is standing in front of, not a flat backdrop.
         PA.fill_rect(tile, [0, 0, W, H], BRICK, seed=900, value=0.08)
-        for k in range(9):
-            PA.hand_stroke(d, [(0, 40 + k * 62), (W, 40 + k * 62)],
-                           CLAY_D, 4, closed=False, seed=902 + k,
-                           wavelength=220.0)
-        PA.fill_rect(tile, [0, 560, W, H], (92, 92, 90), seed=920,
+        _brick_bond(d, -20, 0, W + 20, 556, 902, col=BRICK,
+                    col_m=(146, 108, 88), mortar=(174, 170, 160),
+                    bw=104, bh=36, w=3)
+        # pilasters -- vertical breaks so the wall has a rhythm, not a field
+        for _i, _px in enumerate((96, 402, 1108)):
+            PA.fill_rect(PA.img_of(d), [_px, 74, _px + 74, 560],
+                         (150, 112, 92), seed=906 + _i, value=0.09)
+            PA.hand_stroke(d, [(_px, 74), (_px + 74, 74), (_px + 74, 560),
+                               (_px, 560)], INK, 5, closed=True,
+                           seed=910 + _i, wavelength=120.0, vary=0.35)
+            for _j in range(4):
+                PA.fill_rect(PA.img_of(d),
+                             [_px + 12, 140 + _j * 96, _px + 62, 168 + _j * 96],
+                             (128, 94, 78), seed=916 + _i * 4 + _j, value=0.08)
+        # kerb + pavement -- the wall has to stand ON something
+        PA.fill_rect(tile, [0, 556, W, 596], (150, 146, 138), seed=920,
+                     value=0.07)
+        PA.hand_stroke(d, [(0, 558), (W, 558)], INK, 5, closed=False,
+                       seed=921, wavelength=200.0)
+        PA.fill_rect(tile, [0, 596, W, H], (92, 92, 90), seed=922,
                      value=0.06)
+        for _i, _sx in enumerate((0, 168, 336, 504, 672, 840, 1008, 1176)):
+            PA.hand_stroke(d, [(_sx, 596), (_sx - 46, H)], (66, 66, 66), 3,
+                           closed=False, seed=924 + _i, wavelength=110.0)
+        PA.hand_stroke(d, [(0, 664), (W, 664)], (70, 70, 70), 3, closed=False,
+                       seed=932, wavelength=220.0)
+        # gooseneck lamp cropped in at the left -- a light source in frame
+        PA.hand_stroke(d, [(-10, 556), (34, 470), (96, 430), (188, 424)],
+                       INK, 9, closed=False, seed=934, wavelength=130.0,
+                       vary=0.3)
+        PA.fill_poly(PA.img_of(d), [(168, 396), (222, 396), (236, 436),
+                                    (154, 436)], (58, 58, 60), seed=935,
+                     value=0.06)
+        PA.hand_stroke(d, [(168, 396), (222, 396), (236, 436), (154, 436)],
+                       INK, 5, closed=True, seed=936, wavelength=70.0)
+        # The cone MONOTONICALLY widens. The first pass pinched it to a waist
+        # at y=520 and it rendered as a pale bowtie on the brick, not a wash.
+        PA.fill_poly(PA.img_of(d), [(156, 438), (234, 438), (318, 652),
+                                    (62, 652)], LAMP, seed=937, value=0.05)
+        # drain grating at the wall foot, clear of the cone -- small repeated
+        # shapes, cheap density
+        for _i in range(7):
+            PA.fill_rect(PA.img_of(d), [1126 + _i * 21, 566, 1126 + _i * 21 + 13,
+                                        592], (58, 58, 56), seed=938 + _i,
+                         value=0.06)
+        PA.hand_stroke(d, [(1122, 564), (1276, 564), (1276, 594), (1122, 594)],
+                       INK, 4, closed=True, seed=946, wavelength=80.0)
     els.append(SC.stage(clock, 27, f_wall, j=30))
 
     def f_doors(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [540, 220, 1010, 600], STEEL, seed=930, value=0.08)
-        PA.hand_stroke(d, [(540, 220), (1010, 220), (1010, 600), (540, 600)],
+        # THE FLAT-VECTOR FIX, measured: b28 read 3.09 on one smooth steel
+        # rectangle. Two leaves split by one seam is still two smooth
+        # rectangles, so the leaf is now articulated the way the b37 leaf
+        # is -- jamb stiles, three hinge blocks, a rivet course top and
+        # bottom, and raised louvre plates -- and it is scaled to fill the
+        # frame between its own jambs instead of floating in the brick.
+        PA.fill_rect(tile, [470, 150, 1090, 690], (74, 78, 84), seed=929,
+                     value=0.07)
+        PA.hand_stroke(d, [(470, 150), (1090, 150), (1090, 690), (470, 690)],
+                       INK, 11, closed=True, seed=928, wavelength=170.0,
+                       vary=0.3)
+        PA.fill_rect(tile, [500, 178, 1062, 664], STEEL, seed=930, value=0.08)
+        PA.hand_stroke(d, [(500, 178), (1062, 178), (1062, 664), (500, 664)],
                        INK, 8, closed=True, seed=931, wavelength=140.0)
-        PA.hand_stroke(d, [(775, 220), (775, 600)], INK, 7, closed=False,
+        PA.hand_stroke(d, [(781, 178), (781, 664)], INK, 7, closed=False,
                        seed=932, wavelength=140.0)
-        _lock_wheel(d, 660, 420, 90, 933)
+        # jamb stiles -- a lit edge and a dark edge on each stile, so the
+        # leaf reads as folded steel rather than a fill
+        for _i, _sx in enumerate((500, 743, 781, 1024)):
+            PA.fill_rect(PA.img_of(d), [_sx, 178, _sx + 38, 664],
+                         (136, 146, 158), seed=960 + _i, value=0.08)
+            PA.hand_stroke(d, [(_sx, 178), (_sx, 664)], STEEL_D, 5,
+                           closed=False, seed=964 + _i, wavelength=200.0)
+            PA.hand_stroke(d, [(_sx + 38, 178), (_sx + 38, 664)], (170, 180,
+                                                                 192), 3,
+                           closed=False, seed=968 + _i, wavelength=200.0)
+        # Left leaf carries the keypad, so it gets raised side ribs instead of
+        # plates -- the keypad itself is the plate there.
+        for _i, _rx in enumerate((504, 738)):
+            PA.fill_rect(PA.img_of(d), [_rx, 186, _rx + 34, 656],
+                         (136, 146, 158), seed=972 + _i, value=0.08)
+            PA.hand_stroke(d, [(_rx, 186), (_rx, 656)], STEEL_D, 5,
+                           closed=False, seed=976 + _i, wavelength=200.0)
+            for _j in range(6):
+                PA.fill_rect(PA.img_of(d), [_rx + 8, 226 + _j * 68,
+                                            _rx + 26, 244 + _j * 68],
+                             (86, 92, 102), seed=980 + _i * 6 + _j,
+                             value=0.06)
+        # Right leaf carries the lock wheel, so its plates flank the wheel
+        # rather than stacking under it. First pass ran FOUR plates down the
+        # whole leaf and the wheel landed on top of two of them.
+        for _i, _ly in enumerate((196, 546)):
+            PA.fill_rect(PA.img_of(d), [820, _ly, 1042, _ly + 100],
+                         (104, 112, 124), seed=990 + _i, value=0.08)
+            PA.hand_stroke(d, [(820, _ly), (1042, _ly), (1042, _ly + 100),
+                               (820, _ly + 100)], INK, 5, closed=True,
+                           seed=994 + _i, wavelength=90.0)
+            for _m in range(4):
+                PA.hand_stroke(d, [(832, _ly + 18 + _m * 22),
+                                   (1030, _ly + 18 + _m * 22)], (70, 76, 86),
+                               4, closed=False, seed=998 + _i * 4 + _m,
+                               wavelength=70.0)
+        _rivet_row(d, 512, 190, 1050, 190, 11, 1010)
+        _rivet_row(d, 512, 652, 1050, 652, 11, 1011)
+        _lock_wheel(d, 930, 420, 100, 933)
     els.append(SC.accrue(clock, 27, 30, f_doors,
                          motion=SC.enter(clock, 27, dx=90, dur=0.50)))
 
     def f_keypad(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _keypad(d, 620, 400, 260, 340, 768, cols=3, rows=4)
-        PA.hand_stroke(d, [(880, 300), (880, 220)], (86, 90, 96), 8,
-                       closed=False, seed=940, wavelength=60.0)
-        PA.fill_poly(PA.img_of(d),
-                     [(880, 220), (880, 300), (1040, 340), (900, 300)],
-                     (216, 208, 168), seed=941, value=0.05)
+        # Conduit + junction box, run up the RIGHT of the panel into the brick.
+        # The first pass dropped a pale wedge straight over the door's louvre
+        # plates and read as a rendering fault rather than as hardware.
+        PA.hand_stroke(d, [(1010, 470), (1010, 150), (940, 150)], (86, 90, 96),
+                       8, closed=False, seed=940, wavelength=70.0)
+        PA.fill_rect(PA.img_of(d), [944, 118, 1078, 178], (216, 208, 168),
+                     seed=941, value=0.05)
+        PA.hand_stroke(d, [(944, 118), (1078, 118), (1078, 178), (944, 178)],
+                       INK, 5, closed=True, seed=942, wavelength=70.0)
+        for _i, _sx in enumerate((968, 1000, 1032)):
+            PA.hand_stroke(d, [(_sx, 134), (_sx, 162)], (86, 90, 96), 6,
+                           closed=False, seed=943 + _i, wavelength=40.0)
     els.append(SC.accrue(clock, 28, 30, f_keypad,
                          motion=SC.enter(clock, 28, dx=0, dy=-40, dur=0.45)))
 
@@ -1468,10 +2235,20 @@ def build():
 
     def g_chair(tile, fw, fh):
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [480, 520, 700, 596], (66, 70, 78), seed=1100,
+        # Moved off centre. At 480-700 the chair sat directly under the
+        # 'no one in decades' label AND directly under the presenter, so the
+        # beat read as a person sitting in it -- the exact opposite of the
+        # line. Left of centre, it reads as an empty chair with someone
+        # standing well away from it.
+        PA.fill_rect(tile, [386, 496, 606, 572], (66, 70, 78), seed=1100,
                      value=0.07)
-        PA.hand_stroke(d, [(480, 520), (700, 520)], (96, 98, 110), 6,
+        PA.hand_stroke(d, [(386, 496), (606, 496)], (96, 98, 110), 6,
                        closed=False, seed=1101, wavelength=90.0)
+        PA.hand_stroke(d, [(386, 496), (386, 420), (430, 420)], (96, 98, 110),
+                       6, closed=False, seed=1102, wavelength=90.0)
+        for _i, _lx in enumerate((410, 470, 530, 590)):
+            PA.hand_stroke(d, [(_lx, 500), (_lx, 540)], (48, 51, 59), 4,
+                           closed=False, seed=1104 + _i, wavelength=60.0)
         D.draw_label(tile, 'no one in decades', center=(640, 646), color=SNOW,
                      size=26)
     els.append(SC.layer(clock, 36, g_chair, j=37))
@@ -1482,10 +2259,12 @@ def build():
         # at all, so every one of those frames was pure diagram. He arrives on
         # the "no one in decades" beat, which is the emptiest line in the
         # chapter and the one a surrogate is for.
-        # Cropped into the RIGHT so he does not sit on the chair or the 'no one
-        # in decades' label at (640,646); cream because the chamber is dark.
-        # pose 'shrug' because the line is a shrug of the room.
-        SC.fullbody(ImageDraw.Draw(tile), 1030, 660, 380, 'shrug',
+        # Stand-off at the right, feet on the chamber's near floor course, well
+        # clear of the empty chair -- memory resize-figure-check-neighbors:
+        # the first pass at x=1030 put him astride the chair and the beat lost
+        # its meaning. Cream because the chamber is dark; 'shrug' because the
+        # line is a shrug of the room.
+        SC.fullbody(ImageDraw.Draw(tile), 1092, 700, 400, 'shrug',
                     'deadpan', 1112, ink=(238, 236, 228))
     els.append(SC.accrue(clock, 36, 38, g_presenter, kind='character',
                          motion=SC.enter(clock, 36, dx=90, dy=0, dur=0.50)))
@@ -1494,7 +2273,12 @@ def build():
         # The finale. One door filling the frame, the way the chapter opened
         # on one door filling the frame at b13 -- the bookend is deliberate.
         d = ImageDraw.Draw(tile)
-        _blast_door(d, 560, 380, 980, 940, 1023, wheel=True, plates=4,
+        # FULL BLEED. At 980 wide centred on 560 the leaf stopped at x=1050 and
+        # a 130px strip of the night cross-section showed down the right side --
+        # a tree, the park band and the red light, all of them from b34. The
+        # finale was showing the previous act. Widened to 1420 so the leaf runs
+        # off both edges and the strip is gone.
+        _blast_door(d, 620, 360, 1420, 1000, 1023, wheel=True, plates=5,
                     lamp=False, seam_floor=96)
         d.ellipse([1080, 300, 1116, 336], fill=RED)
         PA.fill_rect(tile, [1160, -40, W + 60, 760], (66, 70, 78), seed=1110,
@@ -1503,6 +2287,47 @@ def build():
                        seed=1111, wavelength=210.0)
         D.draw_label(tile, 'still shut', center=(560, 646), color=RED,
                      size=34)
+        # ---- LEAF STRUCTURE (the flat-vector fix) -------------------------- #
+        # Four plate courses across 1280px is four big smooth shapes, which is
+        # the flat-vector failure wearing plate seams as a disguise. A real
+        # blast leaf is stiffened: vertical ribs down every stile, hinge
+        # blocks up the left edge, dog-bolt bosses across the meeting stile,
+        # and a hazard chevron band at head height.
+        for _i, _rx in enumerate((146, 262, 378, 862, 978, 1094)):
+            PA.fill_rect(PA.img_of(d), [_rx - 17, -40, _rx + 17, 760],
+                         (134, 146, 160), seed=1120 + _i, value=0.08)
+            PA.hand_stroke(d, [(_rx - 17, -40), (_rx - 17, 760)], STEEL_D, 5,
+                           closed=False, seed=1130 + _i, wavelength=200.0)
+            PA.hand_stroke(d, [(_rx + 17, -40), (_rx + 17, 760)], (176, 186, 198),
+                           3, closed=False, seed=1140 + _i, wavelength=200.0)
+        for _i, _hy in enumerate((196, 300, 480, 660)):
+            PA.fill_rect(PA.img_of(d), [-40, _hy - 26, 122, _hy + 26],
+                         (120, 132, 146), seed=1150 + _i, value=0.08)
+            PA.hand_stroke(d, [(-40, _hy - 26), (122, _hy - 26)], STEEL_D, 5,
+                           closed=False, seed=1160 + _i, wavelength=140.0)
+            for _j in range(3):
+                PA.fill_poly(PA.img_of(d),
+                             PA.ellipse_pts(18 + _j * 36, _hy, 9, 9, n=10),
+                             (176, 184, 194), seed=1170 + _i * 3 + _j,
+                             value=0.05)
+        # Hazard chevrons on the head beam: the one saturated note on an
+        # all-steel frame. Placed at y 86-128 rather than across the middle --
+        # the first pass ran them at 214 and they cut straight through the lock
+        # wheel, which is the one thing on this leaf the eye must land on.
+        for _i in range(11):
+            _cx0 = 106 + _i * 76
+            PA.fill_poly(PA.img_of(d),
+                         [(_cx0, 86), (_cx0 + 40, 86), (_cx0 + 76, 128),
+                          (_cx0 + 36, 128)], (46, 44, 48), seed=1190 + _i,
+                         value=0.06)
+            PA.fill_poly(PA.img_of(d),
+                         [(_cx0 + 40, 86), (_cx0 + 76, 86), (_cx0 + 112, 128),
+                          (_cx0 + 76, 128)], (188, 152, 44), seed=1201 + _i,
+                         value=0.07)
+        PA.hand_stroke(d, [(100, 80), (946, 80)], INK, 6, closed=False,
+                       seed=1215, wavelength=180.0)
+        PA.hand_stroke(d, [(100, 134), (946, 134)], INK, 6, closed=False,
+                       seed=1216, wavelength=180.0)
     els.append(SC.accrue(clock, 37, 38, g_final_door, kind='shape'))
     els.append(cap(37, 640, 690, size=32, fill=INK))
 

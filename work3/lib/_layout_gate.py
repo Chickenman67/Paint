@@ -107,7 +107,7 @@ def _edge_energy(a, box):
 
 def check(chapter):
     _instrument()
-    mod = importlib.import_module('%s_scene' % chapter)
+    mod = importlib.import_module(SC.scene_mod(chapter))
     meta = json.load(open(os.path.join(ROOT, 'segments', chapter,
                                        'beats.json')))
     beats = meta['beats']
@@ -148,7 +148,7 @@ def main(argv):
                                            'beats.json')):
             print('%-11s no beats.json -- skip' % ch)
             continue
-        if not os.path.exists(os.path.join(HERE, '%s_scene.py' % ch)):
+        if not os.path.exists(os.path.join(HERE, SC.scene_mod(ch) + '.py')):
             print('%-11s no scene file -- skip' % ch)
             continue
         try:

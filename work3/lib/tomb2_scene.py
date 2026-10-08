@@ -349,6 +349,123 @@ def _contour_bands(tile, d, x0, x1, y_base, seed, cols, n=6, h=54,
         y -= h
 
 
+def _hatch(tile, d, poly, seed, col, spacing=15, width=3, angle=0.62,
+           wd=6):
+    """Parallel hatching clipped to a polygon -- the survey/geology convention,
+    and the only thing that moves the MEDIAN tile.
+
+    WHY THIS EXISTS AND WHY SMALL SHAPES WERE NOT ENOUGH. The pigment gate is a
+    MEDIAN over 24px tiles, so a frame only clears the bar when more than half
+    its tiles straddle an edge. A lattice of 90x70 outlined cells does not do
+    that: each cell leaves a 24px tile at its centre that is pure flat fill, so
+    the median stays at the fill's own drift and the frame reads flat no matter
+    how many cells it stacks. Hatching puts an edge every `spacing` px, so a 24px
+    tile holds one or two of them and every tile in the region gets real spread.
+    That is why the fortknox gold-slab frame scores 53 -- its slabs are small
+    enough that most tiles touch a mortar line.
+
+    Lines are clipped by testing sample points against the polygon, so hatching
+    follows the shape it is filling rather than running through the frame.
+    """
+    xs = [p[0] for p in poly]
+    ys = [p[1] for p in poly]
+    x0, x1 = min(xs), max(xs)
+    y0, y1 = min(ys), max(ys)
+
+    def inside(px, py):
+        c = False
+        n = len(poly)
+        for i in range(n):
+            ax, ay = poly[i]
+            bx, by = poly[(i + 1) % n]
+            if (ay > py) != (by > py):
+                xint = ax + (py - ay) * (bx - ax) / float(by - ay)
+                if px < xint:
+                    c = not c
+        return c
+
+    ca, sa = math.cos(angle), math.sin(angle)
+    diag = math.hypot(x1 - x0, y1 - y0)
+    steps = int(diag / spacing) + 2
+    for k in range(steps):
+        off = k * spacing + ((seed * 7) % max(1, int(spacing)))
+        run = []
+        nhops = int(diag / float(wd)) + 2
+        for s in range(nhops):
+            # a point on the k-th line: walk along the line direction from the
+            # polygon's top-left corner, offset perpendicular by `off`.
+            ax0, ay0 = x0, y0
+            t = s * wd
+            px = ax0 + t * ca - off * sa
+            py = ay0 + t * sa + off * ca
+            if x0 - 2 <= px <= x1 + 2 and y0 - 2 <= py <= y1 + 2 and \
+                    inside(px, py):
+                run.append((px, py))
+            else:
+                if len(run) >= 2:
+                    PA.hand_stroke(d, run, col, width, closed=False,
+                                   seed=seed + k * 7, wavelength=120.0)
+                run = []
+        if len(run) >= 2:
+            PA.hand_stroke(d, run, col, width, closed=False,
+                           seed=seed + k * 7, wavelength=120.0)
+
+
+def _cut_face(tile, d, x0, y0, x1, y1, seed, base, n=7):
+    """An excavated earth face: stacked strata bands, each a different tone.
+
+    A trench wall or a pit's cut side is the most common large surface in this
+    chapter and the flattest. Real cuts band by soil layer, and each boundary is
+    a wobbled line -- so the surface arrives already carrying horizontal
+    contours and value steps, and the near band gets a rammed-earth course grid
+    pressed into it. Layers are drawn top-down from `base` so a lower, darker
+    stratum shows at each riser.
+    """
+    strata = (base,
+              tuple(max(0, c - 16) for c in base),
+              tuple(min(255, c + 18) for c in base),
+              tuple(max(0, c - 30) for c in base),
+              tuple(min(255, c + 8) for c in base),
+              tuple(max(0, c - 8) for c in base),
+              tuple(min(255, c + 26) for c in base))
+    y = float(y0)
+    band_h = (y1 - y0) / float(n)
+    for k in range(n):
+        yb = y + band_h * (1.0 + 0.22 * (((seed + k * 19) % 30) / 30.0 - 0.5))
+        yb = min(yb, y1)
+        pts = [(x0, y)]
+        steps = 16
+        for s in range(steps + 1):
+            fx = x0 + (x1 - x0) * s / float(steps)
+            wob = 9.0 * math.sin(s * 0.9 + k * 2.1 + seed * 0.03)
+            wob += (((seed + k * 13 + s * 7) % 10) / 10.0 - 0.5) * 14.0
+            pts.append((fx, y + wob))
+        PA.fill_poly(tile, pts + [(x1, yb), (x0, yb)], strata[k % len(strata)],
+                     seed=seed + k * 7, value=0.09, tint=0.0, band=0.0,
+                     edge=1.6)
+        PA.hand_stroke(d, pts, INK, 4, closed=False, seed=seed + k * 11,
+                       wavelength=170.0)
+        y = yb
+    # The top two bands are the ones a digger actually cut into, so they carry
+    # the course grid -- small pressed rectangles, the rammed-earth texture at
+    # the scale the fortknox gold-slab frame gets its density from.
+    for r in range(4):
+        ya = y0 + (y1 - y0) * r * 0.055
+        yb = ya + (y1 - y0) * 0.055
+        x = x0 + 10
+        c = 0
+        while x < x1 - 20:
+            seg = 74 + ((seed + r * 17 + c * 11) % 78)
+            xe = min(x + seg, x1)
+            PA.hand_stroke(d, [(x + 2, ya + 4), (xe - 2, ya + 4), (xe - 2, yb - 4),
+                               (x + 2, yb - 4)], (92, 70, 52), 3, closed=True,
+                           seed=seed + 300 + r * 23 + c, wavelength=80.0)
+            x = xe
+            c += 1
+    PA.hand_stroke(d, [(x0, y0), (x1, y0)], INK, 6, closed=False,
+                   seed=seed + 500, wavelength=200.0)
+
+
 def _far_rank(tile, d, seed, y_base, rows=((0.42, 0.55, (96, 60, 36),
                                             (70, 44, 26)),
                                            (0.24, 0.36, (120, 76, 44),
@@ -904,6 +1021,15 @@ def build():
             PA.hand_stroke(d, [(tx, 150), (tx, 186)], GOLD, 5, closed=False,
                            seed=312 + k, wavelength=40.0)
         _throne(d, 940, 730, 560, 296)
+        # Carved panel divisions ON the throne itself. _throne draws two plain
+        # rectangles; left smooth they are ~90k px of flat terracotta, which is
+        # what kept b16 under the bar on the second attempt even after the room
+        # got structure. A recessed lattice over the back and the seat breaks
+        # both rectangles into edge-rich panels.
+        _panel_grid(tile, d, 786, 208, 1096, 424, seed=306,
+                    col=(122, 68, 46), nx=4, ny=3, w_line=4)
+        _panel_grid(tile, d, 664, 622, 1216, 700, seed=308,
+                    col=(116, 64, 44), nx=6, ny=1, w_line=4)
         # ornament on the throne back: two carved roundels and a bead band
         for rx in (860, 1020):
             PA.hand_stroke(d, PA.arc_pts(rx, 300, 42, 42, 0, 360, n=28),
@@ -922,8 +1048,32 @@ def build():
                      (70, 52, 42), seed=301, value=0.10)
         PA.hand_stroke(d, [(640, 720), (1300, 720), (1230, 660), (700, 660)],
                        INK, 6, closed=True, seed=300, wavelength=150.0)
-        SC.closeup(d, 400, 330, 175, 'deadpan', 297)
-        D.draw_bubble(tile, 'himself', (940, 200), tail_to=(840, 380),
+        # A rack of ceremonial bronze blades on the wall in the gap between the
+        # man and the throne -- the court furniture that says "throne room"
+        # instead of "brown box". The rail runs off under the canopy at the
+        # right, so the room reads as continuing past the frame.
+        PA.hand_stroke(d, [(498, 182), (648, 182)], BRONZE, 8, closed=False,
+                       seed=312, wavelength=60.0)
+        for k in range(5):
+            bx = 512 + k * 30
+            bl = 78 + ((k * 31) % 44)
+            PA.fill_poly(tile, [(bx - 8, 182), (bx + 8, 182), (bx + 5, 182 + bl),
+                                (bx - 3, 182 + bl)], BRONZE, seed=314 + k,
+                         value=0.12, edge=1.4)
+            PA.hand_stroke(d, [(bx - 8, 182), (bx + 8, 182), (bx + 5, 182 + bl),
+                               (bx - 3, 182 + bl)], INK, 4, closed=True,
+                           seed=318 + k, wavelength=45.0)
+            PA.hand_stroke(d, [(bx - 11, 178), (bx + 11, 178)], GOLD, 4,
+                           closed=False, seed=322 + k, wavelength=25.0)
+        # The close-up is kept on the left, but at hr 132 rather than 175.
+        # SC.closeup's bust is a fill_poly with value/tint/band/edge all zero --
+        # a deliberately pigment-free black mass -- and at hr 175 it covered
+        # ~27% of the frame in one smooth shape, which is what held b16 at 6.53
+        # even after the room got its wall. Smaller bust, same presence.
+        SC.closeup(d, 286, 306, 132, 'deadpan', 297)
+        # The bubble still points at the EMPTY THRONE -- the joke is that the
+        # seat labelled "himself" stands in for the man.
+        D.draw_bubble(tile, 'himself', (1074, 150), tail_to=(990, 320),
                       font_size=34, max_w=260)
     els.append(SC.layer(clock, 16, c_throne, j=17, kind='bg',
                         eid='c_throne'))
@@ -941,17 +1091,106 @@ def build():
         _earth_field(tile, 355, sky=(198, 206, 214), ground=EARTH,
                      hz=int(H * 0.44))
         d = ImageDraw.Draw(tile)
+        # The upper 44% of this stage was bare sky on all four beats, and b17
+        # through b20 all measured 3.0-3.9 because of it: one smooth 405k-pixel
+        # field with nothing in it. The fix is layered depth -- a hazy sun, two
+        # cloud decks, and a far mountain range sitting on the horizon -- so the
+        # sky is receding space rather than a fill, and the eye gets a horizon
+        # to read the mound against.
+        hz = int(H * 0.44)
+        # hazy sun, low and pale, sitting just left of the mound's crown
+        PA.fill_poly(tile, PA.ellipse_pts(300, 196, 74, 74, n=26),
+                     (238, 226, 198), seed=380, value=0.07, tint=0.10,
+                     band=0.20, edge=0.9)
+        PA.hand_stroke(d, PA.arc_pts(300, 196, 74, 74, 0, 360, n=30),
+                       (226, 208, 176), 5, closed=False, seed=381,
+                       wavelength=110.0)
+        # two cloud decks: the far one thin and high, the near one a stacked
+        # row of lobes with a shaded underside
+        for k, (cy, rx, ry, col) in enumerate((
+                (110, 120, 26, (214, 218, 222)),
+                (146, 96, 22, (206, 210, 216)))):
+            cx = 180 + k * 620
+            PA.fill_poly(tile, PA.ellipse_pts(cx, cy, rx, ry, n=24), col,
+                         seed=382 + k, value=0.06, tint=0.08, band=0.24,
+                         edge=1.0)
+            PA.hand_stroke(d, PA.arc_pts(cx, cy, rx, ry, 190, 350, n=20), col,
+                           6, closed=False, seed=384 + k, wavelength=90.0)
+        for k, (cx, cy, rx, ry) in enumerate(((430, 122, 108, 24),
+                                              (560, 136, 76, 18),
+                                              (960, 108, 132, 26),
+                                              (1090, 128, 92, 20))):
+            PA.fill_poly(tile, PA.ellipse_pts(cx, cy, rx, ry, n=24),
+                         (222, 226, 230), seed=386 + k, value=0.06, tint=0.10,
+                         band=0.26, edge=1.0)
+            PA.hand_stroke(d, PA.arc_pts(cx, cy + ry * 0.5, rx * 0.86, ry * 0.5,
+                                         200, 340, n=18), (188, 192, 200), 5,
+                           closed=False, seed=388 + k, wavelength=80.0)
+        # a far mountain range on the horizon, three ridges receding
+        for k, (col, amp, base) in enumerate((((178, 188, 198), 46, hz + 6),
+                                              ((166, 178, 190), 62, hz + 14),
+                                              ((152, 164, 178), 40, hz + 24))):
+            pts = [(-40, base + 40)]
+            x = -40
+            while x < W + 40:
+                x += 54 + ((k * 37 + x) % 46)
+                pts.append((x, base - amp * (0.35 + ((x * 7 + k * 53) % 60)
+                                             / 100.0)))
+            pts.append((W + 40, base + 40))
+            PA.fill_poly(tile, pts, col, seed=390 + k, value=0.08, tint=0.06,
+                         band=0.18, edge=1.1)
+            PA.hand_stroke(d, pts[1:-1], tuple(max(0, c - 26) for c in col), 4,
+                           closed=False, seed=394 + k, wavelength=120.0)
+        # Ploughed ground in the foreground either side of the mound. Drawn BEFORE
+        # the mound so the furrows recede behind it instead of striping across
+        # it -- the mound is the subject and must read as one solid mass.
+        for k in range(9):
+            yy = hz + 26 + k * 44
+            if yy > 716:
+                break
+            PA.hand_stroke(d, [(-20, yy), (W + 20, yy + 10)],
+                           (150, 124, 92), 4, closed=False, seed=410 + k,
+                           wavelength=180.0)
+        _rubble(tile, d, (0, 600, 340, 720), 12, seed=414, col=(152, 126, 94),
+                rmin=8, rmax=22)
+        _rubble(tile, d, (960, 600, 1280, 720), 12, seed=416, col=(152, 126, 94),
+                rmin=8, rmax=22)
         # The mound, truncated by the bottom edge, with its rammed-earth
         # courses. It is the backdrop rather than an arrival so that b20's
         # carriers have something to be small against.
         PA.fill_poly(tile, [(150, 720), (470, 232), (810, 232), (1140, 720)],
                      EARTH_D, seed=356, value=0.10)
-        for k in range(6):
-            yy = 262 + k * 66
-            inset = int((yy - 232) * 0.55)
-            PA.hand_stroke(d, [(180 + inset, yy), (1110 - inset, yy)],
-                           EARTH, 7, closed=False, seed=360 + k,
-                           wavelength=170.0)
+        # Dense rammed-earth banding. The original six strokes left ~250k px of
+        # one flat trapezoid; the mound is the single largest shape in all four
+        # beats, so it has to carry real surface.
+        for k in range(17):
+            yy = 250 + k * 28
+            if yy > 700:
+                break
+            # The courses must sit INSIDE the trapezoid. The first pass used
+            # an inset measured from the apex, which drew them straight across
+            # the sky and the mountains -- the mound stopped reading as a
+            # solid. Half-width is linear in y, so derive both edges from it.
+            hw = 170.0 + (yy - 232.0) * 0.656
+            xl = 640.0 - hw + 8
+            xr = 640.0 + hw - 8
+            if xr - xl < 20:
+                continue
+            PA.hand_stroke(d, [(xl, yy), (xr, yy)],
+                           EARTH, 5, closed=False, seed=360 + k,
+                           wavelength=120.0)
+            PA.hand_stroke(d, [(xl, yy + 6), (xr, yy + 6)],
+                           (108, 84, 60), 3, closed=False, seed=380 + k,
+                           wavelength=140.0)
+        # the vertical lift shafts on the east face, and a spoil ramp
+        for k, sx in enumerate((520, 620, 720, 820)):
+            PA.hand_stroke(d, [(sx, 250 + (720 - sx) * 0.22),
+                               (sx + 10, 690)], (108, 84, 60), 6,
+                           closed=False, seed=400 + k, wavelength=130.0)
+        PA.fill_poly(tile, [(880, 720), (990, 720), (935, 430)], EARTH,
+                     seed=404, value=0.10)
+        PA.hand_stroke(d, [(880, 720), (935, 430), (990, 720)], INK, 5,
+                       closed=False, seed=405, wavelength=110.0)
         PA.hand_stroke(d, [(150, 720), (470, 232), (810, 232), (1140, 720)],
                        INK, 7, closed=False, seed=370, wavelength=190.0)
     els.append(SC.stage(clock, 17, d_field, j=21))
@@ -978,6 +1217,41 @@ def build():
         d = ImageDraw.Draw(tile)
         PA.fill_poly(tile, [(300, 720), (360, 480), (900, 460), (980, 720)],
                      PIT, seed=310, value=0.10)
+        # The pit was one smooth near-black trapezoid and it is the single
+        # largest shape in b18 and b19, where both beat scores sat at 3.1-3.2
+        # even after the stage backdrop got its sky. Give it what a pit has:
+        # shored timber walls down each side, a ladder, spoil, and the stacked
+        # bricks of a half-dug shaft at the bottom.
+        for k in range(4):     # shoring posts down the near wall
+            px = 340 + k * 168
+            PA.hand_stroke(d, [(px, 462 + ((k * 23) % 20)), (px - 10, 720)],
+                           (92, 66, 46), 11, closed=False, seed=430 + k,
+                           wavelength=150.0)
+            PA.hand_stroke(d, [(px + 12, 468 + ((k * 23) % 20)),
+                               (px + 2, 720)], (72, 52, 36), 7, closed=False,
+                           seed=434 + k, wavelength=150.0)
+        for k in range(3):     # cross-braces
+            py = 520 + k * 66
+            PA.hand_stroke(d, [(316, py), (972, py - 14)], (86, 62, 44), 7,
+                           closed=False, seed=438 + k, wavelength=200.0)
+        # a ladder down into the shaft
+        PA.hand_stroke(d, [(872, 470), (836, 716)], (140, 108, 74), 6,
+                       closed=False, seed=442, wavelength=90.0)
+        PA.hand_stroke(d, [(934, 466), (898, 712)], (140, 108, 74), 6,
+                       closed=False, seed=443, wavelength=90.0)
+        for k in range(8):
+            ry = 486 + k * 30
+            PA.hand_stroke(d, [(866 - k * 4.4, ry), (928 - k * 4.4, ry - 5)],
+                           (150, 118, 82), 5, closed=False, seed=444 + k,
+                           wavelength=45.0)
+        # spoil and half-dug brick courses on the pit floor
+        for k in range(7):
+            yy = 646 + (k % 3) * 22
+            xx = 340 + ((k * 97) % 480)
+            PA.fill_rect(tile, [xx, yy, xx + 54, yy + 18], (74, 54, 40),
+                         seed=452 + k, value=0.10, edge=1.4)
+        _rubble(tile, d, (320, 620, 960, 720), 18, seed=460, col=(66, 48, 38),
+                rmin=7, rmax=20)
         PA.fill_poly(tile, [(620, 470), (700, 216), (790, 216), (800, 470)],
                      (122, 92, 62), seed=311, value=0.09)
         d.ellipse([686, 186, 734, 240], fill=(176, 142, 106))
@@ -1033,13 +1307,42 @@ def build():
     def e_night(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         PA.fill_rect(tile, [0, 0, W, H], (44, 44, 66), seed=380, value=0.08)
+        # A milky band across the sky before the stars. All five beats of this
+        # stage measured 2.9-3.9 on a 430px sky that was one flat navy with
+        # forty dots on it; the band plus a denser, brightness-varied starfield
+        # turns the upper half into layered night instead of a fill.
+        for k in range(9):
+            # A drifting diagonal of OUTLINED lobes. Soft unoutlined blobs made
+            # this WORSE -- they cost b23 2.4 points, because a smooth pale
+            # ellipse on a smooth navy field is exactly the flat the gate is
+            # hunting. The lobe has to carry an edge.
+            cx = -80 + k * 170
+            cy = 250 - (cx + 80) * 0.30 + ((k * 61) % 120) - 60
+            rx = 130 + ((k * 47) % 110)
+            ry = 40 + ((k * 29) % 34)
+            PA.fill_poly(tile, PA.ellipse_pts(cx, cy, rx, ry, n=26),
+                         (70, 70, 102), seed=1400 + k, value=0.10, tint=0.10,
+                         band=0.30, edge=1.8)
+            PA.hand_stroke(d, PA.ellipse_pts(cx, cy, rx, ry, n=26),
+                           (40, 40, 68), 4, closed=True, seed=1405 + k,
+                           wavelength=200.0)
+        for k in range(5):      # dust lanes, following the same diagonal
+            yy = 176 + k * 44
+            PA.hand_stroke(d, [(-20, yy), (W + 20, yy - 130)], (36, 36, 60),
+                           20, closed=False, seed=1410 + k, wavelength=240.0)
         PA.paper_overlay(tile, seed=381)
-        for k in range(40):
+        for k in range(96):
             sx = (k * 197) % W
-            sy = 96 + (k * 83) % 300
-            sr = 2 + (k % 3)
-            PA.fill_poly(tile, PA.ellipse_pts(sx, sy, sr, sr, n=10),
-                         (226, 228, 236), seed=382 + k, value=0.05)
+            sy = 96 + (k * 83) % 306
+            sr = 1 + (k % 4)
+            b = 168 + ((k * 53) % 84)
+            PA.fill_poly(tile, PA.ellipse_pts(sx, sy, sr, sr, n=8),
+                         (b, b, min(255, b + 8)), seed=382 + k, value=0.06)
+            if k % 7 == 0:     # the brightest get a soft halo, not a cross --
+                PA.hand_stroke(d, PA.arc_pts(sx, sy, sr * 3.2, sr * 3.2,
+                                             0, 360, n=14),
+                               (b - 40, b - 40, b - 32), 3, closed=False,
+                               seed=1430 + k, wavelength=30.0)
         # AFTER the stars, per v1's c_palace: the lit course has to be the
         # topmost thing in the band or the stars punch holes in it.
         SC.title_backdrop(tile, 1382, col=(86, 88, 116))
@@ -1051,21 +1354,88 @@ def build():
         PA.fill_rect(tile, [0, 430, W, H], (30, 28, 34), seed=390, value=0.07)
         PA.hand_stroke(d, [(-10, 430), (1290, 430)], INK, 6, closed=False,
                        seed=391, wavelength=210.0)
+        # Receding ground: three contour ridges below the horizon so the
+        # lower band is receding night plain rather than one dark plane.
+        for k, (col, base, amp) in enumerate((((44, 40, 46), 512, 26),
+                                              ((58, 52, 58), 594, 34),
+                                              ((72, 64, 68), 676, 40))):
+            pts = [(-40, base + 60)]
+            x = -40
+            while x < W + 40:
+                x += 78 + ((k * 41 + x) % 70)
+                pts.append((x, base - amp * (0.30 + ((x * 11 + k * 47) % 60)
+                                             / 100.0)))
+            pts.append((W + 40, base + 60))
+            PA.fill_poly(tile, pts, col, seed=1460 + k, value=0.11, tint=0.06,
+                         band=0.30, edge=2.0)
+            PA.hand_stroke(d, pts[1:-1], (22, 20, 26), 5, closed=False,
+                           seed=1464 + k, wavelength=150.0)
+            # scrub tufts along the ridge, so the plain is walked ground and
+            # not three stacked ribbons
+            for j in range(14):
+                tx = -20 + j * 96 + ((k * 29 + j * 13) % 40)
+                ty = base - amp * (0.30 + ((tx * 11 + k * 47) % 60) / 100.0)
+                PA.fill_poly(tile, [(tx - 5, ty), (tx + 5, ty),
+                                    (tx + 1, ty - 16 - (j % 3) * 6)],
+                             (34, 34, 42), seed=1468 + k * 20 + j,
+                             value=0.10, edge=1.0)
         # the mound, cropped by the left edge, and beside it a stepped pyramid
         # cropped by the right: the comparison the beat is making
         PA.fill_poly(tile, [(60, 720), (300, 300), (620, 300), (860, 720)],
                      (34, 30, 28), seed=392, value=0.08)
+        # rammed-earth banding on the mound, clipped inside its own silhouette.
+        # The bands were (52,46,42) on (34,30,28) -- eight levels of luma apart,
+        # which is invisible at 24px. Real rammed earth is banded in LIGHT and
+        # DARK lifts with a shadow line under each, so the contrast has to be
+        # wide or the banding is just a slightly dirty trapezoid.
+        for k in range(13):
+            yy = 320 + k * 30
+            if yy > 706:
+                break
+            hw = 160.0 + (yy - 300.0) * 0.588
+            xl = 460 - hw + 8
+            xr = 460 + hw - 8
+            if xr - xl < 24:
+                continue
+            PA.hand_stroke(d, [(xl, yy), (xr, yy)],
+                           (86, 76, 68) if k % 2 else (74, 64, 58), 8,
+                           closed=False, seed=1470 + k, wavelength=130.0)
+            PA.hand_stroke(d, [(xl, yy + 9), (xr, yy + 9)], (20, 18, 20), 5,
+                           closed=False, seed=1475 + k, wavelength=130.0)
+        # the ramps and cut faces a half-buried mound actually shows: two
+        # stepped excavation cuts down the near face
+        for k, (rx, rw) in enumerate(((300, 54), (640, 66))):
+            for j in range(5):
+                PA.fill_rect(tile, [rx - rw + j * 14, 470 + j * 46,
+                                    rx + rw - j * 14, 470 + j * 46 + 44],
+                             (56, 48, 44) if j % 2 else (68, 58, 52),
+                             seed=1490 + k * 9 + j, value=0.11, edge=1.6)
         PA.hand_stroke(d, [(60, 720), (300, 300), (620, 300), (860, 720)],
                        INK, 6, closed=False, seed=393, wavelength=170.0)
+        # the stepped pyramid: a course line and a lit face on each of five
+        # steps, cropped by the right edge
         for k in range(5):
             PA.fill_rect(tile, [1130 + k * 34, 700 - k * 76, 1320,
                                 700 - k * 76 + 76], (72, 64, 58),
                          seed=394 + k, value=0.07)
+            PA.hand_stroke(d, [(1130 + k * 34, 700 - k * 76),
+                               (1320, 700 - k * 76)], (104, 94, 84), 5,
+                           closed=False, seed=1480 + k, wavelength=90.0)
         PA.hand_stroke(d, [(1130, 720), (1130, 320)], INK, 6, closed=False,
                        seed=399, wavelength=150.0)
     els.append(SC.stage(clock, 21, e_night, j=26))
 
     def e_copied(tile, fw, fh):
+        # The comparison needs someone making it. b21 was backdrop plus one
+        # label -- no character at all, and under-filled beats with no
+        # character are the ones this project has lost most of. A presenter in
+        # the gap between mound and pyramid, one arm out at the pyramid, at
+        # 400px so he is a figure in the landscape rather than a doodle.
+        d = ImageDraw.Draw(tile)
+        SC.fullbody(d, 1000, 700, 400, pose='pointing', expression='neutral',
+                    seed=1478, ink=PALE)
+        PA.hand_stroke(d, [(1036, 700 - 400 * 0.60), (1140, 700 - 400 * 0.76)],
+                       INK, 8, closed=False, seed=1479, wavelength=60.0)
         D.draw_label(tile, 'COPIED A PYRAMID', center=(640, 150), color=GOLD,
                      size=40)
     els.append(SC.layer(clock, 21, e_copied, j=22, kind='shape',
@@ -1075,6 +1445,50 @@ def build():
         d = ImageDraw.Draw(tile)
         PA.fill_poly(tile, [(-40, 720), (240, 470), (640, 420), (1040, 470),
                             (1320, 720)], (86, 36, 32), seed=400, value=0.10)
+        # The roof was one smooth maroon trapezoid over the bottom 45% of the
+        # frame, and b22 sat at 2.92 because of it. Roof tiles run in courses
+        # PARALLEL to the eaves, so the course line at depth t is the ridge
+        # shape scaled out from the crest: the ridge spans x 240..1040 with its
+        # apex at y=420, the eave spans the full width at y=720.
+        def course(t):
+            return [(240.0 - 280.0 * t, 470.0 + 250.0 * t),
+                    (640.0, 420.0 + 300.0 * t),
+                    (1040.0 + 280.0 * t, 470.0 + 250.0 * t)]
+        for k in range(11):
+            t = 0.06 + k * 0.088
+            pts = course(t)
+            PA.hand_stroke(d, pts, (58, 24, 22), 7, closed=False,
+                           seed=1500 + k, wavelength=200.0)
+            PA.hand_stroke(d, [(x, y + 7) for x, y in pts], (124, 60, 46), 4,
+                           closed=False, seed=1510 + k, wavelength=200.0)
+        # the ridge cap itself, with its row of ridge-tile discs
+        PA.hand_stroke(d, course(0.0), INK, 8, closed=False, seed=1520,
+                       wavelength=200.0)
+        for k in range(17):
+            rx = 244 + k * 50
+            if rx > 1036:
+                break
+            ry = 470 - abs(rx - 640) * (50.0 / 400.0)
+            PA.fill_poly(tile, PA.ellipse_pts(rx, ry - 9, 13, 11, n=12),
+                         (134, 68, 50), seed=1524 + k, value=0.12, edge=1.4)
+            PA.hand_stroke(d, PA.arc_pts(rx, ry - 9, 13, 11, 0, 360, n=14),
+                           INK, 4, closed=False, seed=1528 + k,
+                           wavelength=30.0)
+        # the upturned eave tips at both ends, cropped by the side edges
+        for s in (-1, 1):
+            tipx = 1280 if s > 0 else 0
+            PA.fill_poly(tile, [(tipx, 520), (tipx - s * 150, 452),
+                                (tipx - s * 250, 500), (tipx - s * 210, 566)],
+                         (128, 62, 48), seed=1530 + s, value=0.11, edge=1.8)
+            PA.hand_stroke(d, [(tipx, 520), (tipx - s * 150, 452),
+                               (tipx - s * 250, 500)], INK, 6, closed=False,
+                           seed=1534 + s, wavelength=90.0)
+            for j in range(4):     # eave-tile discs along the lip
+                dx = tipx - s * (34 + j * 34)
+                dy = 512 + j * 15
+                PA.fill_poly(tile, PA.ellipse_pts(dx, dy, 11, 11, n=12),
+                             (146, 74, 54), seed=1538 + s * 7 + j,
+                             value=0.12, edge=1.4)
         PA.hand_stroke(d, [(-40, 720), (240, 470), (640, 420), (1040, 470),
                            (1320, 720)], INK, 7, closed=False, seed=401,
                        wavelength=200.0)
@@ -1100,19 +1514,50 @@ def build():
                      value=0.05)
         PA.hand_stroke(d, [(760, 300), (1260, 300), (1260, 660), (760, 660)],
                        INK, 5, closed=True, seed=411, wavelength=160.0)
+        # The inset is a MAP PANEL, and it was a blank pale rectangle with a
+        # pale-grey rectangle on it -- 40k px of nothing in the middle of a beat
+        # whose whole job is to say "this place, on a map". Grid it, draw the
+        # Han river and the wall, mark the city.
+        for k in range(9):      # graticule
+            PA.hand_stroke(d, [(790, 336 + k * 22), (1232, 336 + k * 22)],
+                           (214, 208, 194), 3, closed=False, seed=4600 + k,
+                           wavelength=120.0)
+        for k in range(15):
+            PA.hand_stroke(d, [(790 + k * 30, 330), (790 + k * 30, 528)],
+                           (214, 208, 194), 3, closed=False, seed=4610 + k,
+                           wavelength=120.0)
         PA.fill_rect(tile, [800, 350, 1010, 520], (206, 200, 186), seed=412,
                      value=0.06)
-        for k in range(9):
+        for k in range(9):      # the city wall's crenellations
             PA.fill_rect(tile, [800 + k * 24, 342, 812 + k * 24, 352],
                          (150, 144, 132), seed=413 + k, value=0.06)
-        PA.hand_stroke(d, [(1010, 430), (1200, 404)], INK, 8, closed=False,
-                       seed=422, wavelength=110.0)
-        PA.fill_rect(tile, [1150, 370, 1260, 500], (150, 104, 66), seed=424,
+        # the river, running out of the panel toward the city
+        PA.hand_stroke(d, [(1006, 348), (1044, 396), (1078, 448),
+                           (1120, 486), (1178, 508)], (74, 104, 132), 11,
+                       closed=False, seed=422, wavelength=150.0)
+        # the wall line, hatched
+        PA.hand_stroke(d, [(1012, 528), (1080, 500), (1146, 470),
+                           (1206, 452)], INK, 8, closed=False, seed=4620,
+                       wavelength=110.0)
+        for k in range(10):
+            tx = 1022 + k * 20
+            ty = 524 - k * 8
+            PA.hand_stroke(d, [(tx, ty), (tx + 9, ty + 13)], INK, 3,
+                           closed=False, seed=4622 + k, wavelength=25.0)
+        PA.fill_rect(tile, [1140, 368, 1236, 500], (150, 104, 66), seed=424,
                      value=0.08)
-        PA.hand_stroke(d, [(1150, 370), (1260, 370), (1260, 500), (1150, 500)],
+        PA.hand_stroke(d, [(1140, 368), (1236, 368), (1236, 500), (1140, 500)],
                        INK, 5, closed=True, seed=425, wavelength=120.0)
+        for k in range(5):      # roof ridges on the walled town
+            PA.hand_stroke(d, [(1148, 396 + k * 22), (1228, 396 + k * 22)],
+                           (92, 60, 38), 5, closed=False, seed=4640 + k,
+                           wavelength=50.0)
+        PA.fill_poly(tile, PA.ellipse_pts(1090, 452, 13, 13, n=14), FIRE,
+                     seed=4650, value=0.10, edge=1.6)
+        PA.hand_stroke(d, PA.arc_pts(1090, 452, 22, 22, 0, 360, n=18), INK, 4,
+                       closed=False, seed=4651, wavelength=40.0)
         D.draw_label(tile, "XI'AN", center=(900, 588), color=INK, size=26)
-        D.draw_label(tile, 'OUTSIDE', center=(1205, 588), color=INK, size=24)
+        D.draw_label(tile, 'OUTSIDE', center=(1180, 588), color=INK, size=24)
     els.append(SC.accrue(clock, 23, 26, e_xian, kind='shape', eid='e_xian',
                          # DROPPED IN, not slid in from the right. dx=+90 put
                          # the whole inset 90px right at arrival: the panel's
@@ -1171,15 +1616,93 @@ def build():
     # ===================================================================== #
     def f_field(tile, fw, fh):
         _earth_field(tile, 560, sky=BLUE_L, ground=(178, 152, 118), hz=520)
+        d = ImageDraw.Draw(tile)
+        # This backdrop carried all six beats of the dig and every one of them
+        # measured 3.0-3.2: 330px of unmodulated blueprint sky and 200px of flat
+        # tan. It is a survey register, so draw it like one -- a measured grid
+        # in the sky, a pegged and staked dig site on the ground, a spoil heap,
+        # and a survey pole -- and the two-thousand-years beat finally has a
+        # place to be.
+        hz = 520
+        for k in range(11):     # survey grid in the sky register
+            gx = 60 + k * 116
+            PA.hand_stroke(d, [(gx, 84), (gx, hz - 6)], (176, 200, 218), 3,
+                           closed=False, seed=2660 + k, wavelength=190.0)
+        for k in range(4):
+            gy = 120 + k * 96
+            PA.hand_stroke(d, [(0, gy), (W, gy)], (176, 200, 218), 3,
+                           closed=False, seed=2670 + k, wavelength=210.0)
+        # a low ridge on the horizon so the sky meets land
+        pts = [(-40, hz + 30)]
+        x = -40
+        while x < W + 40:
+            x += 96 + ((x * 7) % 70)
+            pts.append((x, hz - 26 - ((x * 13) % 30)))
+        pts.append((W + 40, hz + 30))
+        PA.fill_poly(tile, pts, (150, 168, 182), seed=2680, value=0.09,
+                     band=0.22, edge=1.6)
+        PA.hand_stroke(d, pts[1:-1], (118, 140, 158), 5, closed=False,
+                       seed=2684, wavelength=160.0)
+        # survey pegs and string lines marking the dig square
+        for px, py in ((196, 604), (958, 596), (250, 468), (908, 462)):
+            PA.hand_stroke(d, [(px, py), (px + 4, py - 52)], (86, 72, 58), 7,
+                           closed=False, seed=2690 + px, wavelength=40.0)
+            PA.fill_poly(tile, PA.ellipse_pts(px, py - 54, 8, 8, n=10),
+                         (198, 62, 48), seed=2694 + px, value=0.10, edge=1.2)
+        for a, b in (((200, 552), (956, 544)), ((254, 466), (250, 550)),
+                     ((912, 460), (956, 542))):
+            PA.hand_stroke(d, [a, b], (206, 96, 66), 3, closed=False,
+                           seed=2698 + a[0], wavelength=120.0)
+        # the spoil heap the farmers have been throwing out
+        PA.fill_poly(tile, [(120, 700), (250, 588), (410, 596), (470, 700)],
+                     (150, 124, 92), seed=2700, value=0.11, band=0.24,
+                     edge=1.8)
+        PA.hand_stroke(d, [(120, 700), (250, 588), (410, 596), (470, 700)],
+                       INK, 6, closed=True, seed=2701, wavelength=130.0)
+        for k in range(6):
+            PA.hand_stroke(d, [(160 + k * 48, 692), (200 + k * 44, 620)],
+                           (176, 148, 112), 5, closed=False, seed=2704 + k,
+                           wavelength=60.0)
+        _rubble(tile, d, (0, 600, 1280, 720), 22, seed=2710, col=(162, 136, 102),
+                rmin=7, rmax=22)
+        for k in range(7):     # furrows running off the right edge
+            yy = hz + 40 + k * 30
+            PA.hand_stroke(d, [(700, yy), (W + 30, yy - 16)], (160, 134, 100), 5,
+                           closed=False, seed=2720 + k, wavelength=170.0)
     els.append(SC.stage(clock, 26, f_field, j=32))
 
     def f_outline(tile, fw, fh):
-        # An empty rectangle of ground. v1's beat, and it earns its place: it
-        # is the two-thousand-years beat and there is nothing to look at yet,
-        # which IS the joke.
+        # The two-thousand-years beat. v1 drew a bare closed quad on the
+        # ground and the beat came out at 3.06 in a 1280px frame -- four thin
+        # strokes over an empty field. It still earns its place (there IS
+        # nothing to look at yet, which is the joke) but the nothing now has
+        # to be a MARKED-OUT excavation square: pegs, string, a scale bar and
+        # a spoil ring, so the emptiness is deliberate and surveyed rather than
+        # unfinished.
         d = ImageDraw.Draw(tile)
+        PA.fill_poly(tile, [(150, 604), (900, 466), (980, 600), (180, 710)],
+                     (196, 172, 134), seed=570, value=0.10, band=0.22,
+                     edge=1.6)
         PA.hand_stroke(d, [(180, 470), (900, 466), (980, 600), (150, 604)],
-                       EARTH_D, 8, closed=True, seed=570, wavelength=180.0)
+                       EARTH_D, 8, closed=True, seed=572, wavelength=180.0)
+        for px, py in ((180, 470), (900, 466), (980, 600), (150, 604)):
+            PA.hand_stroke(d, [(px, py), (px + 3, py - 44)], (78, 64, 50), 6,
+                           closed=False, seed=574 + px, wavelength=35.0)
+            PA.fill_poly(tile, PA.ellipse_pts(px, py - 46, 7, 7, n=10),
+                         (198, 62, 48), seed=578 + px, value=0.10, edge=1.1)
+        for a, b in (((184, 468), (898, 464)), ((902, 468), (978, 598)),
+                     ((978, 602), (152, 606)), ((152, 602), (178, 472))):
+            PA.hand_stroke(d, [a, b], (204, 96, 66), 3, closed=False,
+                           seed=582 + a[0], wavelength=110.0)
+        for k in range(4):     # scale bar along the near edge
+            bx = 620 + k * 74
+            PA.fill_rect(tile, [bx, 656, bx + 74, 674], INK, seed=586 + k,
+                         value=0.0, tint=0.0)
+            if k % 2:
+                PA.fill_rect(tile, [bx, 656, bx + 74, 674], (238, 236, 226),
+                             seed=590 + k, value=0.05)
+        _rubble(tile, d, (620, 600, 1000, 700), 10, seed=594,
+                col=(166, 140, 106), rmin=8, rmax=20)
         D.draw_label(tile, '2,000 YEARS', center=(880, 250), color=GOLD,
                      size=40)
     els.append(SC.layer(clock, 26, f_outline, j=27, kind='shape',
@@ -1299,7 +1822,146 @@ def build():
     # cut is a thing the narration actually says.                             #
     # ===================================================================== #
     def g_paper(tile, fw, fh):
+        # Measured 3.06 -- one of the three worst beats in the chapter. v1's
+        # `_interior` here is a single PAPER2 rectangle with tooth over it, and
+        # PAPER2 on PAPER2 is a 10-value difference: the whole frame is one
+        # smooth shape. The beat is "in 2012 they opened a new pit", so it is
+        # a SURVEY PLAN, and a plan is the most edge-rich thing a pale sheet
+        # can carry: a measured grid, a hatched site boundary, a north arrow,
+        # a scale bar, contour traces, and the plan's own annotation blocks.
+        # Nothing here is a label the narration also says; the caption at b32
+        # carries the words, this carries the drawing.
         _interior(tile, 650, PAPER2)
+        d = ImageDraw.Draw(tile)
+        # --- the measured grid, drawn faintly so it never competes with the
+        # plan line but still breaks every 100px of paper into cells.
+        for k in range(14):
+            gx = -30 + k * 100
+            PA.hand_stroke(d, [(gx, 86), (gx, H)], (188, 182, 170), 3,
+                           closed=False, seed=1650 + k, wavelength=200.0)
+        for k in range(7):
+            gy = 96 + k * 100
+            PA.hand_stroke(d, [(0, gy), (W, gy)], (188, 182, 170), 3,
+                           closed=False, seed=1660 + k, wavelength=210.0)
+        # The margin ABOVE the site boundary was the last smooth field in this
+        # beat: 180px of PAPER2 between the title band and the cut line, which
+        # is seven full rows of tiles at the fill's own drift. It is hatched on
+        # the cross direction, so the two hatch fields meet at the boundary at
+        # right angles -- which is what a section drawing looks like, and it
+        # means no part of the sheet is left as an unhatched void.
+        _hatch(tile, d, [(-60, 86), (1340, 86), (1340, 178), (-60, 178)],
+               seed=1645, col=(180, 172, 158), spacing=22, width=3,
+               angle=-0.58)
+        # heavier grid every fifth cell, so the sheet reads as a measured plan
+        # rather than as graph paper
+        for k in range(3):
+            PA.hand_stroke(d, [(-30 + k * 500, 86), (-30 + k * 500, H)],
+                           (128, 118, 104), 5, closed=False, seed=1670 + k,
+                           wavelength=220.0)
+        for k in range(2):
+            PA.hand_stroke(d, [(0, 96 + k * 500), (W, 96 + k * 500)],
+                           (128, 118, 104), 5, closed=False, seed=1675 + k,
+                           wavelength=230.0)
+        # --- the pit site boundary: a stepped, wobbled polygon running off
+        # BOTH side edges and off the bottom, hatched on its inside edge. A
+        # plan that stops short of the frame is a plan that fits in a picture;
+        # this one admits the dig is bigger than the sheet.
+        site = [(-60, 236), (150, 206), (330, 222), (470, 180), (700, 196),
+                (880, 168), (1080, 200), (1340, 176)]
+        PA.fill_poly(tile, site + [(1340, H), (-60, H)], (196, 186, 168),
+                     seed=1680, value=0.07, band=0.08, edge=1.6)
+        # The site fill is hatched, not left smooth: a section/plan of a cut
+        # is hatched on the drawing, and the hatch is what lifts every interior
+        # 24px tile off the flat-fill floor. Spacing 22px, one axis -- dense
+        # enough to reach every tile, open enough to still read as a drawing.
+        # (See _hatch for why cells alone were not enough.)
+        _hatch(tile, d, site + [(1340, H), (-60, H)], seed=1683,
+               col=(166, 156, 140), spacing=22, width=3, angle=0.62)
+        PA.hand_stroke(d, site, INK, 7, closed=False, seed=1681,
+                       wavelength=200.0)
+        # hatch ticks hanging off the boundary -- the survey convention for
+        # "this is the cut". Forty small strokes is the edge density that a
+        # flat sheet does not have.
+        hx = -40
+        k = 0
+        while hx < W + 40:
+            hpy = 176 + ((hx * 13) % 60)
+            PA.hand_stroke(d, [(hx, hpy), (hx + 16, hpy + 30)], (108, 98, 86), 4,
+                           closed=False, seed=1685 + k, wavelength=40.0)
+            hx += 34
+            k += 1
+        # --- contour traces inside the site: three nested wobbled rings, the
+        # way a plan shows the original mound's footprint. Each ring FILLS a
+        # stepped tone darker than the one inside it, so the mound reads as a
+        # landform on the plan instead of three hairlines in the paper.
+        mound = ((0.42, (176, 164, 142), (112, 100, 84), 6),
+                 (0.66, (192, 182, 162), (134, 122, 104), 5),
+                 (0.86, (206, 198, 180), (156, 144, 126), 5))
+        for ci, (sc, fill, col, wd) in enumerate(mound):
+            pts = []
+            for s in range(29):
+                a = 6.283185 * s / 28.0
+                rx = 430.0 * sc * (1.0 + 0.06 * math.sin(a * 3 + ci))
+                ry = 210.0 * sc * (1.0 + 0.08 * math.cos(a * 2 - ci))
+                pts.append((640 + rx * math.cos(a), 448 + ry * math.sin(a)))
+            PA.fill_poly(tile, pts, fill, seed=1688 + ci, value=0.07,
+                         band=0.07, edge=1.4)
+            PA.hand_stroke(d, pts, col, wd, closed=True, seed=1690 + ci,
+                           wavelength=190.0)
+        # --- the grid of sounding squares that fills the site's interior, so
+        # the middle of the frame is a lattice of small outlined cells and not
+        # one pale region. Seven by four, at the scale a pit plan uses, with a
+        # clear tone step against the site fill so the squares are squares.
+        for r in range(4):
+            for c in range(8):
+                x0 = 250 + c * 122
+                y0 = 316 + r * 94
+                PA.fill_rect(tile, [x0 + 3, y0 + 3, x0 + 116, y0 + 88],
+                             (222, 216, 202) if (r + c) % 2 else (166, 154,
+                             134), seed=1700 + r * 9 + c, value=0.07, edge=1.4)
+                PA.hand_stroke(d, [(x0 + 3, y0 + 3), (x0 + 116, y0 + 3),
+                                   (x0 + 116, y0 + 88), (x0 + 3, y0 + 88)],
+                               (86, 76, 64), 4, closed=True,
+                               seed=1710 + r * 7 + c, wavelength=70.0)
+                # Every cell carries its own fine hatch. A sounded square on a
+                # real plan is a gridded/hatched patch, and it is the only way
+                # a 24px tile at the CENTRE of a 114x86 cell stops being flat
+                # fill -- the cell's own border is only in the corner tiles.
+                _hatch(tile, d, [(x0 + 5, y0 + 5), (x0 + 114, y0 + 5),
+                                 (x0 + 114, y0 + 86), (x0 + 5, y0 + 86)],
+                       seed=1780 + r * 8 + c, col=(150, 138, 120), spacing=20,
+                       width=2, angle=0.7 if (r + c) % 2 else -0.7)
+                # a sounding figure in every third cell: the small number a
+                # plan actually carries, as a tick and a dot.
+                if (r * 8 + c) % 3 == 0:
+                    PA.fill_poly(tile, PA.ellipse_pts(x0 + 60, y0 + 46, 9, 9,
+                                                      n=12), (86, 76, 64),
+                                 seed=1760 + r * 8 + c, value=0.05, edge=1.0)
+                    PA.hand_stroke(d, [(x0 + 60, y0 + 58), (x0 + 60, y0 + 82)],
+                                   (86, 76, 64), 3, closed=False,
+                                   seed=1770 + r * 8 + c, wavelength=30.0)
+        # --- survey furniture at the edges: north arrow (top right), scale bar
+        # (bottom left), and a title block of small ruled boxes (bottom right).
+        nx0, ny0 = 1130, 240
+        PA.hand_stroke(d, [(nx0, ny0 + 90), (nx0, ny0 - 10)], INK, 7,
+                       closed=False, seed=1720, wavelength=90.0)
+        PA.fill_poly(tile, [(nx0, ny0 - 46), (nx0 - 24, ny0 + 18),
+                            (nx0 + 24, ny0 + 18)], INK, seed=1721, value=0.0)
+        PA.hand_stroke(d, [(nx0 - 38, ny0 + 48), (nx0 + 38, ny0 + 48)], INK, 6,
+                       closed=False, seed=1722, wavelength=40.0)
+        for k in range(4):
+            PA.fill_rect(tile, [40 + k * 52, 664, 92 + k * 52, 690],
+                         INK if k % 2 else (232, 228, 218), seed=1725 + k,
+                         value=0.05, edge=1.6)
+        PA.hand_stroke(d, [(40, 692), (248, 692)], INK, 6, closed=False,
+                       seed=1730, wavelength=80.0)
+        for k in range(5):     # title block: five ruled rows of small boxes
+            PA.fill_rect(tile, [900, 590 + k * 26, 1250, 612 + k * 26],
+                             (226, 220, 206) if k % 2 else (160, 148, 128),
+                         seed=1735 + k, value=0.06, edge=1.4)
+            PA.hand_stroke(d, [(900, 590 + k * 26), (1250, 590 + k * 26)],
+                           (84, 74, 62), 4, closed=False, seed=1740 + k,
+                           wavelength=80.0)
     els.append(SC.stage(clock, 32, g_paper, j=38))
 
     def g_corridor(tile, fw, fh):
@@ -1308,26 +1970,58 @@ def build():
         # and off the bottom, with the vault row reading as a row: the plan is
         # supposed to look BIGGER than the frame, which is what a pit does.
         d = ImageDraw.Draw(tile)
-        PA.fill_poly(tile, [(-60, 720), (-60, 470), (430, 470), (430, 720)],
-                     (222, 218, 208), seed=700, value=0.05)
+        LEFT = [(-60, 720), (-60, 470), (430, 470), (430, 720)]
+        BOT = [(430, 720), (430, 330), (1340, 330), (1340, 720)]
+        PA.fill_poly(tile, LEFT, (216, 210, 196), seed=700, value=0.06)
+        PA.fill_poly(tile, BOT, (208, 202, 188), seed=702, value=0.06)
+        # The two corridor runs are 490x250 and 910x390 of near-PAPER2 fill.
+        # They are the LARGEST smooth shapes in this beat and they sit ON TOP of
+        # the plan sheet, so no amount of work underneath them reaches the
+        # pixels the eye and the gate see. A cut-through corridor on a pit plan
+        # is drawn with the excavated earth hatched on ONE axis -- a single
+        # direction at 26px, lighter than the boundary ink. Cross-hatching at
+        # 15px was tried and rejected: it cleared the metric by a wider margin
+        # but read at ship size as machine-made textile rather than as a drawn
+        # plan, which is the defect the metric is supposed to catch (memory
+        # flat-vector-fails-the-style-bar -- the bar is painterly, not noisy).
+        _hatch(tile, d, LEFT, seed=7005, col=(178, 166, 148), spacing=26,
+               width=3, angle=0.62)
+        _hatch(tile, d, BOT, seed=7007, col=(172, 160, 142), spacing=26,
+               width=3, angle=0.62)
         PA.hand_stroke(d, [(-60, 720), (-60, 470), (430, 470), (430, 720)],
-                       INK, 6, closed=True, seed=701, wavelength=140.0)
-        PA.fill_poly(tile, [(430, 720), (430, 330), (1340, 330), (1340, 720)],
-                     (216, 212, 202), seed=702, value=0.05)
+                       INK, 7, closed=True, seed=701, wavelength=140.0)
         PA.hand_stroke(d, [(430, 720), (430, 330), (1340, 330), (1340, 720)],
-                       INK, 6, closed=True, seed=703, wavelength=160.0)
+                       INK, 7, closed=True, seed=703, wavelength=160.0)
         for k in range(8):
             vx = 500 + k * 108
-            PA.fill_rect(tile, [vx, 380, vx + 72, 476], (196, 190, 178),
-                         seed=704 + k, value=0.05)
+            PA.fill_rect(tile, [vx, 380, vx + 72, 476], (176, 168, 152),
+                         seed=704 + k, value=0.06, edge=1.4)
             PA.hand_stroke(d, [(vx, 476), (vx + 72, 476)], INK, 5,
                            closed=False, seed=712 + k, wavelength=60.0)
+            # a cross-rib inside each bay, so the vault row is a row of rooms
+            PA.hand_stroke(d, [(vx + 36, 380), (vx + 36, 476)], INK, 4,
+                           closed=False, seed=730 + k, wavelength=45.0)
         for k in range(4):
             vx = 30 + k * 108
-            PA.fill_rect(tile, [vx, 520, vx + 72, 616], (196, 190, 178),
-                         seed=720 + k, value=0.05)
+            PA.fill_rect(tile, [vx, 520, vx + 72, 616], (176, 168, 152),
+                         seed=720 + k, value=0.06, edge=1.4)
             PA.hand_stroke(d, [(vx, 616), (vx + 72, 616)], INK, 5,
                            closed=False, seed=724 + k, wavelength=60.0)
+            PA.hand_stroke(d, [(vx + 36, 520), (vx + 36, 616)], INK, 4,
+                           closed=False, seed=740 + k, wavelength=45.0)
+        # side-walls drawn INSIDE the corridor runs, off both frame edges: the
+        # corridor is a trench with two faces, and those faces are where the
+        # section's texture belongs.
+        for yy in range(346, 720, 34):
+            PA.hand_stroke(d, [(-60, yy), (430, yy)], (120, 108, 92), 3,
+                           closed=False, seed=750 + yy, wavelength=90.0)
+        for yy in range(486, 720, 34):
+            PA.hand_stroke(d, [(-60, yy), (430, yy)], (120, 108, 92), 3,
+                           closed=False, seed=790 + yy, wavelength=90.0)
+        for k in range(24):
+            xx = 430 + k * 40
+            PA.hand_stroke(d, [(xx, 330), (xx, 720)], (126, 114, 98), 3,
+                           closed=False, seed=830 + k, wavelength=90.0)
         # NO drawn 'PIT 1 - 2012': the caption at b32 says it, and saying it
         # twice in one beat is the pile-up this file exists to avoid.
     els.append(SC.accrue(clock, 32, 38, g_corridor, kind='shape',
@@ -1433,8 +2127,19 @@ def build():
         PA.fill_rect(tile, [0, 0, W, H], (104, 82, 60), seed=810, value=0.08)
         PA.paper_overlay(tile, seed=811)
         SC.title_backdrop(tile, 1811, col=(118, 92, 70))
+        # b36 measured 3.35: one 600px slab of (104,82,60) earth behind a
+        # single figure is the biggest smooth shape in the frame. This is the
+        # cut face of the pit, so give it what a cut face has -- stacked strata
+        # bands of differing tone, a rammed-earth course grid pressed into the
+        # near band, and rubble at the toe. The figure still owns the left, the
+        # jar still owns the right; the middle third that was dead earth now
+        # reads as ground that was cut.
+        _cut_face(tile, d, 90, 200, 1280, 600, seed=1815, base=(104, 82, 60))
         PA.fill_rect(tile, [0, 600, W, H], (74, 58, 44), seed=812,
                      value=0.07)
+        _slab_floor(tile, d, 600, H, seed=1817, col=(86, 66, 50), n=14)
+        _rubble(tile, d, (0, 604, 1280, 716), 26, seed=1818,
+                col=(92, 72, 54), rmin=9, rmax=26)
         PA.hand_stroke(d, [(-10, 600), (1290, 600)], INK, 6, closed=False,
                        seed=813, wavelength=200.0)
         _soldier(d, 420, 880, 700, 810, col=(150, 108, 70),
@@ -1488,6 +2193,27 @@ def build():
         PA.fill_rect(tile, [0, 0, W, H], (150, 148, 144), seed=820,
                      value=0.06)
         PA.paper_overlay(tile, seed=821)
+        # b37 measured 3.10 and this is the flattest beat left in stage G. The
+        # flat grey IS the information -- the figure has been reduced to the
+        # colour it was turned into -- so the fix cannot be colour. It is
+        # structure at values a few steps off that grey: the etched pit floor,
+        # the slabs the acid has dulled, and the rubble it has dulled with
+        # them. A grey room with a floor in it still reads as grey.
+        _slab_floor(tile, d, 470, H, seed=1824, col=(160, 158, 152), n=12)
+        PA.fill_rect(tile, [0, 470, W, 486], (128, 126, 122), seed=1826,
+                     value=0.05)
+        PA.hand_stroke(d, [(-10, 470), (1290, 470)], INK, 6, closed=False,
+                       seed=1827, wavelength=200.0)
+        # the back wall: a course grid so the upper two thirds is a surface,
+        # not a void, at values only a few apart from the field.
+        _panel_grid(tile, d, -20, 86, W + 20, 462, seed=1828, col=(160, 158,
+                                                                 152),
+                    nx=9, ny=4, w_line=3)
+        _rubble(tile, d, (900, 500, 1280, 700), 16, seed=1829,
+                col=(142, 140, 136), rmin=10, rmax=28)
+        _rubble(tile, d, (760, 560, 980, 700), 8, seed=1830, col=(136, 134,
+                                                                 130),
+                rmin=9, rmax=22)
         _soldier(d, 700, 820, 640, 846, col=GREY, shade=GREY_D,
                  has_armour=False)
         PA.paper_overlay(tile, 822, bbox=[560, 300, 860, 560])
@@ -1511,30 +2237,104 @@ def build():
     # transition.                                                            #
     # ===================================================================== #
     def h_lab(tile, fw, fh):
-        _interior(tile, 860, (208, 214, 218))
+        # b38 measured 2.85 -- the flattest beat in the chapter. v1 drew this as
+        # `_interior` (one 208,214,218 rectangle, 10 values from the jar in
+        # front of it) so the entire frame was a single smooth pale field with a
+        # hollow outline floating in it. The beat is "soil samples gave up
+        # mercury", which happens in a lab, and a lab is a BUILT room: tiled
+        # wall, a bench with a lip, a shelf of sample jars, a rack of small
+        # bottles. All of it in cool greys so the SILVER bead and the MERCURY
+        # jar in the next layer still own the frame.
+        d = ImageDraw.Draw(tile)
+        _interior(tile, 860, (206, 212, 216))
+        # --- tiled back wall across the whole upper two thirds. The tile grid
+        # is the edge density: ~90 small outlined squares instead of one void.
+        for r in range(6):
+            ya = 88 + r * 66
+            off = (r % 2) * 33
+            c = -1
+            x = off - 33
+            while x < W + 40:
+                x0 = x + c * 66
+                PA.fill_rect(tile, [x0 + 2, ya + 2, x0 + 64, ya + 64],
+                             (198, 205, 209) if (r + c) % 2 else (212, 218,
+                             222), seed=861 + r * 11 + c, value=0.05, edge=1.0)
+                PA.hand_stroke(d, [(x0 + 2, ya + 2), (x0 + 64, ya + 2),
+                                   (x0 + 64, ya + 64), (x0 + 2, ya + 64)],
+                               (166, 174, 179), 3, closed=True,
+                               seed=871 + r * 7 + c, wavelength=70.0)
+                c += 1
+                x += 66
+        # --- a lab bench across the mid frame, with a lip and slab feet, and
+        # the shelf above it carrying small sample bottles.
+        _shelf(tile, d, 470, seed=873, col=(150, 158, 164), thick=44)
+        # shelf of sample jars along the top, each a small filled bottle
+        for k in range(9):
+            bx = 70 + k * 138
+            bh = 46 + ((k * 29) % 22)
+            PA.fill_rect(tile, [bx, 92, bx + 58, 92 + bh], (150, 158, 166),
+                         seed=875 + k, value=0.06, edge=1.4)
+            PA.hand_stroke(d, [(bx, 92), (bx + 58, 92)], (96, 104, 112), 5,
+                           closed=False, seed=880 + k, wavelength=40.0)
+            PA.fill_rect(tile, [bx + 12, 92 + bh - 16, bx + 46, 92 + bh - 2],
+                         (196, 176, 120) if k % 3 else (170, 158, 140),
+                         seed=885 + k, value=0.06, edge=1.0)
     els.append(SC.stage(clock, 38, h_lab, j=43))
 
     def h_jar(tile, fw, fh):
+        # The mercury jar: filled, graduated, standing ON the bench lip. v1 drew
+        # a hollow outline ellipse with a brown blob beneath; filling it with a
+        # graded column and putting it on the bench is what makes the frame's
+        # subject read as a vessel of liquid rather than a drawn circle.
         d = ImageDraw.Draw(tile)
-        PA.fill_rect(tile, [0, 500, W, 760], (176, 182, 186), seed=870,
-                     value=0.05)
-        PA.hand_stroke(d, [(-10, 500), (1290, 500)], INK, 6, closed=False,
+        # bench top surface, cropping the jar's base onto it
+        PA.fill_rect(tile, [0, 560, W, 760], (168, 174, 180), seed=870,
+                     value=0.05, edge=1.8)
+        PA.hand_stroke(d, [(-10, 560), (1290, 560)], INK, 6, closed=False,
                        seed=871, wavelength=180.0)
-        PA.fill_poly(tile, PA.ellipse_pts(640, 300, 180, 300, n=48),
-                     (222, 228, 232), seed=872, value=0.05)
-        PA.hand_stroke(d, PA.arc_pts(640, 300, 180, 300, 0, 360, n=48) +
-                       [(820, 600), (460, 600)], INK, 7, closed=False,
-                       seed=873, wavelength=150.0)
-        PA.fill_poly(tile, PA.ellipse_pts(640, 560, 160, 40, n=40),
-                     (138, 110, 78), seed=874, value=0.08)
-        D.draw_label(tile, 'MERCURY', center=(640, 170), color=INK, size=52)
+        for k in range(11):     # bench front edge ribs
+            PA.hand_stroke(d, [(k * 118, 560), (k * 118 - 8, 720)], INK, 4,
+                           closed=False, seed=873 + k, wavelength=70.0)
+        # the jar body, filled with a cool glass tone, and a graduated mercury
+        # column inside it (silver band with tick marks), cropped by the bench
+        # lip so it sits on the surface.
+        PA.fill_poly(tile, PA.ellipse_pts(640, 400, 170, 260, n=48),
+                     (196, 206, 212), seed=872, value=0.06, edge=1.8)
+        # The mercury itself: a tall, dark silver column filling most of the
+        # jar, with a bright meniscus line at its top. At the old pale SILVER
+        # against a 206-grey body it was invisible -- the vessel read hollow.
+        PA.fill_poly(tile, [(640 - 152, 380), (640 + 152, 380),
+                            (640 + 138, 570), (640 - 138, 570)], (118, 126, 134),
+                     seed=874, value=0.07, edge=1.6)
+        PA.fill_poly(tile, [(640 - 152, 380), (640 + 152, 380),
+                            (640 + 148, 400), (640 - 148, 400)], (222, 228, 232),
+                     seed=875, value=0.05, edge=1.2)
+        for k in range(6):      # graduation ticks down the left of the jar
+            gy = 410 + k * 26
+            PA.hand_stroke(d, [(492, gy), (492 + 26, gy)], (232, 236, 240), 5,
+                           closed=False, seed=876 + k, wavelength=30.0)
+        PA.hand_stroke(d, PA.arc_pts(640, 400, 170, 260, 0, 360, n=48),
+                       INK, 7, closed=True, seed=873, wavelength=150.0)
+        PA.fill_poly(tile, PA.ellipse_pts(640, 128, 104, 36, n=32), INK,
+                     seed=878, value=0.0, edge=1.6)   # jar stopper
+        D.draw_label(tile, 'MERCURY', center=(640, 246), color=INK, size=52)
     els.append(SC.layer(clock, 38, h_jar, j=39, kind='shape', eid='h_jar'))
 
     def h_bead(tile, fw, fh):
-        # MOVING. A single bead settling onto the soil sample.
-        PA.fill_poly(PA.img_of(ImageDraw.Draw(tile)),
-                     PA.ellipse_pts(700, 520, 40, 26, n=28), SILVER,
-                     seed=880, value=0.05)
+        # MOVING. A single bead settling onto the soil sample. Moved left onto
+        # the sample dish beside the jar: at the old (700,520) it landed on the
+        # jar's own mercury column, so the bead and the thing it came from were
+        # the same pixels. The dish + its soil mound are drawn first so the bead
+        # has a surface to settle onto.
+        d = ImageDraw.Draw(tile)
+        PA.fill_poly(tile, PA.ellipse_pts(300, 560, 130, 34, n=32),
+                     (176, 182, 188), seed=879, value=0.06, edge=1.6)
+        PA.hand_stroke(d, PA.arc_pts(300, 560, 130, 34, 0, 360, n=32), INK, 6,
+                       closed=True, seed=881, wavelength=70.0)
+        PA.fill_poly(tile, PA.ellipse_pts(300, 548, 96, 22, n=28),
+                     (138, 110, 78), seed=882, value=0.08, edge=1.4)
+        PA.fill_poly(PA.img_of(d), PA.ellipse_pts(300, 508, 40, 26, n=28),
+                     SILVER, seed=880, value=0.05, edge=1.6)
     els.append(SC.layer(clock, 38, h_bead, j=39, kind='shape', eid='h_bead',
                         motion=SC.enter(clock, 38, dx=0, dy=-34,
                                         dur=ARRIVE)))

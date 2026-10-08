@@ -198,6 +198,24 @@ C3.POSES.setdefault('a51_pointing_e', dict(
     la=(16, 24), ra=(70, 38), ll=(-12, 0), rl=(11, 0), lean=-3))
 C3.POSES.setdefault('a51_shield', dict(
     la=(58, 78), ra=(58, 78), ll=(-10, 0), rl=(12, 0), lean=2))
+# a51_lectern: the man at the microphone, b28-b30. `standing` is la/ra (19,17)
+# and that 17 is the forearm bend -- the same defect as `pointing` above, and at
+# ship size both arms render as straight bars hanging off the shoulders, so he
+# read as a torso on a lectern rather than as a man holding it. Here the left
+# forearm comes down onto the lectern edge (bend 54) and the right one is out
+# and up in the gesture of a man describing something (bend 76). Both bends are
+# far above the ~30 degrees where an elbow is visible at playback size.
+C3.POSES.setdefault('a51_lectern', dict(
+    la=(26, 54), ra=(64, 76), ll=(-11, 0), rl=(12, 0), lean=1))
+# a51_reach: the reader at b31, reaching down-left for the top sheet of a pile
+# that sits well below his hand. `a51_lectern` was used here first and its
+# raised right arm came out as one horizontal bar at this scale, so it read as a
+# man holding a plank out sideways rather than a man taking a document. Both
+# bends here are past 60 degrees and the right arm angles DOWN (a negative
+# angle), which is the whole difference between reaching for something low and
+# gesturing at something level.
+C3.POSES.setdefault('a51_reach', dict(
+    la=(14, 38), ra=(-38, 68), ll=(-10, 0), rl=(13, 0), lean=4))
 
 # --- what the engine needs, taken straight from v1 -------------------------- #
 SEG = A51.SEG
@@ -349,7 +367,8 @@ def _scrub(d, y0, y1, col, seed, n=26, s0=0.5, s1=1.5):
                        wavelength=34.0)
 
 
-def _crust(d, y0, y1, col, seed, rows=5, lw=4, jitter=0.5, cross=0.55):
+def _crust(d, y0, y1, col, seed, rows=5, lw=4, jitter=0.5, cross=0.55,
+           c0=6, wavy=7.0):
     """A cracked-mud polygon net: irregular cells, NOT horizontal grain.
 
     WHY THIS IS NOT `_contour_bands`. A dry lake bed reads as a net of
@@ -366,6 +385,20 @@ def _crust(d, y0, y1, col, seed, rows=5, lw=4, jitter=0.5, cross=0.55):
 
     `jitter` scales the x-offsets (0.5 default); the row spacing stays roughly
     even so perspective still reads.
+
+    `wavy` is the per-node Y offset in pixels, and it exists because of a real
+    failure measured on stage D. Without it every node in a row shares one y,
+    so each row edge is a dead-straight horizontal run 115-227px long, and a
+    field of dead-straight horizontal runs at regular vertical spacing does
+    not read as cracked ground -- it reads as SCAFFOLDING. That is exactly
+    what the noon playa looked like: guy-wires and struts over a beige field.
+    A cracked plate boundary wanders in both axes; giving each node its own y
+    is what turns the net back into ground. The value is in PIXELS, not a
+    fraction of the span, because it has to stay visible on the tightly
+    compressed far rows as well as the near ones.
+
+    `c0` is the cell count of the FIRST (far) row, so a caller can ask for a
+    finer net than 6-wide without touching the stages that already read well.
 
     `cross` (0.55 default) is how many of the cell interiors get a diagonal
     hairline. A quad's interior is otherwise a smooth fill -- and the pigment
@@ -384,13 +417,15 @@ def _crust(d, y0, y1, col, seed, rows=5, lw=4, jitter=0.5, cross=0.55):
         y = y0 + (y1 - y0) * u
         # row spacing compresses with distance (perspective on the flat)
         yy = y0 + (y1 - y0) * (u ** 0.86)
-        count = 6 + r                       # more, wider cells near the viewer
+        count = c0 + r                      # more, wider cells near the viewer
         row = []
         for c in range(count + 1):
             base = -40 + (W + 80) * (c / float(count))
             # closed-form per-node offset, so it's deterministic
             k = (r * 131 + c * 17 + seed) % 41
-            row.append((base + (k - 20) * 18.0 * jitter, yy))
+            k2 = (r * 47 + c * 89 + seed * 3) % 19
+            dy = (k2 - 9) * wavy
+            row.append((base + (k - 20) * 18.0 * jitter, yy + dy))
         nodes.append(row)
 
     # horizontal-ish edges within each row
@@ -399,8 +434,12 @@ def _crust(d, y0, y1, col, seed, rows=5, lw=4, jitter=0.5, cross=0.55):
         for c in range(len(row) - 1):
             x0, y0_ = row[c]
             x1, y1_ = row[c + 1]
-            PA.hand_stroke(d, [(x0, y0_), (x1, y1_)], col, lw,
-                           seed=seed + r * 50 + c, wavelength=90.0)
+            # a midpoint nudge as well: one segment per cell, so the wander
+            # above still leaves each individual edge a straight 120px run.
+            m = ((r * 53 + c * 31 + seed) % 13 - 6) * (wavy * 0.9)
+            PA.hand_stroke(d, [(x0, y0_), ((x0 + x1) * 0.5,
+                                            (y0_ + y1_) * 0.5 + m), (x1, y1_)],
+                           col, lw, seed=seed + r * 50 + c, wavelength=90.0)
     # vertical-ish seams between rows
     for r in range(rows):
         up, dn = nodes[r], nodes[r + 1]
@@ -1101,8 +1140,8 @@ def build():
         # and the eye read a wireframe web strung over the playa rather than the
         # playa itself. A night crust is a suggestion: the cell seams at 8-14
         # levels over the ground, and almost no interior diagonals.
-        _crust(d, HZ + 20, H + 10, (40, 38, 50), 396, rows=6, lw=4, cross=0.30)
-        _crust(d, HZ + 120, H + 10, (34, 32, 44), 398, rows=4, lw=4, cross=0.22)
+        _crust(d, HZ + 20, H + 10, (34, 33, 44), 396, rows=6, lw=3, cross=0.22)
+        _crust(d, HZ + 120, H + 10, (29, 28, 38), 398, rows=4, lw=3, cross=0.15)
 
         # THE REAL EDGE DENSITY AT NIGHT IS LIGHT, NOT CRACKS. With the crust
         # softened to a suggestion, stage C fell back under the bar (b15/b16/
@@ -1114,14 +1153,48 @@ def build():
         # door, four apron lamp pools on the ground, and the mast-and-head
         # silhouette of the fence line along the rim. Bright marks on black are
         # high contrast; the playa under them stays a playa.
-        _bunker(d, 120, HZ + 96, 250, 118, 410)
+        # The bunker is drawn NIGHT-VALUED, not in CONCRETE. `_bunker`'s default
+        # colour is the day palette's 206, which on a NIGHT 28 register is the
+        # brightest object in the frame and read as a lit daytime building
+        # standing in the dark -- a register break, not a lit window. Dark mass
+        # with a row of warm lit windows is both what a bunker looks like at
+        # night and where the frame's contrast belongs.
+        _bunker(d, 120, HZ + 96, 250, 118, 410, colour=(58, 56, 70))
+        for i in range(5):
+            wx = 152 + i * 44
+            PA.fill_rect(tile, [wx, HZ + 30, wx + 26, HZ + 54],
+                         (226, 186, 108), seed=430 + i, value=0.05, edge=1.0)
+        # The apron lamps: a bright core, a mid halo, a wide dim pool. One flat
+        # grey ellipse read as a hole in the ground; three concentric values
+        # read as light falling on it.
         for i in range(4):
             lx = 200 + i * 292
-            d.ellipse([lx - 46, HZ + 150, lx + 46, HZ + 190],
-                      fill=(52, 54, 72), outline=(70, 72, 92), width=3)
+            ly = HZ + 170
+            for rr, col in ((74, (34, 34, 46)), (46, (52, 52, 66)),
+                            (20, (128, 126, 112))):
+                d.ellipse([lx - rr, ly - rr * 0.34, lx + rr, ly + rr * 0.34],
+                          fill=col)
+            PA.hand_stroke(d, [(lx, ly - 62), (lx, ly - 6)], (70, 70, 84), 5,
+                           seed=440 + i, wavelength=40.0)
         _fence_run_off_edge(d, HZ + 34, 62, 414, (74, 78, 98), n_posts=8)
         _tower(d, 1128, HZ + 40, 96, 416)
         _camera_pole(d, 906, HZ + 52, 82, 418, lens_dir=1)
+        # A second hangar on the right, cropped by the frame edge, plus a lit
+        # apron strip running off both sides. b15 sits at the far left where the
+        # jet arrives, so the left third needs the structure most and the right
+        # third was carrying one tower and a camera.
+        _bunker(d, 1058, HZ + 88, 280, 104, 426, colour=(54, 52, 66))
+        for i in range(4):
+            wx = 1092 + i * 56
+            PA.fill_rect(tile, [wx, HZ + 28, wx + 32, HZ + 52],
+                         (226, 186, 108), seed=460 + i, value=0.05, edge=1.0)
+        PA.fill_poly(tile, [(0, HZ + 214), (W, HZ + 190), (W, HZ + 236),
+                            (0, HZ + 262)], (44, 44, 58), seed=430, value=0.05)
+        for i in range(9):
+            lx = 40 + i * 150
+            PA.fill_rect(tile, [lx, HZ + 206 + i % 2 * 3, lx + 46,
+                                HZ + 216 + i % 2 * 3], (222, 190, 116),
+                         seed=470 + i, value=0.05, edge=1.0)
         _stars_spark(d, 402, 214, 420)
         _stars_spark(d, 986, 172, 424)
         _tufts(d, HZ + 60, H - 10, (40, 36, 46), 400, n=26)
@@ -1252,13 +1325,119 @@ def build():
         d = ImageDraw.Draw(tile)
         _playa(tile, 151)
         _mountain_strip(d, HZ, 152)
+        # Stage D measured 3.02 / 2.90 -- the emptiest frames in the chapter. The
+        # narration for both beats is about the DESERT, so the desert is what has
+        # to be in the picture: two crusts on the lakebed (this is the same
+        # cracked-alkali register as A2, seen at noon rather than at dusk), a
+        # scrub/boulder scatter, a second range behind the first, and cloud
+        # strata. The bottom 38% of the frame was a dead cream field with a
+        # balloon floating over it; that is the composition defect the brief
+        # names, and it is fixed by giving the ground something to be.
+        # A range BEHIND the one _mountain_strip drew, so the horizon has depth
+        # rather than one silhouette against sky.
+        back = [(-40, HZ)]
+        for i in range(27):
+            u = i / 26.0
+            back.append((-40 + (W + 80) * u,
+                         HZ - 26 * (0.28 + 0.72 * abs(math.sin(u * 5.7 + 2.7)))))
+        back.append((W + 40, HZ))
+        PA.fill_poly(tile, back, (168, 172, 176), seed=169, value=0.04)
+        PA.hand_stroke(d, back, (122, 126, 132), 4, closed=False, seed=170,
+                       wavelength=130.0)
+
+        # THE LAKEBED, PROPERLY. A playa is a cracked polygon surface. Two wrong
+        # versions of this lived here first. Version one ran the crack net at
+        # 188,178,160 on an ALKALI of 232,230,222 -- forty-odd levels of pale
+        # on pale, which reads as a wireframe scribble laid over the picture
+        # rather than as cracks in it. Version two over-corrected to 118,108,94,
+        # roughly 110 levels down, and that is worse: dark seams on a near-white
+        # plate are SCAFFOLDING. It is the same net, drawn heavier, and the eye
+        # now reads structural steel rather than ground.
+        #
+        # What makes the same net read as ground in stage A2 is that it is WARM
+        # and CLOSE IN VALUE to a warm mid-tone plate, so the seams sit IN the
+        # surface. So the ground here is dropped to a warm alkali and the seams
+        # are dropped with it, thirty to fifty levels apart. The high-contrast
+        # linework in this frame is the power line, which is a real object and
+        # is allowed to be black; the ground is not.
+        PA.fill_rect(tile, [0, HZ - 6, W, H], (214, 202, 176), seed=154,
+                     value=0.07)
+        # The net is kept COARSE here on purpose. A finer net (c0=9/11 with
+        # cross=0.70) pushed tile_std from 5.93 to 12.46 and the picture got
+        # WORSE: dense short strokes at random angles with no coherent cell
+        # boundaries read as brushwood, not as a lake bed. The metric rewards
+        # edge count and the eye rejects it, and the eye is the judge -- so the
+        # coarse net stays and the density comes from plates instead.
+        _crust(d, 452, H + 30, (172, 156, 126), 155, rows=6, lw=5, cross=0.18,
+               c0=7, wavy=6.0)
+        _crust(d, 566, H + 30, (150, 132, 102), 157, rows=4, lw=5,
+               jitter=0.75, cross=0.20, c0=9, wavy=6.0)
+        # Tufts and rocks sit ON the crust, a shade under the seams so they
+        # still read as objects standing on the surface.
+        _tufts(d, 470, H - 6, (156, 140, 110), 159, n=44)
+        _boulder(d, 214, 648, 40, (168, 152, 122), 161)
+        _boulder(d, 688, 690, 52, (158, 142, 112), 163)
+        _boulder(d, 1040, 556, 30, (174, 158, 128), 165)
+
+        # THE POWER LINE. One gesture carries edge density through the sky and
+        # the middle distance at once, and it is the reason a desert reads as
+        # inhabited-and-ignored rather than as an empty gradient: five poles at
+        # decreasing height running off BOTH edges, three sagging catenaries
+        # strung between each pair, crossarms and insulators on every pole. The
+        # wires are the highest-contrast lines in the frame and they cross the
+        # sky where the eye had nothing to look at.
+        _pole_tops = ((-60, 214), (196, 262), (500, 306), (836, 344),
+                      (1096, 372), (1340, 392))
+        for i, (px, ptop) in enumerate(_pole_tops):
+            PA.fill_poly(tile, [(px - 7, ptop), (px + 7, ptop),
+                                (px + 10, HZ + 16), (px - 10, HZ + 16)],
+                         (96, 90, 84), seed=180 + i, value=0.06)
+            PA.hand_stroke(d, [(px, ptop), (px, HZ + 16)], INK, 5, seed=184 + i,
+                           wavelength=110.0)
+            PA.hand_stroke(d, [(px - 46, ptop + 18), (px + 46, ptop + 18)],
+                           (66, 62, 58), 5, seed=188 + i, wavelength=60.0)
+            for k in (-1, 1):
+                PA.hand_stroke(d, [(px + k * 46, ptop + 11),
+                                   (px + k * 46, ptop + 24)], (66, 62, 58), 4,
+                               seed=192 + i * 2 + k, wavelength=30.0)
+            # a brace, so a pole is not a bare stick
+            PA.hand_stroke(d, [(px - 22, HZ - 30), (px, HZ - 62),
+                               (px + 22, HZ - 30)], (66, 62, 58), 3,
+                           seed=196 + i, wavelength=40.0)
+        for i in range(len(_pole_tops) - 1):
+            (x0, y0), (x1, y1) = _pole_tops[i], _pole_tops[i + 1]
+            for k, drop in ((-1, 28), (0, 36), (1, 28)):
+                ax = x0 + k * 46
+                bx = x1 + k * 46
+                pts = []
+                for s in range(13):
+                    u = s / 12.0
+                    pts.append((ax + (bx - ax) * u,
+                                (y0 + 20) + ((y1 + 20) - (y0 + 20)) * u
+                                + drop * 4 * u * (1 - u)))
+                PA.hand_stroke(d, pts, (52, 48, 46), 3, seed=200 + i * 3 + k,
+                               wavelength=170.0)
         SC.title_backdrop(tile, 153, col=SKY)
+        # THE SKY. Stage A carries five outlined cloud strata and stage D did
+        # not, which is why the upper half of b21 was the smoothest region in a
+        # frame whose whole problem was that it read as an empty field. The
+        # power line crosses it, but a wire over a gradient is still a gradient
+        # everywhere the wire is not.
+        _cloud_bands(d, 96, HZ - 70, 210, n=5)
     els.append(SC.stage(clock, 20, d_backdrop, j=22))
 
     def d_roswell(tile, fw, fh):
         # 1947, three years before 1955. The beat is a DATE, so the calendar
         # primitive draws it.
-        _calendar(ImageDraw.Draw(tile), 430, 400, 200, 152, 154, year=1947,
+        #
+        # FRAME-FILL. At half-extents 200x152 the sheet was 400px of a 1280
+        # frame -- under a third of the width, and it read as a prop held at
+        # arm's length in an empty playa. It is now 560x430 and CROPPED BY THE
+        # LEFT EDGE (centre x=280, so the left 96px of the page are off-frame):
+        # the viewer is looking at the page from close and slightly off-square,
+        # which is how you read a date you have been handed. The balloon owns
+        # the right edge from b21, so the two never compete.
+        _calendar(ImageDraw.Draw(tile), 280, 356, 280, 215, 154, year=1947,
                   circle_year=True)
     els.append(SC.layer(clock, 20, d_roswell, j=21, kind='shape',
                         eid='d_roswell',
@@ -1282,6 +1461,25 @@ def build():
                         motion=SC.enter(clock, 21, dx=170, dy=0, dur=ARRIVE)))
     # NO caption at b21: the sagging balloon IS "the story went flat", and b20
     # is one beat earlier with words on it.
+
+    def d_storykeeper(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # The two-beat stage had NO character at all, which breaks the
+        # chapter's hard rule that every stage carries the stickman at least
+        # once, and left the left half of b21 with nothing on it but wire.
+        # "The desert kept the story all the same" is a line ABOUT someone
+        # still believing it, so the man is the point: he stands on the playa
+        # pointing at the sagging balloon, elbow visibly folded, and the
+        # balloon he is pointing at is the story that went flat.
+        #
+        # x=352 puts him under the second power pole but far enough right that
+        # his pointing hand clears the pole; at height 430 he reaches +-183, so
+        # he spans roughly x 169..535 and nothing else in the frame is there.
+        SC.fullbody(d, 352, 706, 430, pose='a51_pointing_e',
+                    expression='worried', seed=161, ink=(38, 32, 30))
+    els.append(SC.layer(clock, 21, d_storykeeper, j=22, kind='character',
+                        eid='d_storykeeper',
+                        motion=SC.enter(clock, 21, dx=-70, dy=0, dur=ARRIVE)))
 
     # ===================================================================== #
     # STAGE E  b22-b25  "Pilots named the place Hangar 18.                   #
@@ -1321,6 +1519,63 @@ def build():
         pts.append((W + 40, HZ))
         PA.fill_poly(tile, pts, (128, 132, 138), seed=405, value=0.05)
         PA.hand_stroke(d, pts, INK, 5, closed=False, seed=406, wavelength=140.0)
+
+        # THE OVERCAST SKY. Stage E measured 3.18-3.32 across all four beats and
+        # the sky is the largest area in three of them: an overcast lid painted
+        # as one fill. Overcast reads as cloud DECK -- long, flat, layered
+        # strata rather than the puffy bands the bleached-noon cards use -- so
+        # these are wide, shallow, low-contrast outlined decks that bunch toward
+        # the horizon, which is what a grey lid actually looks like from below.
+        _cloud_bands(d, 96, HZ - 76, 420, n=4, col=(168, 176, 186))
+        # and a second, darker deck, so the lid has two layers rather than one
+        _cloud_bands(d, 150, HZ - 90, 424, n=3, col=(140, 148, 158))
+
+        # THE APRON. The bottom-right quadrant of b22-b24 is 570x250 of one
+        # smooth tarmac fill. It is the ground a runway sits on, so it gets
+        # what ground gets: expansion joints in perspective, a kerb along the
+        # hangar side, and the tyre-black patches that make an apron read as
+        # used rather than as a fill.
+        for i in range(9):
+            u = i / 8.0
+            x0 = 720 + 560 * u
+            PA.hand_stroke(d, [(x0, H + 20), (x0 + 90, HZ + 6)], (168, 164, 156),
+                           4, seed=430 + i, wavelength=120.0)
+        for j, (yy, sc) in enumerate(((520, 0.22), (588, 0.5), (664, 0.84))):
+            PA.hand_stroke(d, [(700 + 580 * (1 - sc), yy), (1340, yy - 6)],
+                           (170, 166, 158), 4, seed=440 + j, wavelength=170.0)
+        # the kerb along the building's base, running off to the right
+        PA.fill_rect(tile, [706, 648, 1340, 676], (158, 152, 144), seed=445,
+                     value=0.06)
+        PA.hand_stroke(d, [(706, 648), (1340, 642)], (96, 92, 86), 6,
+                       seed=446, wavelength=170.0)
+        # tyre scuff on the turn into the hangar
+        PA.hand_stroke(d, [(790, 640), (880, 596), (980, 578)], (120, 116, 110),
+                       6, seed=447, wavelength=110.0)
+        # ground support equipment parked on the apron, so the band between the
+        # hangar and the fence (x 700-1010, y 400-560) is not 300x150 of flat
+        # tarmac. A mobile stair, a chock and a cable reel -- small outlined
+        # objects, the same move as the fortknox slab frame.
+        # mobile stair against the hangar side
+        PA.fill_poly(tile, [(742, 604), (742, 520), (810, 500), (810, 584)],
+                     (176, 172, 164), seed=480, value=0.06)
+        PA.hand_stroke(d, [(742, 604), (742, 520), (810, 500), (810, 584)],
+                       INK, 5, closed=True, seed=481, wavelength=80.0)
+        for k in range(4):
+            PA.hand_stroke(d, [(746, 592 - k * 20), (806, 576 - k * 20)],
+                           (128, 124, 118), 3, seed=482 + k, wavelength=40.0)
+        d.ellipse([752, 600, 772, 620], outline=INK, width=4)
+        # cable reel
+        PA.fill_poly(tile, [(862, 596), (930, 596), (930, 624), (862, 624)],
+                     (150, 146, 140), seed=486, value=0.06)
+        PA.hand_stroke(d, [(862, 596), (930, 596), (930, 624), (862, 624)],
+                       INK, 5, closed=True, seed=487, wavelength=70.0)
+        d.ellipse([878, 586, 914, 622], fill=(122, 118, 112), outline=INK,
+                  width=4)
+        # chocks and a traffic cone, near the runway edge
+        PA.fill_poly(tile, [(948, 636), (972, 596), (996, 636)], (196, 108, 56),
+                     seed=488, value=0.05, edge=1.0)
+        PA.hand_stroke(d, [(948, 636), (972, 596), (996, 636)], INK, 4,
+                       closed=True, seed=489, wavelength=50.0)
 
         # THE RIGHT HALF IS COMPOSED FROM b22, not left empty until b25. Nellis
         # at b25 has to ARRIVE at something; a bare 570px of desert gave it
@@ -1364,15 +1619,44 @@ def build():
         # measured as a pale empty field; a hangar wall reads as a wall when it
         # has HORIZONTAL joints too, a dark skirt where it meets the ground,
         # and a shadow plane.
-        for i in range(7):
-            x = 30 + i * 104
-            PA.hand_stroke(d, [(x, 220), (x, 640)], (104, 100, 94), 7,
+        #
+        # MEASURED AGAIN AT 5.49-7.82 after the sky and apron went in, so the
+        # wall itself is now the last big soft field in the stage. Its seams
+        # were (104,100,94) on a (124,120,114) wall -- TWENTY levels, which is
+        # under the 24 the readability gate counts, so from the metric's point
+        # of view they were not there. They are now (78,74,70), forty-six
+        # levels down, and there are more of them: nine verticals instead of
+        # seven and three horizontals instead of two, so a 24px tile anywhere on
+        # the 780px building crosses at least one.
+        for i in range(9):
+            x = 10 + i * 88
+            PA.hand_stroke(d, [(x, 210), (x, 640)], (78, 74, 70), 8,
                            seed=422 + i, wavelength=110.0)
-        for jy in (430, 560):
-            PA.hand_stroke(d, [(-60, jy), (700, jy)], (108, 104, 98), 6,
+            # a rivet row down each seam, so the rib is a structural member and
+            # not a drawn line
+            for k in range(5):
+                ry = 250 + k * 78
+                PA.fill_poly(PA.img_of(d), PA.ellipse_pts(x + 44, ry, 5, n=8),
+                             (92, 88, 82), seed=470 + i * 5 + k, value=0.05,
+                             edge=0.6)
+        for jy in (392, 500, 592):
+            PA.hand_stroke(d, [(-60, jy), (700, jy - 4)], (84, 80, 76), 7,
                            seed=430 + jy, wavelength=150.0)
-        PA.fill_rect(tile, [-60, 600, 700, 660], (88, 84, 80), seed=440,
+        PA.fill_rect(tile, [-60, 600, 700, 660], (72, 68, 64), seed=440,
                      value=0.05)
+        PA.hand_stroke(d, [(-60, 600), (700, 596)], (52, 48, 44), 7, seed=441,
+                       wavelength=150.0)
+        # a hazard chevron band along the wall's base -- the one high-contrast
+        # graphic on an otherwise grey building, and it reads as "mind the
+        # door" in the language the reference uses for exactly this kind of
+        # structure.
+        for i in range(11):
+            cx0 = -60 + i * 66
+            PA.fill_poly(tile, [(cx0, 660), (cx0 + 34, 660), (cx0 + 62, 618),
+                                (cx0 + 28, 618)], (196, 168, 72), seed=450 + i,
+                         value=0.05, edge=0.8)
+        PA.hand_stroke(d, [(-60, 616), (700, 612)], (58, 54, 50), 5, seed=462,
+                       wavelength=150.0)
         # The opening, cut into the wall. It is painted FIRST and never
         # changes: what makes "empty hangar door" legible is the leaf sliding
         # OFF this dark rectangle, not a dark rectangle arriving. At 360x308 it
@@ -1500,8 +1784,189 @@ def build():
     # place, which is why it measures under a third of the frame.            #
     # ===================================================================== #
     def f_backdrop(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # MEASURED 2.90-3.31 on b26-b30 -- five consecutive flat beats, and this
+        # two-fill_rect backdrop is why. The room was a wall colour and a floor
+        # colour and nothing else: 100% of the frame was two smooth fields, so a
+        # 24px tile anywhere in it held one gradient and no edge. The document
+        # and the television were good objects marooned in a void, which is the
+        # under-filled composition the brief names, not a paint problem.
+        #
+        # THE ROOM IS NOW A ROOM. An office is not a backdrop, it is a set with
+        # a back wall, a floor with a horizon, and furniture-sized verticals. So
+        # the wall gets a dado rail and wainscot below it, the floor gets
+        # perspective boards running OFF both side edges, and the wall gets the
+        # one thing that makes it read as an interior rather than as paper: a
+        # WINDOW with blinds and a sill, on the right where the television later
+        # stands in front of it. Every band runs past the frame edge so the room
+        # admits it continues past the picture.
         PA.fill_rect(tile, [0, 0, W, H], (206, 200, 190), seed=460, value=0.05)
         PA.fill_rect(tile, [0, 420, W, H], (188, 180, 170), seed=461, value=0.07)
+
+        # --- the back wall: panel joints + a dado rail + wainscot ----------- #
+        # Vertical panel seams above the rail. At a 24px tile one crossing seam
+        # is already enough local detail; a checkerboard of seams would read as
+        # tile, not plaster.
+        for i in range(1, 9):
+            x = 40 + i * 148
+            PA.hand_stroke(d, [(x, 92), (x + 4, 372)], (186, 180, 170), 4,
+                           seed=470 + i, wavelength=120.0)
+        # the dado rail: the horizontal that makes an interior read as an
+        # interior, because it separates two materials at a consistent height.
+        PA.hand_stroke(d, [(-60, 372), (W + 60, 368)], (150, 142, 132), 8,
+                       seed=480, wavelength=190.0)
+        PA.hand_stroke(d, [(-60, 380), (W + 60, 376)], (222, 216, 206), 5,
+                       seed=481, wavelength=190.0)
+        # wainscot below it -- vertical beadboard, darker than the plaster
+        PA.fill_rect(tile, [-60, 382, W + 60, 424], (176, 168, 158), seed=482,
+                     value=0.06)
+        for i in range(14):
+            x = -40 + i * 100
+            PA.hand_stroke(d, [(x, 386), (x + 2, 420)], (146, 138, 128), 3,
+                           seed=483 + i, wavelength=44.0)
+
+        # --- the window: blinds, mullion, sill. It is the frame's one piece of #
+        # -- architecture and it is what makes the flat wall read as a ROOM.  #
+        # Placed x 596..932, so it sits in the gap between the sheet (ends at
+        # 520) and the television (starts at 940) and is never covered by either.
+        PA.fill_poly(tile, [(596, 128), (932, 128), (932, 344), (596, 344)],
+                     (168, 186, 198), seed=490, value=0.07)
+        PA.hand_stroke(d, [(596, 128), (932, 128), (932, 344), (596, 344)],
+                       INK, 7, closed=True, seed=491, wavelength=130.0)
+        # the view through it: a strip of paler sky over a low band of ridge,
+        # so the window is a window and not a blue rectangle.
+        PA.fill_rect(tile, [604, 136, 924, 236], (196, 212, 222), seed=492,
+                     value=0.05)
+        ridge = [(604, 236)]
+        for i in range(17):
+            u = i / 16.0
+            ridge.append((604 + 320 * u,
+                          236 - 16 * (0.3 + 0.7 * abs(math.sin(u * 6.3 + 1.1)))))
+        ridge.append((924, 236))
+        PA.fill_poly(tile, ridge, (150, 158, 168), seed=493, value=0.05)
+        PA.fill_rect(tile, [604, 236, 924, 336], (142, 150, 160), seed=494,
+                     value=0.05)
+        # horizontal blind slats -- 11 of them across 200px, which is the
+        # single densest small-shape structure available on a wall this plain.
+        for j in range(11):
+            yy = 140 + j * 18
+            PA.fill_rect(tile, [602, yy, 926, yy + 11], (212, 206, 194),
+                         seed=495 + j, value=0.06)
+            PA.hand_stroke(d, [(602, yy + 11), (926, yy + 11)], (128, 122, 114),
+                           3, seed=496 + j, wavelength=120.0)
+        # the mullion and the sill
+        PA.hand_stroke(d, [(764, 130), (764, 342)], INK, 6, seed=497,
+                       wavelength=110.0)
+        PA.fill_rect(tile, [578, 342, 950, 360], (150, 142, 132), seed=498,
+                     value=0.06)
+        PA.hand_stroke(d, [(578, 342), (950, 342)], INK, 6, seed=499,
+                       wavelength=140.0)
+        # the pull cord, so the blind is a thing that is operated
+        PA.hand_stroke(d, [(910, 150), (910, 300)], (108, 102, 96), 3,
+                       seed=500, wavelength=60.0)
+        PA.fill_poly(PA.img_of(d), PA.ellipse_pts(910, 308, 9, n=10),
+                     (108, 102, 96), seed=501, value=0.05, edge=0.8)
+
+        # --- the floor: boards running off BOTH side edges ------------------ #
+        # A floor is the strongest perspective cue in an interior and it is
+        # what tells the eye the wall has a depth behind it. The boards converge
+        # toward a vanishing point above the wall line, which is the standard
+        # one-point read and is why six lines are enough to build a room.
+        vpx = 764.0
+        for i in range(-7, 15):
+            bx = -760 + i * 148
+            PA.hand_stroke(d, [(bx, H + 30), (vpx, 424)], (166, 156, 144), 4,
+                           seed=510 + i, wavelength=150.0)
+        # and the boards' own ends, receding -- three cross-joints so the floor
+        # is planks and not a fan of lines
+        for jy, sc in ((498, 0.30), (588, 0.58), (676, 0.86)):
+            PA.hand_stroke(d, [(-60, jy), (W + 60, jy + 4)], (168, 158, 146), 4,
+                           seed=520 + jy, wavelength=180.0)
+        # the baseboard: the wall/floor join, always drawn, always an edge
+        PA.fill_rect(tile, [-60, 424, W + 60, 452], (156, 148, 138), seed=530,
+                     value=0.06)
+        PA.hand_stroke(d, [(-60, 424), (W + 60, 420)], (112, 104, 96), 6,
+                       seed=531, wavelength=180.0)
+        # a rug in the middle distance, so the floor has an object on it
+        PA.fill_poly(tile, [(330, 620), (1000, 620), (1120, H + 20), (150, H + 20)],
+                     (172, 152, 140), seed=532, value=0.07)
+        PA.hand_stroke(d, [(330, 620), (1000, 620), (1120, H + 20), (150, H + 20)],
+                       (128, 106, 98), 5, closed=True, seed=533, wavelength=170.0)
+        PA.hand_stroke(d, [(368, 648), (1046, 648)], (198, 176, 160), 6,
+                       seed=534, wavelength=150.0)
+
+        # --- an outlet, a switch plate, a light switch: the small stuff that #
+        # -- says "somebody works here" and costs two 24px tiles each.       #
+        PA.fill_rect(tile, [1210, 392, 1258, 442], (176, 168, 158), seed=535,
+                     value=0.05)
+        PA.hand_stroke(d, [(1210, 392), (1258, 392), (1258, 442), (1210, 442)],
+                       (110, 102, 96), 4, closed=True, seed=536, wavelength=60.0)
+        for i in range(2):
+            PA.hand_stroke(d, [(1222, 404 + i * 18), (1246, 404 + i * 18)],
+                           (74, 70, 66), 4, seed=537 + i, wavelength=26.0)
+
+        # --- a wall clock at high left. The band above the dado and left of #
+        # -- the sheet (x 92..520, y 92..170) was one of the last big smooth #
+        # -- fields in the frame, and a clock is the object that belongs there #
+        # -- in an office and happens to be all circles and tick marks -- the  #
+        # -- densest small-shape thing available.                            #
+        cx, cy, cr = 558, 238, 36
+        PA.fill_poly(tile, PA.ellipse_pts(cx, cy, cr, n=40), (226, 220, 208),
+                     seed=545, value=0.06)
+        PA.hand_stroke(d, PA.ellipse_pts(cx, cy, cr, n=40), INK, 6, closed=True,
+                       seed=546, wavelength=70.0)
+        PA.hand_stroke(d, PA.ellipse_pts(cx, cy, cr - 8, n=36), (146, 138, 128),
+                       3, closed=True, seed=547, wavelength=60.0)
+        for k in range(12):
+            a = 2 * math.pi * k / 12.0
+            PA.hand_stroke(d, [(cx + (cr - 16) * math.sin(a),
+                                cy - (cr - 16) * math.cos(a)),
+                               (cx + (cr - 8) * math.sin(a),
+                                cy - (cr - 8) * math.cos(a))],
+                           (74, 70, 66), 4, seed=548 + k, wavelength=18.0)
+        PA.hand_stroke(d, [(cx, cy), (cx + 16, cy - 19)], INK, 5, seed=560,
+                       wavelength=22.0)
+        PA.hand_stroke(d, [(cx, cy), (cx - 4, cy - 29)], INK, 4, seed=561,
+                       wavelength=22.0)
+
+        # --- a shelf of binders above the dado on the far right. The right  #
+        # -- wall (x > 960) above the dado is the other last smooth field,  #
+        # -- and a shelf of spines is ~14 small outlined rectangles in a row, #
+        # -- which is the fortknox-slab move applied to an office.           #
+        PA.hand_stroke(d, [(988, 300), (1272, 296)], (96, 88, 80), 8, seed=570,
+                       wavelength=140.0)
+        PA.hand_stroke(d, [(988, 306), (1272, 302)], (232, 226, 214), 4,
+                       seed=571, wavelength=140.0)
+        _binder_w = 26
+        for i in range(9):
+            bx = 1000 + i * 30
+            lean = 0 if i % 3 else 4
+            tone = (168, 74, 62, ) if i % 2 else (78, 96, 122)
+            PA.fill_poly(tile, [(bx + lean, 302), (bx + _binder_w + lean, 302),
+                                (bx + _binder_w, 232 + (i % 3) * 6),
+                                (bx, 232 + (i % 3) * 6)], tone, seed=572 + i,
+                         value=0.07)
+            PA.hand_stroke(d, [(bx + lean, 302), (bx + _binder_w + lean, 302),
+                               (bx + _binder_w, 232 + (i % 3) * 6),
+                               (bx, 232 + (i % 3) * 6)], INK, 4, closed=True,
+                           seed=580 + i, wavelength=44.0)
+            PA.hand_stroke(d, [(bx + 4, 252), (bx + _binder_w - 2, 250)],
+                           (238, 232, 220), 3, seed=590 + i, wavelength=26.0)
+        # a second, higher shelf with a few box files, so the right wall has a
+        # vertical structure rather than one lonely shelf
+        PA.hand_stroke(d, [(1006, 176), (1268, 172)], (96, 88, 80), 7,
+                       seed=600, wavelength=130.0)
+        for i in range(5):
+            bx = 1020 + i * 50
+            PA.fill_poly(tile, [(bx, 172), (bx + 40, 172), (bx + 40, 112),
+                                (bx, 112)], (196, 184, 164), seed=601 + i,
+                         value=0.06)
+            PA.hand_stroke(d, [(bx, 172), (bx + 40, 172), (bx + 40, 112),
+                               (bx, 112)], INK, 4, closed=True, seed=606 + i,
+                           wavelength=44.0)
+            PA.hand_stroke(d, [(bx + 6, 148), (bx + 34, 146)], (86, 80, 74), 4,
+                           seed=611 + i, wavelength=24.0)
+
         PA.paper_overlay(tile, seed=462)
         SC.title_backdrop(tile, 463, col=(206, 200, 190))
     els.append(SC.stage(clock, 26, f_backdrop, j=31))
@@ -1535,7 +2000,41 @@ def build():
             y = 180 + i * 52
             PA.hand_stroke(d, [(-40, y), (360 - (i % 3) * 70, y)],
                            (150, 146, 138), 5, seed=466 + i, wavelength=70.0)
+        # THE SHEET'S OWN STRUCTURE. At b26 the document is the ONLY subject on
+        # screen, and at 600x490 it was 34% of the frame made of one pale fill
+        # with six thin rules on it -- a big smooth sheet, which is the very
+        # thing the gate is measuring. A budget sheet is not blank paper: it
+        # has a header band, a column rule, a right-hand figures column, a
+        # signature, a paperclip, and a filing stamp. Each is a small outlined
+        # shape and each gives a 24px tile somewhere to get its contrast from.
+        # The ruled lines are deliberately NOT redone: they are correct already.
+        # header band across the top of the sheet
+        PA.fill_rect(tile, [-80, 128, 520, 166], (168, 162, 152), seed=467,
+                     value=0.06)
+        PA.hand_stroke(d, [(-40, 166), (520, 164)], (110, 104, 98), 5,
+                       seed=468, wavelength=140.0)
+        # a column rule, so the sheet has a figures column
+        PA.hand_stroke(d, [(300, 180), (300, 420)], (138, 132, 124), 5,
+                       seed=469, wavelength=120.0)
+        # figures in that column -- short dashes that read as typed numbers
+        for i in range(6):
+            y = 190 + i * 40
+            PA.hand_stroke(d, [(322, y), (322 + 60 + (i * 13) % 90, y - 2)],
+                           (108, 102, 96), 5, seed=480 + i, wavelength=44.0)
+        # the blacked-out line (the redaction) and its surround
         PA.fill_rect(tile, [-20, 430, 470, 496], INK, seed=470, value=0.04)
+        # a paperclip top-right, and a filing stamp bottom-left -- small metal /
+        # ink marks on pale paper, which is what raises a document's local detail
+        PA.hand_stroke(d, [(452, 186), (474, 182), (480, 208), (452, 214),
+                           (446, 190), (468, 186), (472, 202), (450, 206)],
+                       (128, 126, 120), 4, seed=492, wavelength=30.0)
+        PA.hand_stroke(d, [(120, 344), (220, 340)], (86, 120, 156), 5,
+                       seed=493, wavelength=34.0)
+        PA.hand_stroke(d, [(126, 356), (232, 352)], (86, 120, 156), 4,
+                       seed=494, wavelength=34.0)
+        # a rubber-stamp ring in the lower right of the sheet
+        PA.hand_stroke(d, PA.ellipse_pts(430, 560, 34, n=28), (92, 104, 148), 5,
+                       closed=True, seed=495, wavelength=50.0)
         D.draw_label(tile, 'NOT PUBLIC', center=(215, 545), color=RED, size=38,
                      outline=INK, outline_w=2)
     els.append(SC.accrue(clock, 26, 31, f_sheet, kind='shape', eid='f_sheet',
@@ -1575,7 +2074,7 @@ def build():
         # a lectern. At height 440 a standing reach is +-118, so he occupies
         # x 522..758 -- 180px clear of the sheet's right edge at 470 and 182px
         # clear of the television's left edge at 940.
-        SC.fullbody(d, 640, 700, 440, pose='standing', expression='deadpan',
+        SC.fullbody(d, 640, 700, 440, pose='a51_lectern', expression='deadpan',
                     seed=497)
         lect = [(566, 700), (584, 508), (716, 508), (734, 700)]
         PA.fill_poly(tile, lect, (128, 120, 110), seed=498, value=0.06)
@@ -1692,8 +2191,134 @@ def build():
     # way to the wire.                                                       #
     # ===================================================================== #
     def g_backdrop(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # MEASURED 3.04 / 3.05 / 3.53 / 3.60 on b31-b34 -- the flattest run in
+        # the chapter, and this backdrop is why. Two fill_rects and an overlay:
+        # a night sky and a night ground, both smooth, with the fence arriving
+        # later as a single thin band between them. The finale is the frame the
+        # viewer is left holding, and it was a black rectangle with a wire in
+        # it.
+        #
+        # NIGHT IS NOT EMPTY. It is the darkest register in the film and the
+        # only one where a wrong move loses the subject, so the added structure
+        # is all LOW-CONTRAST and large: a star field, the mountain rim the
+        # chapter opened on (b01's horizon, so the loop closes on the same land),
+        # a scatter of facility lights along it, and ground contour below. The
+        # fence still reads as the darkest, sharpest thing in the frame because
+        # everything added here is lighter than it.
         PA.fill_rect(tile, [0, 0, W, H], NIGHT, seed=520, value=0.12)
         PA.fill_rect(tile, [0, HZ - 6, W, H], NIGHT_G, seed=521, value=0.12)
+
+        # --- stars ---------------------------------------------------------- #
+        # The sky is the top 446 rows of the finale and it was one gradient.
+        _stars(d, -20, 96, W + 20, HZ - 120, 540, n=76)
+        # three flares, so the field is not a dot grid
+        _stars_spark(d, 232, 176, 542)
+        _stars_spark(d, 1010, 240, 543)
+        _stars_spark(d, 640, 132, 544)
+
+        # --- the rim: the same landform as b01, in near-black ---------------- #
+        # The chapter opened on a playa with a mountain rim above it, so the
+        # finale puts the rim back. It is what makes b34 read as the same place
+        # at night rather than as a black card.
+        rim = [(-40, HZ)]
+        for i in range(31):
+            u = i / 30.0
+            rim.append((-40 + (W + 80) * u,
+                        HZ - 66 * (0.26 + 0.74 * abs(math.sin(u * 5.9 + 2.1)))))
+        rim.append((W + 40, HZ))
+        PA.fill_poly(tile, rim, (46, 52, 70), seed=545, value=0.07)
+        PA.hand_stroke(d, rim, (86, 94, 116), 4, closed=False, seed=546,
+                       wavelength=150.0)
+        # a second, nearer ridge in front of it, darker -- depth at night
+        rim2 = [(-40, HZ)]
+        for i in range(25):
+            u = i / 24.0
+            rim2.append((-40 + (W + 80) * u,
+                         HZ - 34 * (0.3 + 0.7 * abs(math.sin(u * 8.3 + 0.4)))))
+        rim2.append((W + 40, HZ))
+        PA.fill_poly(tile, rim2, (32, 36, 50), seed=547, value=0.06)
+
+        # --- the facility lights along the base of the rim ------------------ #
+        # A secret base at night is a scatter of small lights and a few towers,
+        # and this is the chapter's own subject seen from outside its fence for
+        # the last time. They are the only warm points in a cold frame.
+        #
+        # AND THE BASE ITSELF. b31 measured 4.42 and did not move when the file
+        # stack was enlarged, because the stack is a small bright object in a
+        # 720px frame of smooth night -- and the smooth night is the defect. The
+        # mid-band between the horizon and the fence (y 330-446, all 1280 wide)
+        # was one dark field. So the base goes there: hangars and a tower as
+        # near-black silhouettes standing ON the rim, with lit windows. It is
+        # the thing the whole chapter has been about, seen from outside its own
+        # fence, and it gives the middle of the frame the structure it needs.
+        for i in range(11):
+            u = ((i * 53) % 97) / 97.0
+            lx = -30 + (W + 60) * u
+            ly = HZ - 16 - ((i * 29) % 23)
+            rr = 2.6 + 2.0 * (((i * 17) % 11) / 11.0)
+            PA.fill_poly(PA.img_of(d), PA.ellipse_pts(lx, ly, rr, n=8),
+                         (232, 206, 150), seed=548 + i, value=0.05, edge=0.5)
+            if i % 3 == 0:
+                PA.hand_stroke(d, [(lx, ly - rr), (lx, ly - rr - 26)],
+                               (96, 104, 124), 3, seed=560 + i,
+                               wavelength=30.0)
+        # three hangars and a control tower, in silhouette against the rim
+        for hx, hw, hh in ((214, 120, 58), (352, 92, 46), (905, 104, 52),
+                           (1046, 86, 44)):
+            base_y = HZ - 8
+            PA.fill_poly(tile, [(hx - hw, base_y), (hx - hw, base_y - hh),
+                                (hx + hw, base_y - hh), (hx + hw, base_y)],
+                         (26, 30, 42), seed=580 + hx % 17, value=0.05)
+            PA.hand_stroke(d, [(hx - hw, base_y), (hx - hw, base_y - hh),
+                               (hx + hw, base_y - hh), (hx + hw, base_y)],
+                           (74, 82, 104), 4, closed=True, seed=584 + hx % 17,
+                           wavelength=90.0)
+            # lit windows -- two or three small warm rectangles on each
+            for k in range(3):
+                wx = hx - hw + 26 + k * (hw - 40) // 2
+                PA.fill_rect(tile, [wx, base_y - hh + 18, wx + 16,
+                                    base_y - hh + 30], (226, 196, 132),
+                             seed=590 + k + hx % 13, value=0.05, edge=0.6)
+        # the tower: tall, with a lit cab at the top and a red aircraft lamp
+        twx, twy = 640, HZ - 6
+        PA.fill_poly(tile, [(twx - 15, twy), (twx - 9, twy - 118),
+                            (twx + 9, twy - 118), (twx + 15, twy)], (28, 32, 44),
+                     seed=598, value=0.05)
+        PA.hand_stroke(d, [(twx - 15, twy), (twx - 9, twy - 118)], (78, 86, 108),
+                       4, seed=599, wavelength=90.0)
+        PA.hand_stroke(d, [(twx + 15, twy), (twx + 9, twy - 118)], (78, 86, 108),
+                       4, seed=600, wavelength=90.0)
+        PA.fill_rect(tile, [twx - 17, twy - 140, twx + 17, twy - 114],
+                     (34, 38, 52), seed=601, value=0.05)
+        PA.fill_rect(tile, [twx - 13, twy - 136, twx + 13, twy - 118],
+                     (232, 202, 140), seed=602, value=0.05, edge=0.8)
+        PA.fill_poly(PA.img_of(d), PA.ellipse_pts(twx, twy - 146, 6, n=8),
+                     RED, seed=603, value=0.05, edge=0.6)
+        # guy wires off both edges of the tower
+        PA.hand_stroke(d, [(twx, twy - 140), (twx - 120, twy)], (56, 62, 80), 3,
+                       seed=604, wavelength=110.0)
+        PA.hand_stroke(d, [(twx, twy - 140), (twx + 120, twy)], (56, 62, 80), 3,
+                       seed=605, wavelength=110.0)
+
+        # --- the ground: contour, scrub, and the fence's own shadow --------- #
+        # The near ground below the fence is 250 rows and was one fill. It is
+        # dry lake at night, so it gets the same cracked crust the daylight
+        # stages use, at a night value -- and the seams are lifted well clear of
+        # the ground tone, because on a card this dark the eye needs the edges
+        # or the whole lower third returns to being a black rectangle.
+        _contour_bands(d, HZ + 20, H + 30, (78, 80, 98), 570, n=5, lw=6,
+                       wobble=0.7)
+        _crust(d, HZ + 34, H + 20, (86, 86, 104), 576, rows=4, lw=4, cross=0.30,
+               c0=8, wavy=5.0)
+        _tufts(d, HZ + 40, H + 20, (72, 74, 92), 572, n=34)
+        # a service track running off the right edge, catching the light -- the
+        # ground admits it continues past the picture
+        PA.hand_stroke(d, [(700, H + 20), (1180, HZ + 44), (1340, HZ + 38)],
+                       (98, 100, 118), 7, seed=574, wavelength=150.0)
+        PA.hand_stroke(d, [(740, H + 30), (1206, HZ + 70)], (86, 88, 106), 5,
+                       seed=575, wavelength=150.0)
+
         PA.paper_overlay(tile, seed=522)
         # lit course on the title band so the hardcoded-INK title reads on the
         # night card (see scene_common.title_backdrop). Called before any fill
@@ -1707,10 +2332,43 @@ def build():
         # NOT the year -- the YEAR is in the caption instead, because the beat
         # is the date as much as the release and printing 2020 in both places is
         # duplication.
-        _file_stack(d, 640, 400, 210, 523, n=6, stamp='RELEASED')
+        #
+        # FRAME-FILL. At w=210 the stack was 420px of a 1280 frame -- under a
+        # third of the width -- floating in the middle of a 720px sky with
+        # nothing else on it. It is a pile of released documents and it is the
+        # only subject on the beat, so it now spans 760px (60% of the width),
+        # sits low and left, and is CROPPED BY THE LEFT EDGE -- the frame-fill
+        # canon's own idiom, and the reason the frame admits the pile is bigger
+        # than the picture. Seven sheets instead of six, because the near edge
+        # of the pile is now off-frame and one more is what carries that.
+        _file_stack(d, 330, 430, 380, 523, n=7, stamp='RELEASED')
+        # the string tie around the bundle, and a shelf of boxed records behind
+        # it on the right, so the beat is a pile of FILES and not six rectangles
+        PA.hand_stroke(d, [(150, 502), (520, 506)], (128, 96, 72), 7, seed=530,
+                       wavelength=140.0)
+        PA.hand_stroke(d, [(96, 470), (96, 548)], (128, 96, 72), 6, seed=531,
+                       wavelength=90.0)
     els.append(SC.layer(clock, 31, g_stack, j=32, kind='shape', eid='g_stack',
                         motion=SC.enter(clock, 31, dy=54, dur=ARRIVE)))
-    els.append(cap(31, 640, 604, size=30, dark=True, max_w=700))
+
+    def g_reader(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # The b31 beat had NO character, and the stage's own rule is that every
+        # stage carries him. "In 2020, the FBI released its files" is a beat
+        # ABOUT somebody finally being allowed to read something, so he is
+        # cropped in by the RIGHT edge, standing over the pile he is being given,
+        # head down, one arm reaching to take the top sheet.
+        #
+        # CREAM INK, same override as b34 -- G is a night stage and the default
+        # INK limbs (L=24) vanish against NIGHT (L=20). Cropped at x=1180 so he
+        # is inside the shot rather than parked in it, and clear of the pile,
+        # which now ends at x=710.
+        SC.fullbody(d, 1186, 700, 430, pose='a51_reach', expression='awed',
+                    seed=547, ink=(236, 228, 208))
+    els.append(SC.layer(clock, 31, g_reader, j=32, kind='character',
+                        eid='g_reader',
+                        motion=SC.enter(clock, 31, dx=110, dy=0, dur=ARRIVE)))
+    els.append(cap(31, 900, 190, size=30, dark=True, max_w=700))
 
     def g_page(tile, fw, fh):
         d = ImageDraw.Draw(tile)
@@ -1720,22 +2378,68 @@ def build():
         # REPLACES the stack -- two documents at once in the same frame is the
         # pile-up -- and the single typed line GROOM LAKE is picked out among
         # the redactions with a finger under it.
-        sheet = [(380, 200), (900, 200), (900, 560), (380, 560)]
+        #
+        # FRAME-FILL. At 520x360 the page was 20% of the frame and sat centred,
+        # which is the "small subject marooned in an empty field" the brief
+        # names. It is now 840x560 -- half the width -- pushed left and CROPPED
+        # BY THE LEFT EDGE, so the frame admits the document continues past the
+        # picture. The lines are re-spaced onto the new box and the redaction
+        # count goes from 6 to 9, because a page this size with seven rules on
+        # it is a big pale rectangle again.
+        sheet = [(-70, 150), (770, 150), (770, 660), (-70, 660)]
         PA.fill_poly(tile, sheet, PAPER, seed=524, value=0.05)
-        PA.hand_stroke(d, sheet, INK, 6, closed=True, seed=525, wavelength=150.0)
-        for i in range(7):
-            y = 240 + i * 44
-            if i == 3:
+        PA.hand_stroke(d, [(0, 150), (770, 150), (770, 660), (-70, 660)],
+                       INK, 6, closed=False, seed=525, wavelength=150.0)
+        # a header band and a case number, so the page has a top
+        PA.fill_rect(tile, [-70, 172, 770, 214], (168, 162, 152), seed=527,
+                     value=0.06)
+        PA.hand_stroke(d, [(0, 214), (770, 212)], (110, 104, 98), 5, seed=528,
+                       wavelength=140.0)
+        for i in range(9):
+            y = 244 + i * 44
+            if i == 4:
                 continue
-            PA.hand_stroke(d, [(410, y), (410 + (360 if i % 2 else 260), y)],
+            PA.hand_stroke(d, [(10, y), (10 + (620 if i % 2 else 430), y)],
                            (150, 146, 138), 4, seed=526 + i, wavelength=70.0)
-        y = 240 + 3 * 44
-        D.draw_label(tile, 'GROOM LAKE', center=(620, y), color=INK, size=42)
-        PA.fill_poly(tile, [(720, 540), (762, 420), (804, 540)],
-                     (222, 180, 150), seed=534, value=0.05)
-        PA.hand_stroke(d, [(720, 540), (762, 420), (804, 540)], INK, 5,
-                       closed=False, seed=535, wavelength=70.0)
+        y = 244 + 4 * 44
+        D.draw_label(tile, 'GROOM LAKE', center=(300, y), color=INK, size=48)
+        # the redaction bars on the lines that were NOT typed out
+        for i in (1, 6, 8):
+            yy = 244 + i * 44
+            PA.fill_rect(tile, [430, yy - 9, 700, yy + 7], (44, 44, 50),
+                         seed=540 + i, value=0.04)
+        # the pointing finger under the one legible line, and the arm
+        # running back to the character cropped in at the top right. The finger
+        # is a slim tapered index with two knuckle creases, NOT a wide triangle
+        # -- a filled triangle 100px wide reads as a cone or a tent on the page,
+        # not as a hand. It tapers to a tip under the GROOM LAKE line.
+        PA.fill_poly(tile, [(586, 556), (614, 546), (626, 452), (604, 446)],
+                     (228, 196, 168), seed=534, value=0.05)
+        PA.hand_stroke(d, [(586, 556), (614, 546), (626, 452), (604, 446)],
+                       INK, 4, closed=True, seed=535, wavelength=50.0)
+        for k in range(2):
+            PA.hand_stroke(d, [(598, 520 - k * 22), (620, 516 - k * 22)],
+                           (162, 122, 96), 3, seed=536 + k, wavelength=22.0)
+        # the forearm and upper arm back to the shoulder mass of the closeup at
+        # (1128, 214, r82) -- its right shoulder sits near (1128 - 60, 250).
+        PA.hand_stroke(d, [(622, 500), (858, 396), (1040, 268)], INK, 9,
+                       seed=538, wavelength=90.0)
+        PA.hand_stroke(d, [(628, 508), (856, 406)], (238, 226, 210), 5,
+                       seed=539, wavelength=70.0)
     els.append(SC.layer(clock, 32, g_page, j=33, kind='shape', eid='g_page'))
+
+    def g_pageface(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
+        # The head at the top of that reaching arm. b32 is a page and a pointing
+        # finger, and a finger with nothing above it is a disembodied limb --
+        # the same defect the file's own comment records for the old floating
+        # _hand_sketch claws. `closeup` puts the face CROPED INTO the frame from
+        # the top right, which is what makes it read as a person leaning over
+        # the document rather than as a drawing of a hand.
+        SC.closeup(d, 1128, 214, 82, 'awed', 538, shoulder=0.62)
+    els.append(SC.layer(clock, 32, g_pageface, j=33, kind='character',
+                        eid='g_pageface',
+                        motion=SC.enter(clock, 32, dx=90, dy=-30, dur=0.5)))
     # NO caption at b32: the page is DRAWN with GROOM LAKE on it in 42px ink
     # under a pointing finger. The words are already the picture.
 
@@ -1766,7 +2470,7 @@ def build():
         # and the 'never' bubble that is the last thing on screen. The fence is
         # still there behind both of them -- it was placed at b33 and nothing in
         # this beat covers it, which is the point: the wall is still up.
-        SC.fullbody(d, 175, 700, 450, pose='standing', expression='awed',
+        SC.fullbody(d, 175, 700, 450, pose='peeking', expression='awed',
                     seed=546, ink=(236, 228, 208))
         # CREAM INK, and it is not optional here. G is a night stage (NIGHT 20 /
         # NIGHT_G 24) and the default INK limbs are L=24 -- twenty-four against

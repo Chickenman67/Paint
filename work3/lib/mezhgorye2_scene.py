@@ -381,6 +381,112 @@ def _speckle(d, x0, y0, x1, y1, col, seed, n=18, width=3):
                        seed=seed + k, wavelength=40.0)
 
 
+def _shards(d, x0, y0, x1, y1, cols, seed, n=90, rmin=12, rmax=34,
+            key=None, key_w=0):
+    """Densely packed value-stepped ANGULAR PLANES -- surface, not confetti.
+
+    `_facets` outlines every chip in INK, which is right for a BUILT subject
+    where each block is an object, but wrong for rock, snow and earth: the
+    keyline makes each chip read as a separate outlined shape floating on the
+    surface, and at ship size a face full of them reads as scattered paper
+    triangles, not as ground. That is the same defect the brief names as
+    confetti, and it is not what the reference draws a mountain as.
+
+    Here the neighbouring planes differ in VALUE and share hairline edges
+    (`key_w=0` by default, so there is no ink keyline at all) -- the surface
+    reads as faceted or wind-carved, and the local tile still spans three
+    values, which is what the pigment metric is actually measuring. Pass
+    `key`/`key_w` for a built subject that should keep an outline.
+    """
+    def rnd(state):
+        s = (state * 1103515245 + 12345) & 0x7fffffff
+        return s, (s >> 8 & 0xffff) / 65535.0
+
+    st = seed
+    for k in range(n):
+        st, fx = rnd(st)
+        st, fy = rnd(st)
+        st, fr = rnd(st)
+        st, fa = rnd(st)
+        px = x0 + (x1 - x0) * fx
+        py = y0 + (y1 - y0) * fy
+        r = rmin + (rmax - rmin) * fr
+        m = 4 + (k % 2)
+        pts = []
+        for j in range(m):
+            st, fj = rnd(st)
+            a = fa * 6.283 + j * (6.283 / m)
+            rr = r * (0.65 + 0.45 * fj)
+            pts.append((px + rr * math.cos(a), py + rr * math.sin(a) * 0.84))
+        col = cols[k % len(cols)]
+        PA.fill_poly(PA.img_of(d), pts, col, seed=seed + k, value=0.06,
+                     edge=1.2)
+        if key_w > 0 and key is not None:
+            PA.hand_stroke(d, pts, key, key_w, closed=True, seed=seed + 60 + k,
+                           wavelength=60.0)
+
+
+def _masked(draw, clip_pts, fn):
+    """Run `fn` into a scratch layer, keep only what lands inside `clip_pts`.
+
+    Edge density is only allowed INSIDE the mass it describes. The first facet
+    pass on the b10-b12 rock face scattered chips over a rectangle that was not
+    the rock, so chips crossed the crest into the pale sky and below the crest
+    into the snow -- confetti outside the silhouette, worse than the flat it
+    replaced. `_strata` warns about this in its own docstring; `_facets` had no
+    guard, and it is the primitive used on the biggest masses in the chapter.
+
+    So the dense passes are drawn into their own transparent layer and
+    composited back through a mask built from the mass polygon. The mask is
+    built on a 1/4-scale grid and upsampled: a full-size polygon mask per pass
+    is exact but costs a full-frame alpha_composite per call, and there are now
+    dozens of calls. Its edge hides under the mass's own ink outline anyway.
+    """
+    img = PA.img_of(draw)
+    fw, fh = img.size
+    layer = Image.new('RGBA', (fw, fh), (0, 0, 0, 0))
+    fn(ImageDraw.Draw(layer), fw, fh)
+    q = 4
+    m = Image.new('L', (max(1, fw // q), max(1, fh // q)), 0)
+    ImageDraw.Draw(m).polygon([(x / q, y / q) for (x, y) in clip_pts], fill=255)
+    m = m.resize((fw, fh), Image.BILINEAR)
+    a = Image.composite(layer.getchannel('A'), Image.new('L', (fw, fh), 0), m)
+    layer.putalpha(a)
+    img.alpha_composite(layer)
+
+
+def _profile_mass(d, x0, x1, base_y, peak_y, col, seed, n=15, width=6,
+                  tilt=0.38, amp=0.55, strata=None, strata_col=None):
+    """A mountain profile CONTAINED INSIDE the box (x0..x1, peak_y..base_y).
+
+    WHY NOT `_mountain`. `_mountain` closes its polygon at H+60 by design -- it
+    is the hero mass of a beat and is meant to run off the bottom of the frame.
+    Calling it inside a CARD (the b06 drafting sheet) painted a 1280px pale
+    mountain over the whole lower frame: that element's alpha bbox came back
+    1280x596 at origin (0,124), it buried the rock-face facets underneath it,
+    and b06-b09 stayed FLAT at 2.6-4.8 no matter how much detail went into the
+    backdrop behind it. That is the brief's "small subject in an empty field"
+    defect one level up: a big subject that escaped its card.
+
+    A card needs its own profile mass, closed at the card's own base line. Same
+    silhouette language as `_mountain` (off-centre summit, long shoulder) so
+    the two do not read as different drawing hands.
+    """
+    pts = []
+    for i in range(n + 1):
+        u = i / float(n)
+        x = x0 + (x1 - x0) * u
+        h = (math.sin(u * math.pi) ** 0.7)
+        shoulder = amp + (1.0 - amp) * math.exp(-((u - tilt) ** 2) / 0.02)
+        pts.append((x, base_y - (base_y - peak_y) * h * shoulder))
+    closed = [(x0, base_y)] + pts + [(x1, base_y)]
+    _mass(d, closed, col, seed, width=width, closed=True)
+    if strata:
+        _strata(d, peak_y + 10, base_y - 8, strata_col or col, seed + 61,
+                n=strata, wobble=6, x0=x0 + 10, x1=x1 - 10, width=3)
+
+
+
 def build():
     clock = SC.BeatClock(BEATS)
     els = []
@@ -604,7 +710,14 @@ def build():
         for y in range(140, 396, 56):
             PA.hand_stroke(d, [(154, y), (776, y)], (192, 202, 210), 2,
                            seed=43, wavelength=180.0, vary=0.10)
-        _mountain(d, 460, 340, 240, 190, 44, col=(150, 164, 178))
+        # CONTAINED profile mass, NOT _mountain -- see _profile_mass.
+        # The old call closed its polygon at H+60 and painted a pale
+        # 1280px mountain over the whole lower frame, burying the
+        # rock-face facets behind it. b06-b09 were FLAT at 2.6-4.8
+        # until this was closed back down to the card.
+        _profile_mass(d, 172, 762, 392, 212, (150, 164, 178), 44,
+                      n=17, width=5, tilt=0.40, amp=0.52, strata=7,
+                      strata_col=(122, 136, 150))
         _bunker(d, 460, 300, 108, 45, decks=3, deck_h=34, tunnel_dy=[96],
                 lamps=False)
         # The sheet is the SUBJECT of this beat and it was a mostly blank card
@@ -712,6 +825,13 @@ def build():
     def c_face(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _winter(tile, 101)
+        # The winter sky is the other big smooth region in this stage (the top
+        # third above the rock crest). Stage A gets broken cloud bands for the
+        # same reason and measures 9-13; here they were missing, so the pale sky
+        # was contributing a flat third of every b10-b12 tile. Kept clear of the
+        # caption band at y~240 by staying above y=200.
+        _strata(d, 104, 138, (214, 226, 236), 105, n=3, wobble=11, width=4)
+        _strata(d, 168, 200, (206, 220, 232), 106, n=3, wobble=9, width=4)
         # The cut rock face the drill is going into. This is a DARK mass, not a
         # pale one: at s=190 the drill was a small brown T lost against a pale
         # winter field, and the beat read as an empty frame. A dark face gives
@@ -719,6 +839,36 @@ def build():
         face = [(-60, 300), (240, 236), (560, 214), (900, 228), (1340, 268),
                 (1340, 780), (-60, 780)]
         _mass(d, face, (86, 82, 92), 102, width=7)
+        # THE FACE WAS ONE SMOOTH VIOLET WASH. It is the largest mass in the
+        # chapter and it carried nothing at all -- b10/b11/b12 measured 2.42 /
+        # 2.52 / 2.87 median tile std, the three lowest in the chapter, because
+        # one _mass fill with no structure is the flattest thing a frame can
+        # hold. It now carries what cut rock carries: bedding strata, a dense
+        # pass of angular chips in stepped values (so a typical 24px tile spans
+        # fill / ink / fill), vertical drill-scar hatching, and scree at the
+        # foot. Same recipe that takes b08 to 15.14.
+        # CLIPPED to the silhouette via _masked: scattered over a plain rectangle
+        # these chips crossed the crest into the pale sky and fell below it into
+        # the snow field, which is confetti outside the rock, not rock.
+        def _face_det(ld, lfw, lfh):
+            _strata(ld, 300, 760, (104, 100, 112), 1021, n=14, wobble=18,
+                    width=5)
+            # Value-stepped planes with NO ink keyline: this is a faceted rock
+            # FACE, not a field of outlined chips floating on it. See _shards.
+            _shards(ld, -40, 220, 660, 780, ((100, 96, 108), (78, 74, 84),
+                                             (92, 88, 100)), 1022, n=110,
+                    rmin=14, rmax=38)
+            _shards(ld, 660, 220, 1330, 780, ((100, 96, 108), (78, 74, 84),
+                                              (92, 88, 100)), 1023, n=104,
+                    rmin=14, rmax=38)
+            # drill scars: the vertical chisel marks the prisoners left in it
+            for k in range(11):
+                x = 60 + k * 118
+                y0 = 340 + (k % 3) * 30
+                PA.hand_stroke(ld, [(x, y0), (x + 9, y0 + 108)], (58, 54, 64),
+                               5, seed=1030 + k, wavelength=70.0)
+            _scree(ld, -20, 640, 1300, 740, (60, 56, 66), 1040, n=34)
+        _masked(d, face, _face_det)
     els.append(SC.stage(clock, 10, c_face, j=13))
 
     # ---- b10  the hand drill, actually cutting --------------------------- #
@@ -740,6 +890,24 @@ def build():
         drift = [(-60, 720), (-60, 616), (200, 580), (520, 562), (860, 580),
                  (1160, 630), (1340, 674), (1340, 780), (-60, 780)]
         _mass(d, drift, SNOW, 104, width=6)
+        # THE DRIFT WAS A SMOOTH WHITE BLOB across the bottom quarter. Snow here
+        # is wind-carved: shallow facets, a contour run and a scree edge.
+        # Clipped so nothing lands on the rock above it.
+        def _drift_det(ld, lfw, lfh):
+            # Snow is wind-carved, so it reads as CONTOUR BANDS and soft
+            # low-contrast planes -- not as outlined chips. Outlined triangles
+            # on white read as scattered arrowheads, which is the confetti
+            # defect in a different register.
+            _strata(ld, 572, 770, (214, 226, 238), 1043, n=11, wobble=13,
+                    width=5)
+            _shards(ld, -40, 552, 660, 780, ((248, 249, 252), (230, 236, 243),
+                                             (240, 244, 248)), 1041, n=54,
+                    rmin=26, rmax=66)
+            _shards(ld, 660, 552, 1330, 780, ((248, 249, 252), (230, 236, 243),
+                                              (240, 244, 248)), 1042, n=50,
+                    rmin=26, rmax=66)
+            _scree(ld, -20, 600, 1300, 770, (222, 231, 240), 1044, n=18)
+        _masked(d, drift, _drift_det)
     els.append(SC.accrue(clock, 11, 13, c_drift, eid='c_drift'))
 
     # MOVING, and small: a single coat on a stake is the emptiest object in

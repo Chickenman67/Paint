@@ -128,6 +128,143 @@ def bedding(tile, x0, x1, y0, y1, seed, n=18, col=(150, 146, 150),
     KS.strata(ImageDraw.Draw(tile), x0, x1, y0, y1, seed=seed, n=n, col=col,
               ink=ink, wob=wob)
 
+
+# ---------------------------------------------------------------------------
+# THE CONTRAST RULE -- WHY THE FIRST DENSITY PASS DID NOT MOVE THE GATE.
+#
+# A previous pass already called KS.slab_wall / KS.grid_lines / KS.strata on the
+# granite face, the room and the hillside, and every one of those beats still
+# measured flat (b07 4.88, b12 3.14, b16 2.33). The structure was there. Look at
+# what it was painted IN:
+#
+#     col_a=(178, 158, 158), col_b=(190, 172, 170), ink=(120, 102, 104)
+#
+# on a (176, 158, 158) rock fill. Slab-to-slab value swing 12, ink 56 below the
+# fill, and the fill itself is within a few points of the page. Every edge is
+# real and none of them are VISIBLE: a 24px sample tile lands inside one slab
+# and sees a near-constant value, which is exactly what the pigment gate calls
+# flat. Rendering those frames at ship size confirms it -- the granite face is a
+# pink wash carrying a dozen faint scratches.
+#
+# KS's OWN defaults are not pastel (slab_wall ink=(28,26,30), floor_slab
+# ink=(28,26,30), door_panel_ribs ink=(26,24,28)) and they were overridden here.
+# So the fix is not more structure and not more paint constants. It is to put
+# the structure that is ALREADY THERE in values that separate from what is
+# behind it: dark ink on a mid fill, two slab values 25+ apart, never a fill
+# within a few points of its own background.
+#
+# Every helper below follows that rule. `rock_face` takes the dark ink as a
+# default rather than a pastel; the ink/contrast args exist so a stage that
+# genuinely needs a low-contrast pass can still ask for one deliberately.
+# ---------------------------------------------------------------------------
+
+INK_ROCK = (34, 30, 34)          # joint ink on any mid-value rock
+
+
+def jointed_rock(tile, x0, x1, y_top, y_bot, seed, rows=9, cols=11,
+                 col=(158, 146, 146), ink=INK_ROCK, swing=34, lw=4,
+                 jitter=0.18):
+    """A jointed, fractured rock face that TILES the region it is given.
+
+    `rock_face`'s high-contrast sibling: instead of soft shards dropped into a
+    smooth fill it lays jittered cut-stone facets, so a 24px sample tile almost
+    always straddles a joint. The ink is dark by default -- that is the whole
+    point (see THE CONTRAST RULE above).
+
+    `KS.faceted`, NOT `KS.slab_wall`. A running-bond course wall is the right
+    read for the machine room, where coursed concrete IS what the walls are,
+    but on granite and on the rock around the blast door it produced a suburban
+    brick wall: b07 measured 6.8 and looked like a garden wall, and the door
+    surround read as loose bricks pasted beside the door. Facets jitter their
+    cell corners by 18% and swing each cell's value by `swing`, so the region
+    reads as quarried stone with no course line to follow.
+    """
+    KS.faceted(ImageDraw.Draw(tile), x0, x1, y_top, y_bot, seed=seed,
+               cols=cols, rows=rows, col=col, ink=ink, jitter=jitter,
+               value_swing=swing)
+
+
+def door_face(d, cx, cy, w, h, seed, ribs=5, rib=(158, 162, 172),
+              ink=(20, 19, 23), plate=(104, 108, 118)):
+    """A blast-door slab built as a FABRICATED object: a few LARGE structural
+    ribs, a plate grid behind them, heavy hinges and bolt rows.
+
+    NOT `KS.door_panel_ribs`. That helper draws `rows` shallow bars ~h/rows tall,
+    and on a 1240x680 slab they are 14 hairlines: b14 measured 46.5 and read as
+    a riveted wall panelling, not as a door, because 14 equally-spaced thin
+    lines have no hierarchy -- nothing says which line is structural. A real
+    700-ton slab is a handful of deep I-beams across a thick plate, and it is
+    the DEPTH of each rib (its own dark shadow and its own thick ink) that makes
+    it read.
+
+    So: `ribs` deep raised beams at ~1/7th of the slab height, each with a lit
+    top face, a dark shadow underneath and a heavy outline; a coarse 3x2 plate
+    weld grid behind them; bolt rows down both stiles. Fewer edges, but every
+    edge is heavy enough to survive at ship size.
+    """
+    img = PA.img_of(d)
+    x0 = cx - w * 0.5
+    y0 = cy - h * 0.5
+
+    # the plate behind the ribs: a coarse weld grid, deliberately low contrast
+    # so it reads as surface, not as structure
+    for gx in range(1, 3):
+        xx = x0 + w * gx / 3.0
+        PA.hand_stroke(d, [(xx, y0 + 16), (xx + 6, y0 + h - 16)], (86, 90, 100), 4,
+                       closed=False, seed=seed + gx * 7, wavelength=150.0)
+    for gy in range(1, 3):
+        yy = y0 + h * gy / 3.0
+        PA.hand_stroke(d, [(x0 + 16, yy), (x0 + w - 16, yy + 8)], (86, 90, 100), 4,
+                       closed=False, seed=seed + 30 + gy * 7, wavelength=170.0)
+
+    # THE RIBS. Deep beams with a lit face and a cast shadow below.
+    span = h / float(ribs)
+    for k in range(ribs):
+        ya = y0 + k * span
+        bh = span * 0.54
+        inset = 26 + (k % 2) * 14          # alternate ribs sit further in
+        beam = [(x0 + inset, ya), (x0 + w - inset, ya + 7),
+                (x0 + w - inset, ya + bh), (x0 + inset, ya + bh - 7)]
+        PA.fill_poly(img, beam, rib, seed=seed + k * 11, value=0.07)
+        PA.hand_stroke(d, beam, ink, 7, closed=True, seed=seed + k * 11 + 1,
+                       wavelength=170.0)
+        # the shadow the rib casts on the plate below it
+        PA.hand_stroke(d, [(x0 + inset, ya + bh), (x0 + w - inset, ya + bh + 6)],
+                       (56, 58, 66), 13, closed=False,
+                       seed=seed + k * 11 + 2, wavelength=140.0, vary=0.05)
+        # a rivet row along the rib, so it is bolted rather than painted on
+        nb = 9
+        for b in range(nb):
+            bx = x0 + inset + 30 + (w - inset * 2 - 60) * b / float(nb - 1)
+            PA.fill_poly(img, PA.ellipse_pts(bx, ya + bh * 0.5, 8, 8, n=12),
+                         (58, 60, 68), seed=seed + k * 11 + 40 + b, value=0.05)
+            PA.hand_stroke(d, PA.ellipse_pts(bx, ya + bh * 0.5, 8, 8, n=12),
+                           (22, 21, 26), 3, closed=True,
+                           seed=seed + k * 11 + 60 + b, wavelength=30.0)
+
+    # bolt rows down both stiles, outside the ribs
+    for side in (0, 1):
+        xx = x0 + (26 if side == 0 else w - 26)
+        for k in range(ribs * 2):
+            yy = y0 + h * (k + 0.5) / (ribs * 2)
+            PA.fill_poly(img, PA.ellipse_pts(xx, yy, 9, 9, n=12), (52, 54, 62),
+                         seed=seed + 300 + side * 40 + k, value=0.05)
+            PA.hand_stroke(d, PA.ellipse_pts(xx, yy, 9, 9, n=12), ink, 3,
+                           closed=True, seed=seed + 320 + side * 40 + k,
+                           wavelength=30.0)
+
+
+def rock_flanks(d, x0, x1, y_top, y_bot, seed, n=13, col=(126, 120, 124),
+                ink=(62, 56, 60), contrast=30, amp=18.0):
+    """Contour-banded rock/mountain flanks -- the terrain read for `_massif`.
+
+    `_massif` paints two big smooth faces. On b34 that is the whole picture: a
+    grey blob with a head on it. Stacked outlined contour strips, each with a
+    seeded value swing, turn the flank into jointed stone at ship size.
+    """
+    KS.contour_bands(d, x0, x1, y_top, y_bot, seed=seed, n=n, col=col, ink=ink,
+                     lw=3, amp=amp, contrast=contrast)
+
 def build():
     clock = SC.BeatClock(BEATS)
     els = []
@@ -161,17 +298,18 @@ def build():
     def a_site(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _sky(tile, 5, ground=(170, 170, 174))
-        mp = _massif(d, 640, HZ + 30, 900, 112, 6)
-        # FRAME-FILL + EDGE DENSITY. Two enormous smooth fills used to hold the
-        # whole stage: the granite massif and the grey ground plane below it.
-        # Together they were ~90% of the picture carrying five black strokes,
-        # which is what "flat and under-filled" means. The massif silhouette is
-        # kept (it is the subject) and now CROPS past both side edges, and both
-        # masses get real surface: fractured rock inside the silhouette, bedding
-        # and talus across the ground.
-        rock_face(tile, mp, seed=5001, n=430)
-        bedding(tile, -30, W + 30, HZ + 26, H + 20, seed=5002, n=15)
-        talus(tile, -20, W + 20, HZ + 60, H - 4, seed=5003, n=34)
+        _massif(d, 640, HZ + 30, 900, 112, 6)
+        # The massif fills the frame. FRAME-FILL, not decoration: the two
+        # enormous smooth fills (massif + grey ground plane) used to carry the
+        # whole stage on five strokes, which is what "flat and under-filled"
+        # means. The subject is the mountain, so the mountain gets the frame --
+        # a second, nearer ridge CROPS past both side edges and runs off the
+        # bottom, and the ground plane becomes a built approach road rather than
+        # a blank apron. Both add a real share of frame-width edges, which is
+        # what the eye and the pigment gate both read as "filled".
+        KS.near_ridge(tile, seed=5001)
+        KS.approach_road(tile, seed=5002)
+        KS.vent_field(tile, seed=5003)
     els.append(SC.stage(clock, 1, a_site, j=7))
 
     def a_scratch(tile, fw, fh):
@@ -319,6 +457,32 @@ def build():
                            closed=False, seed=130 + k, wavelength=60.0)
         D.draw_label(tile, 'SOLID GRANITE', center=(900, 620), color=SNOW,
                      size=44)
+        # EDGE DENSITY. The granite face is the subject and it fills the frame,
+        # but it was carried by ~44 thin diagonal streaks over one big fill --
+        # which measured 3.14 flat. These add real structure to the rock: a
+        # fracture grid of blocky steps plus a bedding band, so the face reads
+        # as jointed stone at ship size rather than as a gradient.
+        #
+        # CONTRAST, not just density: these three passes were present in the
+        # last build painted in pastels (ink=(120,102,104) on a (176,158,158)
+        # fill) and b07 still measured 4.88 flat, because no edge separated
+        # from its own background. Same passes, dark ink and two slab values
+        # 26 apart -- see THE CONTRAST RULE.
+        KS.grid_lines(d, -20, W + 20, 96, H, seed=5301, nx=9, ny=6,
+                      col=(96, 78, 82), lw=5)
+        KS.slab_wall(d, -20, W + 20, 150, H, seed=5302, rows=7, cols=9,
+                     col_a=(150, 130, 130), col_b=(184, 166, 164),
+                     ink=INK_ROCK, joint=5)
+        KS.strata(d, -20, W + 20, 120, H, seed=5303, n=11,
+                  col=(168, 146, 146), ink=(74, 60, 62), wob=16.0)
+        # and a full-height faceted break-up, so no band of the rock is left as
+        # a smooth wash. `rows=7/cols=9` above alone left the top third of the
+        # face as the one smooth band the courses stopped short of; the first
+        # attempt at covering it used `slab_wall` and turned the granite into a
+        # suburban brick wall (b07 read 6.8 and looked like masonry). Facets:
+        # no course line, jittered corners, per-cell value swing.
+        jointed_rock(tile, -20, W + 20, 96, H + 20, seed=5304, rows=8, cols=11,
+                     col=(166, 150, 148), ink=INK_ROCK, swing=40, lw=4)
     els.append(SC.stage(clock, 7, b_granite, j=10))
     # NO caption at b07. The drill coming in, the crack it is chasing and the
     # printed SOLID GRANITE all say it.
@@ -422,6 +586,33 @@ def build():
                        wavelength=190.0)
         PA.fill_rect(tile, [-20, -20, W + 20, 120], CONCRETE_D, seed=310,
                      value=0.07)
+        # EDGE DENSITY. The room measured 3.20 flat: two big fills (slab +
+        # ceiling) and the springs on top. The rock walls between them were
+        # empty. A ribbed wall on the back face and floor-slab tiling on the
+        # slab give the room a built interior instead of a grey box.
+        #
+        # These two passes were ALSO already here, also in pastel (rib ink
+        # (96,92,96) on a (160,158,158) rock, floor ink (96,96,102) on a
+        # CONCRETE slab) and b11-b13 still measured 3.1-4.7 flat. Dark ink,
+        # and the rib fill pulled clear of the rock behind it.
+        KS.ribbed_wall(d, -20, W + 20, 130, 250, seed=5311, n=18,
+                       col=(146, 142, 148), ink=INK_ROCK)
+        KS.floor_slab(d, -30, W + 30, 250, 400, seed=5312, n=16,
+                      col=(150, 150, 156), ink=INK_ROCK)
+        # b12 is the emptiest frame in the chapter (3.14): the springs have been
+        # squashed to a third of their height, so everything from y=400 to the
+        # bottom edge was one unbroken grey. The room's lower half is now a
+        # coursed block wall running off both side edges, and a pipe run crosses
+        # it -- which is also what a machine room looks like from inside.
+        # The courses are DARKER than the rock above them on purpose: this wall
+        # is behind the springs, and the value drop is what keeps the depth
+        # order (bright rock, mid slab, dark back wall) instead of turning the
+        # whole lower frame into one textured sheet.
+        jointed_rock(tile, -30, W + 30, 402, H + 20, seed=5313, rows=5,
+                     cols=13, col=(104, 102, 108), ink=(28, 26, 32),
+                     swing=26, lw=4)
+        KS.pipe_run(d, -30, W + 30, 470, seed=5314, n=2, r=19,
+                    col=(126, 124, 130), ink=(28, 26, 32))
     els.append(SC.stage(clock, 10, c_room, j=14))
 
     def c_springs(tile, fw, fh):
@@ -520,6 +711,37 @@ def build():
         # small object parked in an empty field. Widening pushes both jambs
         # off-frame and the opening becomes the frame.
         _blast_door(d, 520, 380, 1240, 680, 402, closed=True)
+        # THE SLAB IS THE FLAT FIELD. At 1240x680 this door is 75% of the frame's
+        # width, and `_blast_door` gives it three hinge ribs on a single smooth
+        # fill -- b14/b15/b16 measured 2.46/2.47/2.33, the flattest frames in the
+        # chapter. Stiffening bars, weld seams and bolt rows across the slab, at
+        # the slab's own scale, turn the largest object on screen into the
+        # fortknox-density object the eye reads as built.
+        #
+        # NOT the same trick as `jointed_rock` on the surround. A first pass
+        # coursed the WHOLE frame and the door disappeared behind its own wall:
+        # b14 went 2.46 -> 34.6 on the metric and read as a brick wall with a
+        # number on it, because a rock course and a door course are the same
+        # picture. The subject keeps its own vocabulary -- bolted steel bars, a
+        # centre seal, hinge straps -- and only the exposed rock at the edges is
+        # coursed, where nothing else is competing.
+        door_face(d, 520, 380, 1240 * 0.88, 680 * 0.80, seed=5340)
+        # hinge straps, so the door reads as a door and not as a plated wall
+        for k in range(4):
+            yy = 190 + k * 128
+            PA.hand_stroke(d, [(-10, yy), (232, yy + 12)], STEEL, 15,
+                           closed=False, seed=5345 + k, wavelength=110.0)
+            PA.hand_stroke(d, [(1500 - 242, yy - 8), (1500, yy + 4)], STEEL, 15,
+                           closed=False, seed=5355 + k, wavelength=110.0)
+        # The exposed rock either side of the door. Coursed, because a smooth tan
+        # wash was what read as empty -- but a NARROW band that follows the jamb
+        # and is cut by the door's own seal lines, not a field of loose bricks
+        # floating beside it. Two columns of large blocks per side, running the
+        # full height and off the top and bottom edges.
+        for sx, sd in ((-30, 5341), (1214, 5342)):
+            jointed_rock(tile, sx, sx + 110, 96, H + 20, seed=sd, rows=7,
+                         cols=2, col=(150, 146, 146), ink=INK_ROCK, swing=30,
+                         lw=4)
     els.append(SC.stage(clock, 14, d_door, j=17))
 
     def d_tons(tile, fw, fh):
@@ -574,6 +796,29 @@ def build():
         SC.title_backdrop(tile, 1461, col=(100, 104, 120))
         PA.fill_poly(tile, [(-30, 160), (W + 30, 150), (W + 30, 720),
                             (-30, 720)], (92, 94, 102), seed=462, value=0.07)
+        # THE HALL IS A ROOM, and a room has a wall above the cabinets, a floor
+        # under them, and services running across the ceiling. Without them the
+        # read was five dark rectangles floating on one flat grey field -- the
+        # 3.4-6.9 scores at b17-b21. All three passes are behind the cabinets
+        # in layer order: they are the room, not the subject.
+        KS.slab_wall(d, -30, W + 30, 158, 470, seed=463, rows=6, cols=13,
+                     col_a=(104, 106, 116), col_b=(124, 126, 136),
+                     ink=(30, 30, 36), joint=5)
+        KS.grid_lines(d, -30, W + 30, 158, 470, seed=464, nx=8, ny=4,
+                      col=(78, 80, 88), lw=4)
+        # ceiling services: two big pipes and three beams, so the top band is
+        # occupied rather than a bare band of wall
+        KS.pipe_run(d, -30, W + 30, 196, seed=465, n=2, r=21,
+                    col=(126, 130, 142), ink=(26, 26, 32))
+        for k in range(3):
+            PA.hand_stroke(d, [(-30, 232 + k * 26), (W + 30, 226 + k * 26)],
+                           (44, 44, 52), 13, closed=False, seed=466 + k,
+                           wavelength=190.0)
+        # the deck floor, running away from the viewer in perspective courses
+        KS.floor_slab(d, -30, W + 30, 596, 722, seed=467, n=11,
+                      col=(112, 112, 120), ink=(28, 28, 34))
+        PA.hand_stroke(d, [(-30, 600), (W + 30, 596)], CONCRETE_D, 12,
+                       closed=False, seed=510, wavelength=200.0)
         # FIVE cabinets, not six: the sixth footprint is left empty so the
         # thermometer has somewhere to stand on the right without colliding.
         for k in range(5):
@@ -592,8 +837,21 @@ def build():
                 PA.fill_poly(tile, PA.ellipse_pts(x + 40 + c * 42, 570, 11, 11,
                                                   n=20), GREEN,
                              seed=500 + k * 3 + c, value=0.05)
-        PA.hand_stroke(d, [(-30, 600), (W + 30, 596)], CONCRETE_D, 12,
-                       closed=False, seed=510, wavelength=200.0)
+        # Foreground cable trays and conduit dropping between the cabinets --
+        # the machinery that makes 200 people plausible. Kept OUT of the
+        # cabinet footprints so the cabinets still read as the subject.
+        for k in range(4):
+            xx = 210 + k * 210
+            PA.hand_stroke(d, [(xx, 300), (xx + 6, 596)], STEEL_D, 11,
+                           closed=False, seed=468 + k, wavelength=120.0)
+            for q in range(5):
+                PA.fill_poly(tile, PA.ellipse_pts(xx + 4 + (q % 2) * 5,
+                                                   330 + q * 56, 13, 7, n=10),
+                             (108, 106, 112), seed=4690 + k * 7 + q, value=0.06)
+                PA.hand_stroke(d, PA.ellipse_pts(xx + 4 + (q % 2) * 5,
+                                                 330 + q * 56, 13, 7, n=10),
+                               (26, 25, 30), 3, closed=True,
+                               seed=4700 + k * 7 + q, wavelength=40.0)
     els.append(SC.stage(clock, 17, d_hall, j=22))
 
     def d_cold(tile, fw, fh):
@@ -1203,15 +1461,81 @@ def build():
         SC.title_backdrop(tile, 2091, col=(100, 104, 120), dim=0.9)
         PA.fill_rect(tile, [0, 86, W, H], DEEPER, seed=1091, value=0.11)
         PA.paper_overlay(tile, seed=1092)
+        # THE TUNNEL, not a void. b38 measured 3.02 flat: a near-black field, one
+        # smooth blue slab in the middle and a pale triangle. Everything here
+        # starts at y=96 or lower so the title band itself is never touched --
+        # `title_backdrop` requires its rows uniform end to end, and art striking
+        # into y 10..73 is what the intrusion gate exists to catch.
+        jointed_rock(tile, -30, W + 30, 96, H + 20, seed=2092, rows=7, cols=14,
+                     col=(58, 56, 66), ink=(16, 15, 20), swing=26, lw=3)
+        KS.pipe_run(d, -30, W + 30, 168, seed=2093, n=2, r=17,
+                    col=(78, 76, 86), ink=(18, 17, 22))
         _blast_door(d, 640, 480, 900, 660, 1093, closed=True)
-        # THE COLD LIGHT. A wedge falling from the lamp onto the door. Drawn
-        # AFTER the door and BRIGHTER than the door: a beam darker than what it
-        # falls on reads as a shadow occluding the door, which is the opposite
-        # of one light in a dark room.
-        beam = [(596, 104), (652, 104), (846, 320), (416, 320)]
-        PA.fill_poly(tile, beam, (168, 176, 194), seed=1094, value=0.03)
-        PA.hand_stroke(d, [(540, 108), (720, 108)], (232, 236, 244), 16,
-                       closed=False, seed=1095, wavelength=110.0)
+        # The SAME fabricated slab the b14 door is, at the finale's smaller
+        # scale: deep ribs, a rivet row on each, bolt rows down both stiles. A
+        # bare smooth slab here made the chapter's last image the flattest frame
+        # in it, and this is the one the cut is built to land on.
+        door_face(d, 640, 480, 900 * 0.88, 660 * 0.80, seed=1094, ribs=5,
+                  rib=(96, 100, 112), plate=(58, 60, 70), ink=(18, 17, 22))
+        # the hinge straps, cropped by both edges as at b14
+        for k in range(3):
+            yy = 280 + k * 150
+            PA.hand_stroke(d, [(-10, yy), (168, yy + 10)], (86, 90, 102), 15,
+                           closed=False, seed=1096 + k, wavelength=110.0)
+            PA.hand_stroke(d, [(1290 - 168, yy - 8), (1290, yy + 4)],
+                           (86, 90, 102), 15, closed=False,
+                           seed=1106 + k, wavelength=110.0)
+
+        # THE COLD LIGHT. Three nested wedges off one lamp housing, narrowing at
+        # the source and spreading onto the door, each a step dimmer than the
+        # last. The old single pale wedge was the BRIGHTEST shape in the frame
+        # and read as a solid tent standing in front of the door; a light has to
+        # be the thing you notice second, behind the door it is landing on.
+        for k, (spread, val) in enumerate(((108, 104), (74, 124), (44, 148))):
+            PA.fill_poly(tile, [(614, 104), (662, 104),
+                                (662 + spread, 300), (614 - spread, 300)],
+                         (val, val + 6, val + 16), seed=1110 + k, value=0.03)
+        lamp = [(572, 88), (704, 88), (692, 122), (584, 122)]
+        PA.fill_poly(tile, lamp, (44, 44, 52), seed=1114, value=0.06)
+        PA.hand_stroke(d, lamp, (18, 17, 22), 6, closed=True, seed=1115,
+                       wavelength=70.0)
+        PA.hand_stroke(d, [(586, 120), (690, 120)], (226, 230, 240), 14,
+                       closed=False, seed=1116, wavelength=90.0)
+        # dust in the beam: the detail that says "air" rather than "paint"
+        for k in range(16):
+            st = (1117 + k * 37)
+            px = 640 + ((st * 53) % 120) - 60
+            py = 140 + ((st * 97) % 190)
+            PA.fill_poly(tile, PA.ellipse_pts(px, py, 3, 3, n=8),
+                         (198, 204, 216), seed=1120 + k, value=0.04)
+
+        # THE DOOR'S OWN FRAME, put back into shadow. `_blast_door` draws its
+        # surround in CONCRETE_D, which on a near-black finale is the BRIGHTEST
+        # large shape in the picture -- it was a pale tan field wider than the
+        # door on both sides, and darkening the rock OUTSIDE the door only made
+        # it more conspicuous by comparison. The surround is dark rock in here:
+        # the door is the lit object, everything around it is the tunnel.
+        for sx, sd in ((40, 2094), (1032, 2095)):
+            jointed_rock(tile, sx, sx + 210, 96, H + 20, seed=sd, rows=8,
+                         cols=4, col=(54, 52, 62), ink=(16, 15, 20),
+                         swing=22, lw=3)
+        jointed_rock(tile, 40, 1240, 96, 214, seed=2098, rows=4, cols=12,
+                     col=(54, 52, 62), ink=(16, 15, 20), swing=22, lw=3)
+
+        # THE PRESENTER, cropped into the left of the frame in the spill. The
+        # chapter closes on hearsay about survival; the reaction shot belongs
+        # here, and he is lit cream because the frame is near-black -- the
+        # style-canon rule, and the reason SC.fullbody takes ink=.
+        #
+        # 'recoil', not 'standing'. `standing` is la=(19,17): a 17-degree elbow,
+        # which is below the angle at which a bend reads as a bend (memory
+        # elbow-existence-is-not-elbow-visibility), and he shipped as a
+        # scarecrow with two straight T-arms. 'recoil' is (74,44) -- arms flung
+        # up and back on a 44-degree elbow, visible at ship size -- and it is
+        # also the right reaction to "though nobody has confirmed it".
+        SC.fullbody(d, 138, 712, 340, pose='recoil', expression='skeptic',
+                    seed=1140, ink=(236, 234, 226))
+
         PA.hand_stroke(d, [(-30, 118), (W + 30, 100), (W + 30, 706), (-30, 716)],
                        INK, 30, closed=True, seed=1096, wavelength=220.0)
     els.append(SC.stage(clock, 38, h_finale, j=39))

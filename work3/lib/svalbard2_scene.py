@@ -71,7 +71,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from PIL import ImageDraw
+from PIL import Image, ImageDraw
 
 import engine3 as E3
 import scene_common as SC
@@ -146,18 +146,34 @@ def _soft_beam(d, x, y0, y1, half, seed, colour=None):
     """
     colour = colour or AMBER_LT
     steps = 6
+    # The beam is painted on its OWN RGBA layer and alpha-composited once at the
+    # end. Six opaque nested triangles painted straight onto the tile produced a
+    # solid gold pyramid -- the traffic-cone defect -- and the first attempt at
+    # fixing it modulated the tile's own alpha channel, which is a no-op because
+    # compositing a channel against itself returns the channel. Light is not
+    # opaque: it thins as it spreads, so the layer's own alpha is the whole
+    # point and it has to be a separate layer to exist at all.
+    layer = Image.new('RGBA', PA.img_of(d).size, (0, 0, 0, 0))
     for i in range(steps):
         f = 1.0 - i / float(steps)          # 1.0 (widest, base layer) -> ~0.17
         hf = half * (0.30 + 0.70 * f)
         y0i = y0 + (y1 - y0) * (1.0 - f) * 0.55
+        # the widest layer is nearly clear; the narrow core is where the light
+        # actually is. This gradient is what reads as light rather than paint.
+        a = int(18 + 128 * (i / float(steps - 1)) ** 1.7)
         shade = tuple(min(255, int(c + (255 - c) * (i / float(steps)) * 0.55))
                       for c in colour)
         tri = [(x - hf * 0.12, y0i), (x + hf * 0.12, y0i),
                (x + hf, y1), (x - hf, y1)]
-        PA.fill_poly(PA.img_of(d), tri, shade, seed=seed + i, value=0.05)
+        PA.fill_poly(layer, tri, shade, seed=seed + i, value=0.05)
+        if a < 255:
+            m = Image.new('L', layer.size, 0)
+            ImageDraw.Draw(m).polygon([tuple(p) for p in tri], fill=a)
+            layer.putalpha(Image.composite(layer.split()[3],
+                                          Image.new('L', layer.size, 0), m))
     pool = PA.ellipse_pts(x, y1, half * 0.9, 26, n=40)
-    PA.fill_poly(PA.img_of(d), pool, (236, 240, 226), seed=seed + 40,
-                 value=0.06)
+    PA.fill_poly(layer, pool, (236, 240, 226), seed=seed + 40, value=0.06)
+    PA.img_of(d).alpha_composite(layer)
 
 
 def _frost_bank(d, x0, x1, ybase, lo, hi, seed, colour=(233, 243, 250),
@@ -210,6 +226,593 @@ def _frost_crystals(d, x0, x1, ycrest, n, seed, colour=(226, 240, 249)):
                            wavelength=22.0)
 
 
+# =========================================================================== #
+# EDGE-DENSITY HELPERS.
+#
+# WHY THESE EXIST. The label-blind critic scored this chapter's frames as flat
+# vector, and the per-beat pigment measurement agreed on 32 of 35 beats (median
+# 24px-tile luma std ~3.1 against an eye-calibrated paint bar of 8.0). The three
+# beats that DID measure painted -- b08/b09/b10, 28.9 to 42.8 -- are the three
+# that stack many SMALL OUTLINED SHAPES: five shelf runs of thirteen foil
+# packets, sixty-five little rectangles edge to edge across the whole frame.
+# A single big mountain on a smooth snowfield measures 3.1 no matter how much
+# paint the fills carry, because the frame is dominated by a few LARGE SMOOTH
+# REGIONS and a 24px tile inside one of them sees no local variation at all.
+#
+# So the lever is not the paint engine (v2paint is already painting every fill
+# here) and it is not noise. It is GEOMETRY: break every large smooth region
+# into a stack of many small outlined shapes. These helpers are the vocabulary.
+#
+# THE RULES THEY FOLLOW, all learned from the shipped frames:
+#   * Structure runs OFF the frame edge. A slab run that stops at x=1000 with
+#     snow beyond it admits the drawing stopped; one that leaves at x=1300
+#     admits the mountain is bigger than the picture.
+#   * Structure is COARSEST AT THE BACK and finest at the front, so the depth
+#     order is readable without any shading.
+#   * Every shape is outlined. The outline is what puts an edge inside the tile;
+#     a fill alone does not.
+#   * Nothing here touches the title band (y<86) or the caption band.
+#   * Everything is seeded, so two renders are byte-identical.
+# =========================================================================== #
+
+
+def _clipped_stroke(d, pts, colour, lw, seed, clip):
+    """One hand_stroke confined to an L-mask.
+
+    The crevasses over the permafrost band have to stay off the corridor. A
+    stroke is drawn on a scratch layer and composited through the mask, which
+    is the same trick _rock_strata uses; this exists as its own helper because
+    the alternative -- passing a clip to every call site -- reads worse than one
+    function that takes one.
+    """
+    img = PA.img_of(d)
+    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    PA.hand_stroke(ImageDraw.Draw(layer), pts, colour, lw, closed=False,
+                   seed=seed, wavelength=150.0)
+    a = layer.split()[3]
+    img.paste(layer, (0, 0),
+              Image.composite(a, Image.new('L', img.size, 0), clip))
+
+
+def _rock_strata(d, x0, x1, y0, y1, seed, n=7, col=(96, 104, 118),
+                 ink=INK, lw=4, wobble_amp=9.0, clip=None):
+    """Layered rock contour bands -- permafrost strata through the mountain.
+
+    The mountain mass is one smooth polygon, so every 24px tile inside it reads
+    flat. These are stacked wavy contour lines with a slightly different fill
+    value per band, which is how permafrost is actually drawn and what turns one
+    dead grey mass into readable geology. Bands alternate value by ~10 levels,
+    which is under the intrusion gate's DEV=25 so the title band is untouched.
+
+    `clip` is an optional PIL L-mask; strata are drawn on a scratch layer and
+    composited through it, so they can be confined to a mountain silhouette
+    instead of a bounding box. WITHOUT a clip the bands run the full width of
+    the frame and paint over the sky, which is exactly the bug the first pass
+    shipped -- a rect-bounded strata helper is a lid, not a layer.
+    """
+    img = PA.img_of(d)
+    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    ld = ImageDraw.Draw(layer)
+    for k in range(n):
+        t = k / float(max(1, n - 1))
+        base = y0 + (y1 - y0) * t
+        amp = wobble_amp * (0.5 + t)
+        pts = []
+        steps = max(6, int((x1 - x0) / 130.0))
+        for s in range(steps + 1):
+            u = s / float(steps)
+            px = x0 + (x1 - x0) * u
+            py = (base
+                  + amp * math.sin(u * 4.3 + seed * 0.013 + k * 0.9)
+                  + amp * 0.55 * math.sin(u * 9.1 + seed * 0.029 + k * 1.7)
+                  + amp * 0.30 * math.sin(u * 17.3 + seed * 0.007 + k * 0.4))
+            pts.append((px, py))
+        shade = (min(255, int(col[0] - 9 * math.sin(k * 1.3))),
+                 min(255, int(col[1] - 8 * math.sin(k * 1.3 + 0.8))),
+                 min(255, int(col[2] - 7 * math.sin(k * 1.3 + 1.6))))
+        PA.hand_stroke(ld, pts, shade, 26 + 6 * (k % 3), closed=False,
+                       seed=seed + k * 5, wavelength=140.0, vary=0.16)
+        PA.hand_stroke(ld, pts, ink, lw, closed=False, seed=seed + 60 + k,
+                       wavelength=150.0)
+    if clip is None:
+        img.alpha_composite(layer)
+    else:
+        a = layer.split()[3]
+        img.paste(layer, (0, 0), Image.composite(a, Image.new('L', img.size, 0),
+                                                 clip))
+
+
+def _slope_creases(d, ridge, seed, clip, n=16):
+    """Couloir / crevasse lines running DOWN a mountain's face, clipped to it.
+
+    A mountain's structure runs down its slope. Nine near-horizontal bands
+    across the mass (the first attempt at this) read as venetian blinds, which
+    is worse than the smooth polygon they replaced. These lines start along the
+    ridge and run to the base, wander as they fall, and fork -- which is what a
+    snow face actually looks like and what puts local edges through the middle
+    of the mass.
+
+    `clip` is the mountain's silhouette mask; without it the lines would run
+    across the sky.
+    """
+    img = PA.img_of(d)
+    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    ld = ImageDraw.Draw(layer)
+    # the ridge's upper vertices are the couloir mouths
+    mouths = ridge[1:len(ridge) - 1]
+    base_y = ridge[-1][1]
+    for k in range(n):
+        m = mouths[k % len(mouths)]
+        x0 = m[0]
+        y0 = m[1]
+        # a wander that grows as it falls, so the line is not a straight slash
+        pts = []
+        steps = 7
+        for s in range(steps + 1):
+            u = s / float(steps)
+            px = (x0 + 46 * u * math.sin(k * 1.7 + u * 3.1)
+                  + 14 * math.sin(u * 9.0 + k * 2.3))
+            py = y0 + (base_y - y0) * (u ** 0.86)
+            pts.append((px, py))
+        PA.hand_stroke(ld, pts, (48, 54, 66), 7, closed=False,
+                       seed=seed + k * 5, wavelength=120.0, vary=0.24)
+        PA.hand_stroke(ld, [(px - 3, py) for px, py in pts], (150, 162, 180), 3,
+                       closed=False, seed=seed + 70 + k, wavelength=90.0)
+        # a fork off the main line, about a third of the way down
+        if k % 2 == 0:
+            j = 2 + (k % 3)
+            fx, fy = pts[j]
+            PA.hand_stroke(ld, [(fx, fy), (fx + 54, fy + 96)], (56, 62, 74), 5,
+                           closed=False, seed=seed + 140 + k, wavelength=70.0)
+    a = layer.split()[3]
+    img.paste(layer, (0, 0), Image.composite(a, Image.new('L', img.size, 0),
+                                             clip))
+
+
+def _snow_blocks(d, x0, x1, ybase, seed, n=9, h=74, col=(232, 238, 246)):
+    """A run of wind-carved SNOW DRIFTS along the ground line.
+
+    The snow plain was a smooth white field across the bottom third of the
+    frame -- dead pixels by the paint measure AND by the eye. A drift is not a
+    smooth field; it is a low asymmetric mound with a soft crest, a shadowed
+    lee face and a sastrugi ridge on top.
+
+    THE FIRST PASS DREW SHARP TRIANGLES and they read as a row of white tents
+    pitched on the snow. What makes a drift read as a drift is (a) the crest is
+    a long shallow ARC, not a peak, (b) the mound is wide relative to its height,
+    (c) it has a shaded lee face in a DIFFERENT value from its lit face, and
+    (d) consecutive drifts overlap so there is no regular rhythm. All four are
+    load-bearing.
+    """
+    img = PA.img_of(d)
+    step = float(x1 - x0) / n
+    for k in range(n):
+        x = x0 + k * step - step * 0.35          # overlaps its neighbour
+        cw = step * (2.0 + 0.5 * math.sin(k * 1.7))
+        hh = h * (0.62 + 0.38 * abs(math.sin(k * 2.3 + 0.7)))
+        skew = 0.30 * math.sin(k * 1.1)         # wind pushes the crest off-centre
+        # the crest: a long shallow arc, sampled as a wobbled quadratic
+        top = []
+        steps = 9
+        for s in range(steps + 1):
+            u = s / float(steps)
+            px = x + cw * u
+            shape = math.sin(math.pi * min(1.0, max(0.0, (u - skew) / 0.72 + 0.36)))
+            py = (ybase - hh * max(0.0, shape)
+                  + 7 * math.sin(u * 7.3 + k * 1.9)
+                  + 4 * math.sin(u * 13.1 + k * 0.7))
+            top.append((px, py))
+        face = top + [(x + cw, ybase + 60), (x, ybase + 60)]
+        lit = col
+        lee = (col[0] - 26, col[1] - 24, col[2] - 18)
+        PA.fill_poly(img, PA.wobble_edge(face, seed=seed + k * 4, amount=2.6,
+                                         wavelength=110.0),
+                     lit, seed=seed + k * 6, value=0.05, edge=0.0)
+        # the sastrugi -- a shaded crease along the crest's lee side. This is the
+        # line that stops a white mound reading as a white triangle.
+        lee_pts = [(px, py + 13 + 6 * math.sin(u * 5.1 + k))
+                   for u, (px, py) in enumerate(top)]
+        PA.hand_stroke(d, lee_pts, lee, 9, closed=False, seed=seed + 90 + k,
+                       wavelength=70.0, vary=0.22)
+        PA.hand_stroke(d, top, (255, 255, 255), 3, closed=False,
+                       seed=seed + 130 + k, wavelength=90.0)
+        PA.hand_stroke(d, lee_pts, (178, 190, 204), 2, closed=False,
+                       seed=seed + 170 + k, wavelength=60.0)
+
+
+def _snow_contours(d, x0, x1, ytop, ybase, seed, n=6,
+                   col=(214, 226, 238), lw=4):
+    """Layered drift contour lines across an open snow field.
+
+    The plain's version of edge density: long shallow contour lines that follow
+    the lie of the ground, receding bands of a slightly cooler value.
+
+    THEY CURVE WITH THE GROUND. The first pass emitted nearly-straight lines at
+    fixed y and they read as fence wires strung across the mountain, because
+    every one of them was at the same height and none acknowledged a dune. Here
+    each contour is a long arc that dips in the middle of the frame and lifts at
+    the sides, which is the lie of a broad drift, and successive contours are
+    offset horizontally so they never stack into a picket fence.
+    """
+    img = PA.img_of(d)
+    for k in range(n):
+        t = k / float(max(1, n - 1))
+        y = ybase - (ybase - ytop) * (0.16 + 0.84 * t)
+        pts = []
+        steps = max(8, int((x1 - x0) / 110.0))
+        for s in range(steps + 1):
+            u = s / float(steps)
+            px = x0 + (x1 - x0) * u
+            # the ground's own curve: a broad sag plus two smaller swells
+            sag = 26 * math.sin(math.pi * u) * (0.6 + 0.4 * math.sin(k * 1.3))
+            py = (y - sag
+                  + 13 * math.sin(u * 2.7 + seed * 0.011 + k * 0.9)
+                  + 7 * math.sin(u * 6.1 + seed * 0.023 + k * 2.1))
+            pts.append((px, py))
+        PA.hand_stroke(d, pts, (col[0], col[1] - 5 * k, col[2] - 4 * k), lw,
+                       closed=False, seed=seed + k * 4, wavelength=190.0)
+        PA.hand_stroke(d, [(px, py - 5) for px, py in pts],
+                       (250, 252, 254), 2, closed=False, seed=seed + 70 + k,
+                       wavelength=140.0)
+
+
+def _ice_blocks(d, x0, x1, ytop, ybot, seed, n=11,
+                col=(150, 176, 196), ink=(96, 124, 148), clip=None):
+    """A run of outlined ice blocks through the frozen band.
+
+    The permafrost band was one flat ICE rectangle with a comb of hatching over
+    it. Blocks with real joints between them read as a frozen mass AND put an
+    edge in every tile of the band, which is where four of this chapter's flat
+    beats spend their frame.
+
+    `clip` is an optional PIL L-mask. It is here for a specific reason: the
+    frozen band and the corridor OVERLAP (the corridor runs y 386..554, the
+    band y 330..560), so an unclipped run of blocks paints straight over the
+    tunnel and the beat whose caption says "a long tunnel runs down into the
+    rock" loses its tunnel. Pass a mask with the corridor punched out of it.
+    """
+    img = PA.img_of(d)
+    if clip is not None:
+        layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+        img, d = layer, ImageDraw.Draw(layer)
+    step = float(x1 - x0) / n
+    for k in range(n):
+        x = x0 + k * step
+        h = (ybot - ytop) * (0.62 + 0.38 * abs(math.sin(k * 1.31)))
+        top = []
+        steps = 4
+        for s in range(steps + 1):
+            u = s / float(steps)
+            px = x + step * 1.02 * u
+            py = (ytop + (ybot - ytop - h) * 0.5 * math.sin(u * 3.0 + k * 0.8)
+                  + 6 * math.sin(u * 7.0 + k * 1.3))
+            top.append((px, py))
+        face = top + [(x + step * 1.02, ybot + 30), (x, ybot + 30)]
+        shade = (col[0] + (k % 3) * 6 - 6, col[1] + (k % 3) * 5 - 5,
+                 col[2] + (k % 3) * 4 - 4)
+        PA.fill_poly(img, PA.wobble_edge(face, seed=seed + k * 5, amount=2.0,
+                                         wavelength=60.0),
+                     shade, seed=seed + k * 7, value=0.05, edge=0.0)
+        PA.hand_stroke(d, top, ink, 4, closed=False, seed=seed + 90 + k,
+                       wavelength=70.0)
+        # the joint: a short vertical dark seam at the block's left edge
+        PA.hand_stroke(d, [(x + step * 0.04, top[0][1] + 8),
+                           (x + step * 0.02, ybot - 6)], ink, 3, closed=False,
+                       seed=seed + 140 + k, wavelength=60.0)
+    if clip is not None:
+        a = layer.split()[3]
+        PA.img_of(d).paste(layer, (0, 0),
+                           Image.composite(a, Image.new('L', layer.size, 0),
+                                           clip))
+
+
+def _rubble(d, x0, x1, ybase, seed, n=18, col=(128, 134, 142),
+            spread=26.0, scale=1.0):
+    """Small outlined rock chips scattered on a ground line.
+
+    Cheap, and it is what stops a large ground plane reading as a fill: forty
+    little stones with an outline each put a corner in every tile near the
+    base. Deterministic by construction (a fixed stride walk, not random).
+    """
+    img = PA.img_of(d)
+    for k in range(n):
+        u = ((k * 0.61803398875) % 1.0)
+        x = x0 + (x1 - x0) * u
+        y = ybase + spread * math.sin(k * 2.3) - (k % 3) * 7
+        r = (9 + (k * 7) % 13) * scale
+        pts = []
+        m = 6
+        for s in range(m):
+            a = 2 * math.pi * s / m
+            rr = r * (0.72 + 0.42 * math.sin(s * 2.1 + k))
+            pts.append((x + rr * math.cos(a), y + rr * 0.66 * math.sin(a)))
+        PA.fill_poly(img, pts, (col[0] + (k % 3) * 8 - 6,
+                                col[1] + (k % 3) * 6 - 5,
+                                col[2] + (k % 3) * 5 - 4),
+                     seed=seed + k * 5, value=0.06, edge=0.0)
+        PA.hand_stroke(d, pts, INK, 3, closed=True, seed=seed + 80 + k,
+                       wavelength=30.0)
+
+
+def _pipe_run(d, x0, x1, y, seed, n=6, r=13, col=(120, 128, 138)):
+    """A run of conduit with collars along a wall -- industrial edge density.
+
+    The interiors were two flat fills (wall, floor) plus one warm ellipse. Pipes
+    with collars, a cable tray and a strut every bay are what make a cut rock
+    chamber read as a built room, and they are what a corridor close-up needs to
+    stop being two rectangles.
+    """
+    img = PA.img_of(d)
+    for k in range(n):
+        x = x0 + (x1 - x0) * k / float(max(1, n - 1))
+        PA.fill_rect(img, [x - r, y - r, x + r, y + r], col, seed=seed + k * 3,
+                     value=0.06, edge=1.2)
+        PA.hand_stroke(d, [(x - r, y - r), (x + r, y - r), (x + r, y + r),
+                           (x - r, y + r)], INK, 3, closed=True,
+                       seed=seed + 40 + k, wavelength=40.0)
+    PA.hand_stroke(d, [(x0, y), (x1, y)], (86, 94, 104), r * 2 - 6, closed=False,
+                   seed=seed + 90, wavelength=170.0)
+    PA.hand_stroke(d, [(x0, y - 2), (x1, y - 2)], INK, 3, closed=False,
+                   seed=seed + 91, wavelength=170.0)
+
+
+def _strut_run(d, x0, x1, ytop, ybot, seed, n=7, col=(104, 112, 124)):
+    """Vertical wall struts between two heights -- a ribbed rock face.
+
+    Used on the corridor walls and the cutaway's chamber. Cheap, evenly spaced,
+    and it makes a tall smooth wall read as shored ground rather than a fill.
+    """
+    for k in range(n):
+        x = x0 + (x1 - x0) * k / float(max(1, n - 1))
+        PA.hand_stroke(d, [(x, ytop + 6 * math.sin(k * 1.7)),
+                           (x + 3, ybot - 6 * math.sin(k * 2.3))], col, 9,
+                       closed=False, seed=seed + k * 4, wavelength=90.0)
+        PA.hand_stroke(d, [(x, ytop + 6 * math.sin(k * 1.7)),
+                           (x + 3, ybot - 6 * math.sin(k * 2.3))], INK, 3,
+                       closed=False, seed=seed + 60 + k, wavelength=90.0)
+        # a bearing plate at each end so the strut has a head and a foot
+        for yy in (ytop, ybot):
+            PA.fill_rect(PA.img_of(d), [x - 15, yy - 8, x + 19, yy + 8],
+                         (122, 130, 142), seed=seed + 90 + k * 2, value=0.05,
+                         edge=1.2)
+            PA.hand_stroke(d, [(x - 15, yy - 8), (x + 19, yy - 8),
+                               (x + 19, yy + 8), (x - 15, yy + 8)], INK, 3,
+                           closed=True, seed=seed + 130 + k * 2, wavelength=40.0)
+
+
+def _panel_run(d, x0, x1, y0, y1, seed, n=5, col=(146, 152, 162),
+               rivets=True):
+    """Steel plating panels with rivets -- fortknox's gold-slab density in the
+    chapter's own grey.
+
+    The vault door and the flood gate are big smooth steel fields. Riveted
+    plates are what a vault door IS, they survive at any size, and they give the
+    eye the small-scale detail the frame-fill rule asks for.
+    """
+    img = PA.img_of(d)
+    step = float(x1 - x0) / n
+    for k in range(n):
+        x = x0 + k * step
+        box = [(x + 5, y0 + 5), (x + step - 5, y0 + 5),
+               (x + step - 5, y1 - 5), (x + 5, y1 - 5)]
+        PA.fill_poly(img, PA.wobble_edge(box, seed=seed + k * 4, amount=1.8,
+                                         wavelength=70.0),
+                     (col[0] + (k % 3) * 7 - 7, col[1] + (k % 3) * 6 - 6,
+                      col[2] + (k % 3) * 5 - 5),
+                     seed=seed + k * 6, value=0.06, edge=0.0)
+        PA.hand_stroke(d, box, INK, 5, closed=True, seed=seed + 80 + k,
+                       wavelength=90.0)
+        if rivets:
+            for m in (0.16, 0.84):
+                for yy in (y0 + 22, y1 - 22):
+                    px = x + step * m
+                    d.ellipse([px - 5, yy - 5, px + 5, yy + 5],
+                              fill=(96, 102, 112))
+                    PA.hand_stroke(d, [(px - 5, yy - 5), (px + 5, yy - 5),
+                                       (px + 5, yy + 5), (px - 5, yy + 5)],
+                                   INK, 2, closed=True, seed=seed + 120 + k * 4,
+                                   wavelength=20.0)
+
+
+def _star_field(d, x0, x1, y0, y1, seed, n=90, col=(226, 234, 246)):
+    """A scattering of stars in a night sky band.
+
+    Cheap per star, and it is the honest fix for a flat sky: a night sky with
+    nothing in it is a gradient, and a gradient is exactly what the pigment
+    measure calls flat. Deterministic stride walk, three sizes, three values.
+    """
+    img = PA.img_of(d)
+    for k in range(n):
+        u = (k * 0.7548776662) % 1.0
+        v = (k * 0.5698402909) % 1.0
+        px = x0 + (x1 - x0) * u
+        py = y0 + (y1 - y0) * v
+        r = 2 + (k % 4)
+        c = col if k % 5 else (250, 246, 226)
+        d.ellipse([px - r, py - r, px + r, py + r], fill=c)
+
+
+def _ground_plates(d, x0, x1, ytop, ybase, seed, n=7,
+                   col=(96, 104, 118)):
+    """Concrete floor slabs in perspective -- the deck the flood stands in.
+
+    A flooded corridor's floor is the largest single region in frame and it was
+    one flat fill. Slab joints running to a vanishing point plus a kerb line put
+    an edge in every tile of it.
+    """
+    img = PA.img_of(d)
+    for k in range(n):
+        t = k / float(max(1, n - 1))
+        y = ytop + (ybase - ytop) * (t ** 1.6)
+        half = 40 + 700 * (t ** 1.5)
+        PA.hand_stroke(d, [(640 - half, y + 12), (640 + half, y + 12)],
+                       (col[0] - 10, col[1] - 10, col[2] - 8), 4, closed=False,
+                       seed=seed + k * 4, wavelength=140.0)
+    for k in range(-3, 4):
+        x0j = 640 + k * 118
+        PA.hand_stroke(d, [(x0j, ybase), (640 + k * 470, ytop)],
+                       (col[0] - 6, col[1] - 6, col[2] - 5), 3, closed=False,
+                       seed=seed + 50 + k, wavelength=120.0)
+    PA.hand_stroke(d, [(0, ytop), (1280, ytop)], (col[0] + 16, col[1] + 16,
+                                                 col[2] + 16), 6,
+                   closed=False, seed=seed + 99, wavelength=170.0)
+
+
+def _wall_panels(d, x0, x1, y0, y1, seed, n=6, col=(96, 104, 116),
+                 ink=INK, lw=4, skip=None, row_h=112.0):
+    """Shed panels bolted to a room's back wall -- the interior's edge density.
+
+    EVERY `_interior` room in this chapter is two flat fills (wall, floor) plus
+    sometimes one warm ellipse, and every one of them measured 2.6-3.3 until
+    this went on: five of the chapter's flat beats spend their whole frame
+    inside a room. This is the same idea as _panel_run, tuned for a large flat
+    back wall: a grid of bolted sheets with a seam and a rivet in each bay, so
+    the wall has an edge every ~150px instead of none at all.
+
+    `skip` is an optional list of (x0, x1, y0, y1) rectangles left clear, so a
+    caller can keep a lit doorway or a numeral unpanelled.
+    """
+    img = PA.img_of(d)
+    step = float(x1 - x0) / n
+    rows = max(2, int((y1 - y0) / row_h))
+
+    def clear(px, py):
+        if not skip:
+            return False
+        for s in skip:
+            if s[0] <= px <= s[1] and s[2] <= py <= s[3]:
+                return True
+        return False
+
+    for r in range(rows):
+        ry0 = y0 + (y1 - y0) * r / rows
+        ry1 = y0 + (y1 - y0) * (r + 1) / rows
+        for k in range(n):
+            x = x0 + k * step
+            cx = x + step * 0.5
+            cy = (ry0 + ry1) * 0.5
+            if clear(cx, cy):
+                continue
+            box = [(x + 4, ry0 + 4), (x + step - 4, ry0 + 4),
+                   (x + step - 4, ry1 - 4), (x + 4, ry1 - 4)]
+            PA.fill_poly(img, PA.wobble_edge(box, seed=seed + r * 20 + k * 3,
+                                             amount=1.6, wavelength=80.0),
+                         (col[0] + ((r + k) % 3) * 6 - 6,
+                          col[1] + ((r + k) % 3) * 5 - 5,
+                          col[2] + ((r + k) % 3) * 4 - 4),
+                         seed=seed + r * 20 + k * 3 + 1, value=0.06, edge=0.0)
+            PA.hand_stroke(d, box, ink, lw, closed=True,
+                           seed=seed + 200 + r * 20 + k, wavelength=100.0)
+            # four rivets, one per corner of the sheet
+            for mx, my in ((0.14, 0.16), (0.86, 0.16), (0.14, 0.84), (0.86, 0.84)):
+                px = x + step * mx
+                py = ry0 + (ry1 - ry0) * my
+                d.ellipse([px - 4, py - 4, px + 4, py + 4], fill=(74, 80, 90))
+                PA.hand_stroke(d, [(px - 4, py - 4), (px + 4, py - 4),
+                                   (px + 4, py + 4), (px - 4, py + 4)], ink, 2,
+                               closed=True, seed=seed + 400 + r * 20 + k,
+                               wavelength=20.0)
+
+
+def _ceiling_beams(d, x0, x1, y, seed, n=6, col=(84, 92, 104)):
+    """I-beams across a room's ceiling -- depth on the largest empty band.
+
+    A cold room's ceiling is usually the widest unbroken region in frame, and
+    it is the region the camera looks along, so beams running to a vanishing
+    point are what turn it into a room rather than a grey lid.
+    """
+    for k in range(n):
+        x = x0 + (x1 - x0) * k / float(max(1, n - 1))
+        depth = 30 if k % 2 == 0 else 22          # near/far alternate
+        box = [(x - 16, y), (x + 16, y), (x + 16, y + depth), (x - 16, y + depth)]
+        PA.fill_poly(PA.img_of(d), PA.wobble_edge(box, seed=seed + k * 4,
+                                                   amount=1.4, wavelength=40.0),
+                     (col[0] + (k % 3) * 7 - 7, col[1] + (k % 3) * 6 - 6,
+                      col[2] + (k % 3) * 5 - 5),
+                     seed=seed + k * 4 + 1, value=0.06, edge=0.0)
+        PA.hand_stroke(d, box, INK, 4, closed=True, seed=seed + 60 + k,
+                       wavelength=50.0)
+        # the web, so it reads as an I-beam and not a plank
+        PA.hand_stroke(d, [(x - 6, y + depth * 0.5), (x + 6, y + depth * 0.5)],
+                       (70, 76, 86), 3, closed=False, seed=seed + 90 + k,
+                       wavelength=30.0)
+
+
+def _cable_tray(d, x0, x1, y, seed, col=(96, 88, 60), n_cable=4):
+    """A cable tray with slack loops, run off both edges along a wall."""
+    PA.fill_rect(PA.img_of(d), [x0, y, x1, y + 20], (88, 94, 104), seed=seed,
+                 value=0.06, edge=1.2)
+    PA.hand_stroke(d, [(x0, y), (x1, y), (x1, y + 20), (x0, y + 20)], INK, 4,
+                   closed=True, seed=seed + 1, wavelength=180.0)
+    for k in range(n_cable):
+        cy = y + 4 + k * 4
+        PA.hand_stroke(d, [(x0, cy), (x1, cy)], col, 3, closed=False,
+                       seed=seed + 10 + k, wavelength=190.0)
+
+
+def _floor_crates(d, x0, x1, ybase, seed, n=5, col=(122, 116, 102), h=86):
+    """Stacked crates and a pallet on a room's floor.
+
+    The floor of every interior stage here is the region BELOW the caption band,
+    and it was the last dead area on the beats where the wall already carried
+    panels. Crates are the honest thing in a working cold store and they run off
+    the side edges, so the floor admits the room continues past the picture.
+    """
+    img = PA.img_of(d)
+    step = float(x1 - x0) / n
+    for k in range(n):
+        x = x0 + k * step
+        w = step * (0.72 + 0.22 * math.sin(k * 1.9))
+        ch = h * (0.6 + 0.4 * abs(math.sin(k * 2.7 + 0.4)))
+        # a crate is a box with a corner-bracket and a slat, not a plain square
+        PA.fill_rect(img, [x, ybase - ch, x + w, ybase], col, seed=seed + k * 5,
+                     value=0.07, edge=1.4)
+        PA.hand_stroke(d, [(x, ybase - ch), (x + w, ybase - ch),
+                           (x + w, ybase), (x, ybase)], INK, 5, closed=True,
+                       seed=seed + 40 + k, wavelength=60.0)
+        PA.hand_stroke(d, [(x + 5, ybase - ch * 0.62), (x + w - 5, ybase - ch * 0.62)],
+                       (col[0] - 16, col[1] - 15, col[2] - 12), 4, closed=False,
+                       seed=seed + 80 + k, wavelength=40.0)
+        PA.hand_stroke(d, [(x + 4, ybase - ch), (x + w - 4, ybase - 4)],
+                       (col[0] - 22, col[1] - 20, col[2] - 16), 4, closed=False,
+                       seed=seed + 110 + k, wavelength=50.0)
+        # the pallet it stands on: three bearers, so the crate has a foot
+        for m in (0.16, 0.5, 0.84):
+            PA.fill_rect(img, [x + w * m - 6, ybase, x + w * m + 6, ybase + 12],
+                         (94, 88, 76), seed=seed + 140 + k, value=0.06, edge=1.0)
+        PA.hand_stroke(d, [(x - 4, ybase + 12), (x + w + 4, ybase + 12)], INK, 4,
+                       closed=False, seed=seed + 170 + k, wavelength=40.0)
+
+
+def _room_shell(tile, d, seed, wall_col=(88, 96, 108), floor_col=(66, 72, 84),
+                floor_at=0.74, ceil_beams=True, panels=True, tray=True,
+                tray_at=None, panels_skip=None, panel_n=7, row_h=112.0,
+                crates=None):
+    """Everything that makes an `_interior` room stop being two flat fills.
+
+    Called by every interior stage in the chapter after its own `_interior`, so
+    one edit lifts b11-b12, b15, b16-b17, b18-b19 and b22-b25 at once. Written
+    as one function because the per-room variation that matters (which walls,
+    whether a tray) is four keyword arguments, not five copies of this code.
+    """
+    yfloor = int(H * floor_at)
+    if panels:
+        _wall_panels(d, -30, W + 30, 96, yfloor - 4, seed, n=panel_n,
+                     col=(wall_col[0] + 8, wall_col[1] + 8, wall_col[2] + 8),
+                     skip=panels_skip, row_h=row_h)
+    if ceil_beams:
+        _ceiling_beams(d, -20, W + 20, 96, seed + 200, n=7)
+    if tray:
+        _cable_tray(d, -20, W + 20,
+                    yfloor - 96 if tray_at is None else tray_at, seed + 300)
+    # FLOOR: slabs receding to a vanishing point + a kerb, so the largest single
+    # region in most of these rooms has joints in it.
+    _ground_plates(d, -20, W + 20, yfloor + 6, H + 20, seed + 400, n=7,
+                   col=floor_col)
+    if crates:
+        _floor_crates(d, -30, W + 30, H - 46, seed + 600, n=crates)
+
+
 # The arrival duration used by every moving element. 0.45-0.6s reads as a
 # deliberate move; longer and the element stops being an arrival and starts
 # being the picture changing every sample.
@@ -251,29 +854,61 @@ def build():
     def s1_night(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _arctic(tile, 5)
+        # Stars. The night sky was two smooth fills -- measured 3.14, the flattest
+        # reading in the chapter -- and a night sky with nothing in it IS a
+        # gradient, so this is the honest fix rather than a texture cheat.
+        _star_field(d, 8, 1272, 92, 262, 3001, n=110)
         SC.title_backdrop(tile, 1005, col=TITLE_COURSE)
-        _mountain(d, 7, crest=300, base=HZ + 6)
-        _soft_beam(d, 760, 120, HZ - 4, 190, 9)
+        # THE MOUNTAIN, scaled up so it dominates. It used to peak at y=300 with
+        # its base at 452: a 186px band marooned in the middle of a 720px frame,
+        # with the bottom 38% an empty snowfield. crest=176/base=600 puts the
+        # ridge high and the mass down into the plain, and the ridge polyline
+        # already runs off both side edges.
+        ridge = _mountain(d, 7, crest=176, base=612, snowline=True)
+        # Crevasse and couloir lines down the mountain's own face, clipped to its
+        # silhouette. NOT strata: nine near-horizontal bands across the mass read
+        # as venetian blinds, because a mountain's structure runs DOWN its slope.
+        # Two passes -- a broad dark one and a finer light one offset from it --
+        # so each couloir has a shaded side and a lit side.
+        mask = Image.new('L', (fw, fh), 0)
+        ImageDraw.Draw(mask).polygon([tuple(p) for p in ridge], fill=255)
+        _slope_creases(d, ridge, 3011, mask, n=26)
+        # the snow PLAIN: two drift runs running off both edges. Drawn AFTER the
+        # mountain so the drifts occlude its base, which puts the viewer in the
+        # foreground instead of looking at a wall. The second run fills the last
+        # 90px, which was an empty white strip under the caption.
+        _snow_blocks(d, -160, W + 160, 600, 3201, n=6, h=104)
+        _snow_blocks(d, -160, W + 160, 724, 3601, n=4, h=116)
+        # Contours, but ONLY in the near drift band. Thirteen of them run the
+        # full width they read as a picket fence across the mountain face; four,
+        # confined to the snow the viewer is standing on, read as ground.
+        _snow_contours(d, -140, W + 140, 620, 730, 3301, n=4)
+        _rubble(d, -40, W + 40, 606, 3401, n=20, col=(150, 158, 168), scale=0.9)
+        # the vault's own lit portal, low and left -- a warm eye in a cold frame
+        _doorway(d, 214, 588, 3501, w=44, h=56, colour=(40, 46, 58),
+                 lit=AMBER_LT)
+        _soft_beam(d, 214, 402, 590, 96, 9)
     els.append(SC.stage(clock, 1, s1_night, j=4))
 
     def s1_presenter(tile, fw, fh):
-        # Small against a big mountain on purpose: he is a person looking at a
-        # mountain, which is the whole relationship in one frame. dx only, no
-        # dy -- SC.enter renders at its START offset, so a vertical offset
-        # would put his feet below the snow line for the length of the move.
-        SC.fullbody(ImageDraw.Draw(tile), 1150, HZ + 4, 190, pose='standing',
-                    expression='deadpan', seed=11, ink=CREAM)
+        # He was 190px tall in a 720px frame -- 9 pixels of face, which is why
+        # b01 read as an empty landscape with a smudge on it. At 340 he is a
+        # person standing IN the snow in the foreground, cropped by nothing but
+        # close enough to be the emotional read. Pose 'pointingL' and 'shrug' so
+        # the arms carry a real elbow rather than a T-bar.
+        SC.fullbody(ImageDraw.Draw(tile), 1092, 690, 344, pose='pointingL',
+                    expression='awed', seed=11, ink=CREAM)
     els.append(E3.E('s1_presenter_a', 'character', s1_presenter,
                     at=clock.at('b01', 0), until=clock.at('b02', 0),
                     motion=SC.enter(clock, 1, dx=150, dy=0, dur=0.55)))
 
     def s1_presenter_b(tile, fw, fh):
-        # Same man, same spot, awed instead of blank. The expression is baked
-        # into the rasterised tile, so a change is two elements whose windows
-        # abut exactly (SC.expr_swap).
-        SC.fullbody(ImageDraw.Draw(tile), 1150, HZ + 4, 190, pose='standing',
-                    expression='awed', seed=11, ink=CREAM)
-    _s1u, _s1a, _s1au = SC.expr_swap(clock, 2, 'deadpan', 'awed', until_j=4)
+        # Same man, same spot, deadpan instead of awed -- the awe was spent on
+        # b01. The expression is baked into the rasterised tile, so a change is
+        # two elements whose windows abut exactly (SC.expr_swap).
+        SC.fullbody(ImageDraw.Draw(tile), 1092, 690, 344, pose='pointingL',
+                    expression='deadpan', seed=11, ink=CREAM)
+    _s1u, _s1a, _s1au = SC.expr_swap(clock, 2, 'awed', 'deadpan', until_j=4)
     els.append(E3.E('s1_presenter_b', 'character', s1_presenter_b,
                     at=_s1a, until=_s1au))
     els.append(cap(1, W // 2, 690, size=32, fill=AMBER_LT))
@@ -312,7 +947,81 @@ def build():
     # band, and the warm light in the hall once it is cut.                     #
     # ===================================================================== #
     def s2_cut(tile, fw, fh):
-        _cutaway(ImageDraw.Draw(tile), 37, label='PERMAFROST')
+        d = ImageDraw.Draw(tile)
+        _cutaway(d, 37, label='PERMAFROST')
+        # EDGE DENSITY (b04-b06 measured 2.5-2.6, the flattest in the chapter).
+        # The cutaway is three big smooth fields: the slate wash above the
+        # surface line, one ICE band, one dark corridor. A 24px tile inside any
+        # of them sees nothing. Everything below rides ON TOP of _cutaway's own
+        # geometry rather than replacing it.
+        #
+        # THE MASK IS LOAD-BEARING, and the first pass got this wrong. The ice
+        # blocks were drawn straight across the band and buried the corridor --
+        # the caption reads "a long tunnel runs down into the rock" over a frame
+        # with no tunnel in it. Every block below is clipped to the band MINUS
+        # the corridor and the hall, so the diagram stays legible and only the
+        # dead rock gets the detail.
+        band = Image.new('L', (fw, fh), 0)
+        ImageDraw.Draw(band).rectangle([0, 336, W, 554], fill=255)
+        ImageDraw.Draw(band).rectangle([-10, 372, 1244, 566], fill=0)   # corridor
+        ImageDraw.Draw(band).rectangle([1000, 322, W, 602], fill=0)    # the hall
+
+        # 1. ICE BLOCKS in the frozen band -- permafrost as a jointed frozen
+        #    mass rather than one hatched rectangle. Twenty-two, not thirteen:
+        #    at ~60px wide they are small enough that a 24px tile sees a joint.
+        _ice_blocks(d, -40, W + 40, 344, 548, 337, n=22, clip=band)
+        # 2. CREVASSES: long horizontal fracture lines across the ice, clipped
+        #    the same way. Blocks alone give vertical joints; ice also splits
+        #    along its bedding planes, and the cross-hatch of the two is what
+        #    makes the band read as frozen ground rather than pale blue panels.
+        for k in range(9):
+            yy = 352 + k * 24
+            pts = []
+            for i in range(17):
+                u = i / 16.0
+                pts.append((W * u - 20,
+                            yy + 9 * math.sin(u * 6.3 + k * 1.7)
+                            + 5 * math.sin(u * 13.1 + k)))
+            _clipped_stroke(d, pts, (108, 138, 162), 4, 350 + k, band)
+            _clipped_stroke(d, [(px, py - 5) for px, py in pts],
+                            (216, 238, 250), 2, 380 + k, band)
+        # 3. ROCK STRATA through the DEEP mass below the corridor -- the single
+        #    largest region left in frame. Clipped to below y=572 so no band
+        #    runs across the hall.
+        deep = Image.new('L', (fw, fh), 0)
+        ImageDraw.Draw(deep).rectangle([0, 574, W, H], fill=255)
+        _rock_strata(d, -60, W + 60, 592, 716, 331, n=8, col=(96, 104, 118),
+                     lw=4, wobble_amp=7.0, clip=deep)
+        # 4. PIPE RUN along the deep rock: the services a cut chamber has, and
+        #    they run off both edges so the frame admits the rock continues.
+        _pipe_run(d, -40, W + 40, 686, 339, n=8, r=13)
+        _strut_run(d, 10, W - 10, 600, 700, 341, n=9)
+        _rubble(d, -40, W + 40, 716, 351, n=22, col=(126, 132, 142))
+        # 5. STRATA above the surface line. In a cross-section the region above
+        #    the ground is the sky, but _cutaway paints it with the same SLATE
+        #    wash as the rock, so it read as one dead grey field across the top
+        #    of the frame. Two soft haze bands and a ridge line give it depth
+        #    without pretending there is rock in the air.
+        haze = Image.new('L', (fw, fh), 0)
+        ImageDraw.Draw(haze).rectangle([0, 92, W, 176], fill=255)
+        # THREE soft bands, not four hard strata. The first pass ran four
+        # near-horizontal INK lines across the top of the frame and they read
+        # as scan lines on a broken monitor -- strata is right for rock and
+        # wrong for sky, because sky has no bedding planes. These are wide
+        # low-contrast washes that only put a value step in the region.
+        for k, (yy, hh, tone) in enumerate(((100, 16, 132), (124, 20, 126),
+                                            (150, 14, 120))):
+            pts = []
+            for i in range(19):
+                u = i / 18.0
+                pts.append((W * u - 20,
+                            yy + 7 * math.sin(u * 2.3 + k * 1.9)
+                            + 4 * math.sin(u * 5.7 + k)))
+            PA.fill_poly(tile, PA.wobble_edge(
+                pts + [(W + 20, yy + hh), (-20, yy + hh)], seed=370 + k,
+                amount=2.4, wavelength=190.0),
+                (tone, tone + 6, tone + 16), seed=370 + k, value=0.05, edge=0.0)
+        del haze
     els.append(SC.stage(clock, 4, s2_cut, j=7))
 
     def s2_entry(tile, fw, fh):
@@ -321,8 +1030,15 @@ def build():
         # The cutaway already draws the hall running in from the left; this
         # gives it a mouth in the rock, which is what "runs down into the
         # rock" actually points at.
-        _doorway(d, 96, 470, 38, w=64, h=78, colour=(44, 50, 60))
-        PA.hand_stroke(d, [(150, 470), (300, 470)], (150, 180, 196), 5,
+        #
+        # MOVED from cx=96 to cx=-6, and that is a collision fix, not a taste
+        # call. _doorway strokes a heavy frame at cx +/- w*1.16, which at
+        # cx=96 put INK at x=170 -- exactly where the drawn PERMAFROST label
+        # begins, so the beat read "ERMAFROST". Parking the mouth half off the
+        # left edge also matches the frame-fill rule: the corridor is cropped by
+        # the edge rather than started inside the picture.
+        _doorway(d, -6, 470, 38, w=76, h=78, colour=(44, 50, 60))
+        PA.hand_stroke(d, [(96, 470), (300, 470)], (150, 180, 196), 5,
                        closed=False, seed=39, wavelength=90.0)
     els.append(SC.accrue(clock, 4, 5, s2_entry, kind='shape'))
     els.append(cap(4, 640, 690, size=30, fill=VT.LABEL_YELLOW))
@@ -365,7 +1081,65 @@ def build():
     def s3_day(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _day_arctic(tile, 45)
-        _mountain(d, 46, crest=270, base=HZ + 6)
+        # RECEDING RIDGES FIRST, so the big mountain draws OVER them. Three
+        # hazy silhouettes stepping down in value and up in height toward the
+        # viewer. This is what stops the daylight sky (y 0..300) from being one
+        # dead wash -- depth from layering, which is the only honest way to fill
+        # a sky in this style.
+        for k, (yy, tone, sd) in enumerate(((392, (150, 166, 184), 60),
+                                            (352, (132, 148, 168), 61),
+                                            (316, (112, 128, 150), 62))):
+            rpts = []
+            for i in range(13):
+                u = i / 12.0
+                rpts.append((W * u - 40,
+                             yy - 34 * math.sin(u * 3.4 + k * 2.1)
+                             - 20 * math.sin(u * 7.9 + k)))
+            PA.fill_poly(tile, rpts + [(W + 40, HZ + 40), (-40, HZ + 40)],
+                         tone, seed=sd, value=0.05, edge=0.0)
+            # Only the NEAREST ridge gets an ink line. The first pass outlined
+            # all three and the result was three hard graphic bands with the
+            # far one drawn straight across the rising sun, which read as a
+            # scratch on the disc rather than as distance. Aerial perspective
+            # is carried by VALUE here, not by outline -- a far ridge that is
+            # lighter and softer is further away, and that is the honest cue.
+            if k == 0:
+                PA.hand_stroke(d, rpts, (98, 112, 130), 4, closed=False,
+                               seed=sd + 1, wavelength=190.0)
+        # HIGH CLOUD: four soft, wide bands in the upper sky (y 96..190). This
+        # is the last dead region in the frame. Midsummer over the Arctic is
+        # low overcast, so banded cloud is what is actually up there -- and it
+        # is low-contrast on purpose, because the title strip lives in this
+        # region and a hard band behind it would trip the title intrusion gate.
+        for k in range(4):
+            cy0 = 104 + k * 26
+            pts = []
+            for i in range(15):
+                u = i / 14.0
+                pts.append((W * u - 30,
+                            cy0 + 10 * math.sin(u * 2.1 + k * 1.6)
+                            + 6 * math.sin(u * 5.3 + k * 0.7)))
+            PA.fill_poly(tile, PA.wobble_edge(
+                pts + [(W + 30, cy0 + 17), (-30, cy0 + 17)], seed=560 + k,
+                amount=2.0, wavelength=200.0),
+                (222, 232, 242), seed=560 + k, value=0.04, edge=0.0)
+        # The main mountain, brought UP and given a higher crest. At crest=270
+        # it sat as a small dark peak behind the portal with 300px of dead sky
+        # over it. Its right shoulder has to stay below the sun (disc top is
+        # y~388) or the sun would be drawn into the rock instead of clearing
+        # the skyline, which is the whole sentence of this beat.
+        ridge = _mountain(d, 46, crest=176, base=HZ + 6, col_x0=-260)
+        mask = Image.new('L', (fw, fh), 0)
+        ImageDraw.Draw(mask).polygon([tuple(p) for p in ridge], fill=255)
+        _slope_creases(d, ridge, 47, mask, n=26)
+        # SNOW PLAIN. The daylight plain is the largest single region and it was
+        # one flat white fill -- in DAYLIGHT, so it cannot borrow the night
+        # stage's value structure. Drifts plus contour lines plus rubble.
+        _snow_blocks(d, -170, W + 170, HZ - 10, 480, n=7, h=96,
+                     col=(238, 242, 248))
+        _snow_contours(d, -150, W + 150, HZ + 10, H + 16, 481, n=7,
+                       col=(206, 218, 232), lw=4)
+        _rubble(d, -40, W + 40, HZ + 6, 482, n=22, col=(158, 166, 176))
         # ONE portal: a lit opening in a concrete face on the LEFT, so "above
         # the doorway" has a referent. v1 stacked _wedge on _doorway here and
         # the wedge's underside cut through the lintel.
@@ -375,6 +1149,25 @@ def build():
         PA.hand_stroke(d, [(px - 190, py - 210), (px + 190, py - 210),
                            (px + 190, py + 150), (px - 190, py + 150)], INK, 8,
                        closed=True, seed=51, wavelength=150.0)
+        # RIVETED PANELS on the concrete face. A 380x360 grey rectangle is the
+        # second-largest smooth region in the frame; it is also the one thing
+        # the narration points at ("above the doorway"), so it earns the detail
+        # more than the sky does.
+        _panel_run(d, px - 190, px + 190, py - 210, py + 150, 55, n=3,
+                   col=(150, 154, 158))
+        # formwork ties + a drip stain: the marks that make poured concrete
+        # read as poured rather than as a fill
+        for k in range(7):
+            tx = px - 150 + k * 50
+            PA.hand_stroke(d, [(tx, py - 186), (tx + 3, py - 26)], (128, 130, 134),
+                           6, closed=False, seed=400 + k, wavelength=110.0)
+            d.ellipse([tx - 7, py - 34, tx + 7, py - 20], fill=(120, 122, 126))
+            PA.hand_stroke(d, [(tx - 7, py - 27), (tx + 7, py - 27)], INK, 3,
+                           closed=False, seed=440 + k, wavelength=20.0)
+        for k in range(5):
+            sx = px - 150 + k * 74
+            PA.hand_stroke(d, [(sx, py - 200), (sx + 6, py - 60)], (176, 178, 180),
+                           10, closed=False, seed=470 + k, wavelength=90.0)
         PA.fill_rect(tile, [px - 82, py - 118, px + 82, py + 150], (44, 48, 58),
                      seed=52, value=0.06)
         PA.fill_poly(tile, PA.ellipse_pts(px, py + 40, 66, 96, n=44),
@@ -382,7 +1175,31 @@ def build():
         PA.hand_stroke(d, [(px - 82, py - 118), (px + 82, py - 118),
                            (px + 82, py + 150), (px - 82, py + 150)], INK, 7,
                        closed=True, seed=54, wavelength=140.0)
+        # BOLLARDS either side of the mouth, and a kerb running off both edges:
+        # the built apron in front of the door, so the foreground is not bare.
+        for k in range(4):
+            bx = px - 250 + k * 44
+            PA.fill_rect(tile, [bx, py + 118, bx + 20, py + 168],
+                         (96, 100, 106), seed=500 + k, value=0.06)
+            PA.hand_stroke(d, [(bx, py + 118), (bx + 20, py + 118),
+                               (bx + 20, py + 168), (bx, py + 168)], INK, 4,
+                           closed=True, seed=520 + k, wavelength=30.0)
+        PA.hand_stroke(d, [(-20, py + 176), (W + 20, py + 176)], (120, 126, 132),
+                       9, closed=False, seed=540, wavelength=170.0)
+        PA.hand_stroke(d, [(-20, py + 186), (W + 20, py + 186)], INK, 4,
+                       closed=False, seed=541, wavelength=170.0)
     els.append(SC.stage(clock, 7, s3_day, j=8))
+
+    def s3_gazer(tile, fw, fh):
+        # CHARACTER (b07 had none). A small figure on the apron looking up at a
+        # sun that barely clears the skyline is the whole sentence, and he is
+        # the audience surrogate for a beat that is otherwise pure scenery.
+        # Small and low on purpose: this is a wide, and he must not compete with
+        # the sun rising at x=1010.
+        SC.fullbody(ImageDraw.Draw(tile), 560, 622, 250, pose='pointing',
+                    expression='awed', seed=56)
+    els.append(SC.accrue(clock, 7, 8, s3_gazer, kind='character',
+                         motion=SC.enter(clock, 7, dx=0, dy=-26, dur=ARRIVE)))
 
     def s3_sun(tile, fw, fh):
         d = ImageDraw.Draw(tile)
@@ -474,6 +1291,7 @@ def build():
     def s5_deck(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _interior(tile, 77, wall=(80, 88, 100), warm=(104, 90, 58))
+        _room_shell(tile, d, 79, wall_col=(80, 88, 100), floor_col=(62, 68, 80))
         _shelf(d, -60, W + 60, 600, 78, h=210, packets=5)
     els.append(SC.stage(clock, 11, s5_deck, j=13))
 
@@ -573,7 +1391,21 @@ def build():
     # b15 is a 20px tube, so it costs almost nothing and stays a detail.        #
     # ===================================================================== #
     def s7_cold(tile, fw, fh):
+        d = ImageDraw.Draw(tile)
         _interior(tile, 141, wall=(74, 82, 94), warm=(96, 84, 56))
+        # The -18 thermometer (b15) is the only thing on this stage, so the room
+        # behind it is nearly the whole frame. Panelled, beamed and floored.
+        #
+        # tray=False, and that is a fix rather than a preference. The cable tray
+        # is a full-width 20px bar with an ink outline on both edges, and at
+        # EVERY height available on this stage it lands somewhere load-bearing:
+        # at the default it crossed the -18's "DEGREES C"; moved up to clear
+        # that, it ran straight through the caption at y=560 and struck
+        # through the word "degrees". This wall carries its density from the
+        # panels instead.
+        _room_shell(tile, d, 144, wall_col=(74, 82, 94), floor_col=(58, 64, 74),
+                    tray=False, panel_n=9, row_h=104.0, crates=6,
+                    panels_skip=[(700, 1060, 190, 400)])   # clear of the -18
     els.append(SC.stage(clock, 15, s7_cold, j=16))
 
     def s7_thermo(tile, fw, fh):
@@ -602,9 +1434,29 @@ def build():
     # The caption sits under the -18 numeral, in the gap between the numeral
     # and the floor, clear of the thermometer on the left.
 
+    def s7_chilly(tile, fw, fh):
+        # CHARACTER (b15 had none). A small figure on the floor between the
+        # thermometer and the numeral, clear of both the tube (x~300) and the
+        # caption (which spans x 552..1172 at y=560).
+        #
+        # shrug, NOT armscrossed. armscrossed is authored la=(38, 78), and at
+        # this height its forearms swing so far up that the silhouette reads as
+        # a horizontal T-arm scarecrow at ship size -- the recurring stickman
+        # defect, reached here by picking a pose for its name rather than for
+        # how it draws. shrug (46, 62) puts the same cold-shoulder read in a
+        # silhouette that survives being small.
+        SC.fullbody(ImageDraw.Draw(tile), 486, 648, 208, pose='shrug',
+                    expression='worried', seed=145)
+    els.append(SC.accrue(clock, 15, 16, s7_chilly, kind='character',
+                         motion=SC.enter(clock, 15, dx=110, dy=0, dur=ARRIVE)))
+
     def s8_freezers(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _interior(tile, 143, wall=(74, 82, 94), warm=(96, 84, 56))
+        _room_shell(tile, d, 145, wall_col=(74, 82, 94), floor_col=(58, 64, 74),
+                    panel_n=9, row_h=104.0, crates=6,
+                    panels_skip=[(90, 560, 180, 660),      # the chest freezer
+                                 (680, 1000, 100, 240)])   # the VAULT label
         # left: an ordinary domestic chest freezer, small and domestic
         chest = [(120, 300), (520, 300), (520, 640), (120, 640)]
         PA.fill_poly(tile, chest, (222, 224, 226), seed=146, value=0.07)
@@ -678,6 +1530,14 @@ def build():
         d = ImageDraw.Draw(tile)
         _interior(tile, 161, wall=(72, 80, 92), floor=(54, 60, 70),
                   warm=(96, 86, 58))
+        # A corridor of receding doors: the walls are the largest region here
+        # and they were flat. Panelled walls + floor slabs + crates give it the
+        # built depth the vanishing-point doors already imply. tray is off: the
+        # receding door frames are centred on x=640 and a full-width tray
+        # crosses all four of them.
+        _room_shell(tile, d, 164, wall_col=(72, 80, 92), floor_col=(54, 60, 70),
+                    tray=False, panel_n=8, row_h=100.0, crates=5,
+                    panels_skip=[(430, 860, 120, 620)])
         # four doors receding down the corridor. The outermost door's heavy
         # frame used to top out at y=19, driving a full-width INK bar through
         # the persistent title; that geometry is kept trimmed here.
@@ -808,6 +1668,9 @@ def build():
     def s10_corridor(tile, fw, fh):
         d = ImageDraw.Draw(tile)
         _interior(tile, 201, wall=(62, 70, 82), floor=(48, 54, 64))
+        _room_shell(tile, d, 205, wall_col=(62, 70, 82), floor_col=(48, 54, 64),
+                    panel_n=8, row_h=100.0, crates=5,
+                    panels_skip=[(340, 940, 130, 640)])   # clear of the doorway
         # The doorway's frame sits so its top is clear of the title band.
         _doorway(d, 640, 385, 202, w=300, h=250, colour=(70, 76, 88))
     els.append(SC.stage(clock, 22, s10_corridor, j=26))
