@@ -807,13 +807,21 @@ def build():
     # b35 "Only a few hundred tonnes remain" -- the small number stamped on
     # the bare floor where the gold is not, and the presenter standing in the
     # gap at 1010 looking at it.
-    def l_few_hundred(tile, fw, fh):
-        d = ImageDraw.Draw(tile)
-        D.draw_label(tile, 'A FEW HUNDRED', center=(930, 560),
+    #
+    # The legend and the presenter are SEPARATE elements because they do not
+    # share a lifetime. When both lived to b37, the trucks that arrive at b36
+    # painted over the legend and all but one glyph column of it survived --
+    # a single orphaned letter floating in the gap between the two trucks,
+    # which reads to a viewer as a rendering fault rather than as a word. The
+    # legend now lives exactly the one beat it was written for and leaves when
+    # the trucks arrive; the presenter stays, because he is the through-line.
+    def l_few_hundred_label(tile, fw, fh):
+        D.draw_label(tile, 'A FEW HUNDRED', center=(785, 560),
                      color=(250, 232, 168), size=42)
-        SC.fullbody(d, 1010, 690, 400, pose='shrug', expression='skeptic',
-                    seed=362)
-    els.append(SC.accrue(clock, 35, 37, l_few_hundred, kind='character'))
+    els.append(SC.accrue(clock, 35, 36, l_few_hundred_label, kind='shape'))
+    def l_few_hundred(tile, fw, fh):
+        SC.fullbody(ImageDraw.Draw(tile), 1010, 690, 400, pose='shrug',
+                    expression='skeptic', seed=362)
     # NO caption at b35: the drawn A FEW HUNDRED legend sits on the bare floor
     # and says the line. A caption under it printed the same four words twice.
     # b36 "The rest was moved out years ago" -- MOVING, and the only place a
@@ -827,6 +835,12 @@ def build():
         D.draw_arrow(tile, (700, 300), (300, 300), color=RED, width=12,
                      head=54)
     els.append(SC.accrue(clock, 36, 37, l_moving_out, kind='shape'))
+    # The presenter is appended AFTER the trucks so he draws IN FRONT of them.
+    # Appended before, the loaded gold painted over his torso and legs and left
+    # a black smear wedged in the gap between the two trucks -- a figure half
+    # buried by the things moving past him. He is the narrator; the trucks move
+    # past him, not over him. One ordering fact, one line of comment.
+    els.append(SC.accrue(clock, 35, 37, l_few_hundred, kind='character'))
     els.append(cap(36, 640, 560, size=34, fill=TY.LABEL_RED))
 
 
