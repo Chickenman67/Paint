@@ -115,10 +115,26 @@ NO_DRAW = re.compile(r'_(pts|points|path|poly|geom|coords|shape|curve)$')
 _SYNTH = {
     'cx': 640, 'x': 640, 'x0': 380, 'x1': 900, 'ax': 480, 'bx': 800,
     'cy': 380, 'y': 380, 'y0': 240, 'y1': 540, 'ay': 290, 'by': 470,
+    # Ground lines. Missing these was a real hole: `_pylon(d, x, base_y, h, seed)`
+    # fell through to the generic fallback of 1, which anchored the pylon's base
+    # at the top edge and drew it entirely off-frame. A blank tile is
+    # indistinguishable from a primitive that draws nothing, so the harness
+    # reinvented the exact blind spot it was written to close.
+    'base_y': 620, 'ground_y': 620, 'floor_y': 620, 'gy': 620,
+    'foot_y': 620, 'bot_y': 620, 'bottom_y': 620, 'floor': 620,
+    'top_y': 140, 'sky_y': 160, 'horizon': 400, 'hz': 400,
+    # `top`/`bot` are the short forms. `_stock_row(d, x0, x1, top, bot, ...)`
+    # got top=360 and bot=360 from the generic fallback -- equal values, so a
+    # zero-height row that drew nothing. A band with no height is blank, and
+    # blank reads as a primitive that draws nothing.
+    'top': 240, 'bot': 560, 'lo': 240, 'hi': 560, 'ymin': 240, 'ymax': 560,
     'w': 280, 'width': 280, 'rw': 140, 'bw': 200,
     'h': 320, 'height': 320, 'hh': 160, 'bh': 200,
     'r': 130, 'rad': 130, 'radius': 130, 'rr': 130, 'size': 280,
-    'seed': 0, 's': 1.0, 'scale': 1.0, 'k': 1.0, 'amp': 40.0,
+    # `s` is a pixel half-size far more often than it is a unitless scale factor,
+# so 1.0 rendered `_sensor` as a 2px box. 120 puts such primitives on screen.
+# (`scale`/`k` stay 1.0 -- those genuinely are unitless.)
+'seed': 0, 's': 120, 'scale': 1.0, 'k': 1.0, 'amp': 40.0,
     'n': 7, 'count': 7, 'rows': 3, 'cols': 5, 'steps': 7, 'num': 6,
     't': 0.5, 't0': 0.0, 't1': 1.0, 'dur': 1.0, 'alpha': 255,
     'depth': 120, 'thick': 6, 'gap': 40, 'step': 34, 'off': 0,
@@ -163,7 +179,10 @@ def synth_args(fn):
             elif p.annotation is float:
                 val = 1.0
             else:
-                val = 1
+                # Mid-frame, not 1. A near-zero anchor draws the primitive off
+                # the canvas, and an off-canvas primitive is indistinguishable
+                # from one that draws nothing.
+                val = 360
         if p.kind == p.KEYWORD_ONLY:
             kw[p.name] = val
         else:
