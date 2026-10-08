@@ -617,37 +617,111 @@ def _worker(d, x, feet_y, h, seed, coat=(84, 92, 104), cap=True, hunch=0.16):
                        wavelength=50.0)
 
 
-def _hand_drill(d, cx, cy, s, seed):
-    """A hand drill and the two hands on it -- beat 10.
+def _hand_drill(d, cx, cy, s, seed, contact_y=None):
+    """A hand drill, braced and biting into the rock -- beat 10.
 
-    The drill is a T: a crosspiece to grip, a shaft, and a bit going into the
-    rock. Drawn LARGE and cropped so the bit visibly disappears INTO the
-    stone -- that contact point is the subject of the line.
+    "They cut the rock with hand drills." The subject is a TOOL and the verb
+    is CUTTING, so the frame has to read as an object doing work: a heavy
+    crosspiece gripped by two hands, an A-frame braced on the stone, and a bit
+    that visibly disappears into it.
+
+    Three earlier revisions failed here, all measured by rendering the
+    primitive alone and looking at it:
+
+      1. The crosspiece spanned the frame dead horizontal and the two "hands"
+         were cream ellipses big enough to read as lampshades -- the whole
+         thing was a LAMPPOST.
+      2. Authored around cy with the bit reaching cy + 1.32s, so at s=380 the
+         contact point fell off the bottom of the frame entirely.
+      3. It drew its own rectangular ground slab, which sat at the bottom of
+         the frame as a second surface unrelated to the chapter's rock face.
+
+    So `contact_y` is now an ARGUMENT: the caller passes the y of the rock it
+    is cutting into, and the tool is laid out between the bar and that line.
+    Nothing is drawn below the contact, so the existing rock face reads as the
+    ground and the bit visibly enters it.
     """
     img = PA.img_of(d)
-    PA.hand_stroke(d, [(cx - s * 0.92, cy - s * 0.62), (cx + s * 0.92, cy - s * 0.62)],
-                   (128, 84, 52), 22, seed=seed, wavelength=110.0)
-    PA.hand_stroke(d, [(cx, cy - s * 0.62), (cx, cy + s * 0.92)], (110, 74, 46),
-                   20, seed=seed + 1, wavelength=110.0)
-    PA.hand_stroke(d, [(cx, cy + s * 0.86), (cx, cy + s * 1.34)], (86, 88, 92),
-                   12, seed=seed + 2, wavelength=70.0)
-    # two hands gripping the crosspiece
+
+    if contact_y is None:
+        contact_y = cy + s * 0.60
+    rock_y = contact_y
+
+    # Lay the tool out between the bar and the contact line, whatever it is.
+    bar_y = min(cy, rock_y - s * 0.92)
+    bit_top = bar_y + s * 0.42
+
+    # The bit: CHUNKY, with a twist, and it stops just inside the stone so the
+    # contact is visible rather than implied.
+    bit_bot = rock_y + s * 0.05
+    PA.hand_stroke(d, [(cx, bit_top), (cx, bit_bot)], (74, 76, 82),
+                   max(16, int(s * 0.062)), seed=seed + 2, wavelength=80.0)
+    for k in range(5):
+        u = (k + 0.5) / 5.0
+        y0 = bit_top + (bit_bot - bit_top) * u
+        PA.hand_stroke(d, [(cx - s * 0.065, y0), (cx + s * 0.065, y0 + s * 0.032)],
+                       (48, 50, 54), max(5, int(s * 0.017)),
+                       seed=seed + 60 + k, wavelength=22.0)
+
+    # The drill head: a squat collar ABOVE the rock, so the bit is seen
+    # entering the stone rather than a mushroom sitting on it.
+    PA.fill_poly(img, PA.ellipse_pts(cx, bit_top, s * 0.15, s * 0.085, n=22),
+                 (104, 72, 44), seed=seed + 3, value=0.06, edge=1.8)
+    PA.hand_stroke(d, PA.ellipse_pts(cx, bit_top, s * 0.15, s * 0.085, n=22),
+                   INK, 5, closed=True, seed=seed + 4, wavelength=60.0)
+
+    # The shaft.
+    PA.hand_stroke(d, [(cx, bar_y), (cx, bit_top)], (110, 74, 46),
+                   max(18, int(s * 0.065)), seed=seed + 1, wavelength=90.0)
+
+    # The crosspiece: a bar, only as wide as the grip needs, tilted a few
+    # degrees off horizontal so it never reads as a lamppost arm.
+    tilt = s * 0.05
+    PA.hand_stroke(d, [(cx - s * 0.58, bar_y + tilt), (cx + s * 0.58, bar_y - tilt)],
+                   (128, 84, 52), max(16, int(s * 0.055)),
+                   seed=seed, wavelength=80.0)
+
+    # Two HANDS on the bar, gripped from BELOW. The same tone as the rock so
+    # they cannot pass for light sources; each is a mitt with a thumb and
+    # creases, not a blank pebble.
     for side in (-1, 1):
-        hxp = cx + side * s * 0.62
-        PA.fill_poly(img, PA.ellipse_pts(hxp, cy - s * 0.52, s * 0.20,
-                                         s * 0.15, n=24),
-                     (198, 178, 154), seed=seed + 10 + side, value=0.05,
+        hxp = cx + side * s * 0.37
+        hy = bar_y + s * 0.09
+        hw, hh = s * 0.135, s * 0.10
+        PA.fill_poly(img, PA.ellipse_pts(hxp, hy, hw, hh, n=22),
+                     (188, 168, 146), seed=seed + 10 + side, value=0.07,
+                     edge=1.6)
+        PA.hand_stroke(d, PA.ellipse_pts(hxp, hy, hw, hh, n=22), INK, 5,
+                       closed=True, seed=seed + 20 + side, wavelength=50.0)
+        PA.fill_poly(img, PA.ellipse_pts(hxp - side * hw * 0.70, hy - hh * 0.70,
+                                         hw * 0.44, hh * 0.54, n=16),
+                     (188, 168, 146), seed=seed + 30 + side, value=0.05,
                      edge=1.4)
-        PA.hand_stroke(d, PA.ellipse_pts(hxp, cy - s * 0.52, s * 0.20,
-                                         s * 0.15, n=24), INK, 5,
-                       closed=True, seed=seed + 20 + side, wavelength=60.0)
-    # dust falling off the bit
+        PA.hand_stroke(d, PA.ellipse_pts(hxp - side * hw * 0.70, hy - hh * 0.70,
+                                         hw * 0.44, hh * 0.54, n=16),
+                       INK, 4, closed=True, seed=seed + 40 + side, wavelength=36.0)
+        for k in range(3):
+            fx = hxp + (k - 1) * hw * 0.44
+            PA.hand_stroke(d, [(fx, hy - hh * 0.55), (fx, hy + hh * 0.55)],
+                           (150, 132, 116), 3, seed=seed + 50 + side * 3 + k,
+                           wavelength=22.0)
+
+    # The brace: an A-frame from the bar down onto the rock on both sides.
+    # This is what makes the tool look like it is under load.
+    PA.hand_stroke(d, [(cx - s * 0.42, rock_y), (cx, bar_y)], (122, 82, 50),
+                   max(10, int(s * 0.036)), seed=seed + 5, wavelength=60.0)
+    PA.hand_stroke(d, [(cx + s * 0.42, rock_y), (cx, bar_y)], (122, 82, 50),
+                   max(10, int(s * 0.036)), seed=seed + 6, wavelength=60.0)
+
+    # Chips off the contact point: short strokes, not dots, so they read as
+    # stone breaking away rather than as speckle.
     for k in range(9):
         u = (k * 37 % 17) / 17.0
-        x = cx + (u - 0.5) * s * 2.1
-        y = cy + s * (1.5 + u * 1.5)
-        r = 4 + (k % 3) * 2
-        d.ellipse([x - r, y - r, x + r, y + r], fill=(212, 200, 176))
+        x = cx + (u - 0.5) * s * 0.80
+        y = rock_y - s * 0.01 + u * s * 0.14
+        r = s * 0.030 + (k % 3) * s * 0.010
+        PA.hand_stroke(d, [(x - r, y), (x + r, y - r * 0.5)], (214, 204, 180),
+                       max(4, int(s * 0.014)), seed=seed + 70 + k, wavelength=16.0)
 
 
 def _coil_icon(d, cx, cy, s, seed):

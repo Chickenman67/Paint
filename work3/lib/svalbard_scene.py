@@ -406,12 +406,43 @@ def _polar_bear(d, cx, cy, s, seed, col=(250, 250, 248)):
 
 
 def _globe(d, cx, cy, r, seed, colour=(120, 152, 176)):
-    """A simple globe with hand-drawn continent blobs, cropped by the frame edge
-    on the caller's side so it dominates rather than floats."""
+    """A globe with hand-drawn continents, cropped by the frame edge on the
+    caller's side so it dominates rather than floats.
+
+    Two things were wrong here, both found by rendering this primitive alone
+    and looking at it at ship size:
+
+      1. Z-ORDER. The meridian hoops were drawn AFTER the continents, so every
+         hoop crossed straight over the land. That single line of ordering is
+         what stopped the land reading as land -- a globe's grid is a property
+         of the SPHERE and sits on the water, not on top of the countries.
+      2. KEYLINE. The continents were filled AND given a 5px ink keyline, so at
+         r=336 they read as four pale stickers pasted on the sphere rather
+         than as landmass. Real continents meet the water with no outline at
+         all; the value break alone is the boundary.
+    """
     img = PA.img_of(d)
     g = PA.ellipse_pts(cx, cy, r, r, n=80)
     PA.fill_poly(img, g, colour, seed=seed, value=0.07)
+
+    # Hoops FIRST, so the land sits on top of the grid.
+    for k, ry in enumerate((0.30, 0.62, 0.88)):
+        hoop = PA.ellipse_pts(cx, cy, r * ry, r, n=48)
+        PA.hand_stroke(d, hoop, (96, 124, 146), 3, closed=True,
+                       seed=seed + 40 + k, wavelength=140.0)
+    # ...and they stop at the terminator rather than crossing the frame edge.
     PA.hand_stroke(d, g, INK, 7, closed=True, seed=seed + 1, wavelength=170.0)
+
+    # Continents last, no keyline: the value break against the water IS the
+    # coastline, which is what makes them read as land rather than as shapes.
+    #
+    # The coastlines are DENSELY RESAMPLED before they are drawn. With only the
+    # five control points of each landmass, PA.fill_poly produced clean convex
+    # pentagons, and at r=336 four convex pentagons read as four green stickers
+    # on a ball -- which is the defect this whole function exists to avoid. A
+    # real coast is ragged: bays, peninsulas, a few offshore islands. So each
+    # edge is split into segments, pulled off its chord by a deterministic
+    # pseudo-random amount, and given a few inlets.
     lands = [[(-0.62, -0.42), (-0.30, -0.56), (-0.10, -0.34), (-0.24, -0.10),
               (-0.52, -0.14)],
              [(-0.16, 0.02), (0.06, 0.10), (0.02, 0.40), (-0.14, 0.46),
@@ -420,15 +451,61 @@ def _globe(d, cx, cy, r, seed, colour=(120, 152, 176)):
               (0.18, -0.14)],
              [(0.22, 0.06), (0.52, 0.02), (0.58, 0.34), (0.36, 0.52),
               (0.20, 0.30)]]
+
+    def _coast(ctrl, sd, per_edge=9, amp=0.055):
+        """Resample a closed control polygon into a ragged coastline.
+
+        Two things this got wrong before, both visible only by rendering it:
+
+        1. The perpendicular offset was a fraction of the GLOBE RADIUS rather
+           than of the edge it displaces. At r=336 that moved each sample ~18px
+           across segments shorter than that, so the polygon self-intersected
+           and filled as a starburst.
+        2. The wobble keyed off the SAMPLE INDEX, so it flipped sign every
+           sample and turned each edge into a sawtooth -- coastlines came out
+           as spiky stars. A coast is a low-frequency wobble along the edge,
+           so the phase now advances with distance travelled, not with j.
+
+        The offset is clamped to the edge length, which makes self-intersection
+        impossible by construction rather than by luck.
+        """
+        out = []
+        n = len(ctrl)
+        # running arc-length phase, so the wobble is continuous across the join
+        run = 0.0
+        for i in range(n):
+            ax, ay = ctrl[i]
+            bx, by = ctrl[(i + 1) % n]
+            dx, dy = bx - ax, by - ay
+            ln = math.hypot(dx, dy) or 1.0
+            nx, ny = -dy / ln, dx / ln
+            lim = amp * ln
+            for j in range(per_edge):
+                u = j / float(per_edge)
+                s = run + u * ln
+                # three octaves of low-frequency noise, phase on arc length
+                w = (math.sin(s * 0.9 + sd * 0.11) * 0.6
+                     + math.sin(s * 2.3 + sd * 0.37) * 0.28
+                     + math.sin(s * 4.7 + sd * 0.73) * 0.12)
+                t = math.sin(math.pi * u)          # zero at the control corners
+                k = max(-lim, min(lim, w * lim * t))
+                out.append((ax + dx * u + nx * k, ay + dy * u + ny * k))
+            run += ln
+        return out
+
     for k, poly in enumerate(lands):
-        pts = [(cx + u * r, cy + v * r) for u, v in poly]
-        PA.fill_poly(img, pts, (206, 208, 190), seed=seed + 10 + k, value=0.07)
-        PA.hand_stroke(d, pts, INK, 5, closed=True, seed=seed + 20 + k,
-                       wavelength=80.0)
-    for k, ry in enumerate((0.30, 0.62, 0.88)):
-        hoop = PA.ellipse_pts(cx, cy, r * ry, r, n=48)
-        PA.hand_stroke(d, hoop, (86, 112, 132), 3, closed=True,
-                       seed=seed + 40 + k, wavelength=140.0)
+        pts = [(cx + u * r, cy + v * r)
+               for u, v in _coast(poly, seed + k)]
+        PA.fill_poly(img, pts, (146, 160, 116), seed=seed + 10 + k, value=0.10)
+
+    # Offshore islands, so the coast is not the only land detail and the eye
+    # reads "shoreline" rather than "four objects on a disc".
+    isl = [(-0.44, 0.20, 0.030), (0.44, -0.30, 0.022), (0.06, 0.56, 0.026),
+           (-0.74, 0.02, 0.018), (0.70, 0.44, 0.020)]
+    for k, (u, v, rr) in enumerate(isl):
+        ix, iy = cx + u * r, cy + v * r
+        PA.fill_poly(img, PA.ellipse_pts(ix, iy, rr * r, rr * r * 0.78, n=14),
+                     (146, 160, 116), seed=seed + 70 + k, value=0.10)
 
 
 def _cutaway(d, seed, warm_chamber=False, water_level=None, ragged=False,

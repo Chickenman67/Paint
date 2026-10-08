@@ -124,6 +124,25 @@ BEATS = MG.BEATS
 SEG = MG.SEG
 TITLE_BACKDROP = MG.TITLE_BACKDROP
 
+# --- chapter-local poses, ADDITIVE -----------------------------------------
+# character3.POSES['pointing'] is ra=(78, 12): the forearm continues 12 deg past
+# the upper arm, so the bend is 14 deg in total and at ship size the arm reads as
+# ONE straight stroke running out to a hand-blob -- the horizontal T-arm defect
+# this project has hit four times (memory stickman-horizontal-t-arm-defect,
+# elbow-existence-is-not-elbow-visibility). A pointing arm whose elbow is only
+# 14 deg is not a pointing arm, it is a pole with a mitten on it.
+#
+# These are registered into the SHARED table rather than replacing 'pointing',
+# because every other chapter's frames are already tuned against the existing
+# angles; changing one here would silently move every stickman in the film.
+# `pointUp` is 'pointing' with the forearm swung back DOWN to 132 deg absolute,
+# which is the elbow you can actually see: upper arm out and slightly up, forearm
+# angled down, hand at the end pointing at the thing on the wall.
+C3 = sys.modules.get('character3')
+if C3 is not None and 'pointUp' not in C3.POSES:
+    C3.POSES['pointUp'] = dict(la=(16, 24), ra=(74, 58), ll=(-12, 0),
+                               rl=(11, 0), lean=-3)
+
 # --- art primitives, reused from v1 verbatim -------------------------------
 _exterior = MG._exterior
 _winter = MG._winter
@@ -394,9 +413,18 @@ def _shards(d, x0, y0, x1, y1, cols, seed, n=90, rmin=12, rmax=34,
 
     Here the neighbouring planes differ in VALUE and share hairline edges
     (`key_w=0` by default, so there is no ink keyline at all) -- the surface
-    reads as faceted or wind-carved, and the local tile still spans three
-    values, which is what the pigment metric is actually measuring. Pass
-    `key`/`key_w` for a built subject that should keep an outline.
+    reads as faceted or wind-carved. Pass `key`/`key_w` for a built subject
+    that should keep an outline.
+
+    MEASURED, AND IT IS A TRAP. Substituted for keylined `_facets` on the
+    b10-b12 rock face this dropped the beats from 8.98 to 7.02, b11 from 9.99
+    to 6.95, b12 from 9.74 to 6.92 -- all three from ok to FLAT. The pigment
+    gate takes the median 24px-tile luma std, and a value step between two
+    pale greys is worth a few levels while an INK KEYLINE is worth twenty.
+    So the metric is measuring EDGE DENSITY, not colour spread, and a plane
+    pass with no outline cannot carry a beat however many planes it draws.
+    `_shards` is kept because it is the right look where a pass is texture
+    OVER an already-keylined surface; it is not a substitute for structure.
     """
     def rnd(state):
         s = (state * 1103515245 + 12345) & 0x7fffffff
@@ -855,12 +883,10 @@ def build():
                     width=5)
             # Value-stepped planes with NO ink keyline: this is a faceted rock
             # FACE, not a field of outlined chips floating on it. See _shards.
-            _shards(ld, -40, 220, 660, 780, ((100, 96, 108), (78, 74, 84),
-                                             (92, 88, 100)), 1022, n=110,
-                    rmin=14, rmax=38)
-            _shards(ld, 660, 220, 1330, 780, ((100, 96, 108), (78, 74, 84),
-                                              (92, 88, 100)), 1023, n=104,
-                    rmin=14, rmax=38)
+            _facets(ld, -40, 220, 660, 780, (100, 96, 108), (74, 70, 80),
+                    1022, n=76, rmin=16, rmax=40, ink_w=2)
+            _facets(ld, 660, 220, 1330, 780, (100, 96, 108), (74, 70, 80),
+                    1023, n=72, rmin=16, rmax=40, ink_w=2)
             # drill scars: the vertical chisel marks the prisoners left in it
             for k in range(11):
                 x = 60 + k * 118
@@ -878,7 +904,11 @@ def build():
     # "drawn LARGE and cropped" -- at s=190 the crosspiece was 350px on a 1280
     # frame and the drill read as a stray mark. At s=380 it is the subject.
     def c_drill(tile, fw, fh):
-        _hand_drill(ImageDraw.Draw(tile), 640, 400, 380, 103)
+        # The drill plants into the ROCK FACE, whose crest runs y~214 (centre)
+        # to y~300 (left). A separate ground strip read as a second, unrelated
+        # surface, so `_hand_drill` now takes the contact line explicitly and
+        # draws no ground of its own -- the existing face is the ground.
+        _hand_drill(ImageDraw.Draw(tile), 640, 470, 300, 103, contact_y=560)
     els.append(SC.accrue(clock, 10, 11, c_drill,
                          motion=SC.enter(clock, 10, dx=0, dy=30, dur=0.58)))
     # NO caption at b10. The drill, its bit buried in the rock and its dust
@@ -900,12 +930,10 @@ def build():
             # defect in a different register.
             _strata(ld, 572, 770, (214, 226, 238), 1043, n=11, wobble=13,
                     width=5)
-            _shards(ld, -40, 552, 660, 780, ((248, 249, 252), (230, 236, 243),
-                                             (240, 244, 248)), 1041, n=54,
-                    rmin=26, rmax=66)
-            _shards(ld, 660, 552, 1330, 780, ((248, 249, 252), (230, 236, 243),
-                                              (240, 244, 248)), 1042, n=50,
-                    rmin=26, rmax=66)
+            _facets(ld, -40, 552, 660, 780, (248, 249, 252), (228, 234, 241),
+                    1041, n=30, rmin=30, rmax=78, ink_w=2)
+            _facets(ld, 660, 552, 1330, 780, (248, 249, 252), (228, 234, 241),
+                    1042, n=28, rmin=30, rmax=78, ink_w=2)
             _scree(ld, -20, 600, 1300, 770, (222, 231, 240), 1044, n=18)
         _masked(d, drift, _drift_det)
     els.append(SC.accrue(clock, 11, 13, c_drift, eid='c_drift'))
@@ -985,6 +1013,20 @@ def build():
         PA.hand_stroke(d, [(-60, 156), (200, 128), (520, 112), (900, 120),
                            (1180, 140), (1340, 158)], INK, 7, seed=165,
                        wavelength=170.0)
+        # THE EARTH WAS ONE SMOOTH BROWN WASH filling y150-720 -- the largest
+        # mass in this stage, and b13-b16 measured 3.86/3.73/5.42/5.91 because
+        # of it. A cutaway section is LAYERED GROUND: bedding strata through the
+        # whole depth, then keylined chips over them so a typical 24px tile
+        # spans fill / ink / fill. Clipped to the band below the hill.
+        def _earth_det(ed, efw, efh):
+            _strata(ed, 158, 726, (132, 124, 110), 180, n=15, wobble=10,
+                    width=5)
+            _facets(ed, -40, 160, 660, 720, (158, 150, 134), (128, 120, 106),
+                    181, n=52, rmin=16, rmax=44, ink_w=2)
+            _facets(ed, 660, 160, 1330, 720, (158, 150, 134), (128, 120, 106),
+                    182, n=50, rmin=16, rmax=44, ink_w=2)
+        _masked(d, [(-60, 158), (1340, 158), (1340, 780), (-60, 780)],
+                _earth_det)
     els.append(SC.stage(clock, 13, d_section, j=17))
 
     # ---- b13  THE HERO: the buried complex in section --------------------- #
@@ -1023,8 +1065,12 @@ def build():
         D.draw_number(tile, '120', center=(392, 686), color=RED, size=64)
         D.draw_label(tile, 'KILOMETRES', center=(760, 686), color=INK,
                      size=34)
-    els.append(SC.accrue(clock, 14, 17, d_ruler, kind='shape',
-                         motion=SC.enter(clock, 14, dx=0, dy=-34, dur=0.45)))
+    # layer(14, j=16): live b14 and b15, gone by b16. It was accrue(14, 17),
+    # which held the red 120 KILOMETRES ruler through the b16 service beat, so a
+    # measurement belonging to "the tunnels run for a hundred kilometres" was
+    # still on the picture under "power, water, and housing".
+    els.append(SC.layer(clock, 14, d_ruler, j=16, kind='shape',
+                        motion=SC.enter(clock, 14, dx=0, dy=-34, dur=0.45)))
     # NO caption at b14. A 130px red "120" over "KILOMETRES" IS the sentence;
     # a caption under it repeated the number and stacked text on text.
 
@@ -1055,8 +1101,15 @@ def build():
         # a chamber off this tunnel is supposed to look like.
         _chamber(d, 640, 204, 250, 188, 207, door_side=1)
         D.draw_label(tile, 'chambers', center=(640, 466), color=INK, size=34)
-    els.append(SC.accrue(clock, 15, 17, d_chambers, kind='shape',
-                         eid='d_chambers'))
+    # `SC.layer`, NOT `SC.accrue`. This was accrue(15, 17), which is live beats
+    # 15 AND 16, so at b16 the three branching chambers were still on the
+    # picture UNDER the three service chambers -- two sets of chamber boxes in
+    # one rectangle, with the red b14 ruler showing through underneath both.
+    # The comment here has always claimed "REPLACES the b15 chambers"; accrue
+    # cannot replace anything, it only adds, so the replacement was never wired
+    # and b16 rendered as three dead drawings on top of each other. layer(15)
+    # ends it exactly when b16 opens.
+    els.append(SC.layer(clock, 15, d_chambers, kind='shape', eid='d_chambers'))
     # NO caption at b15. The drawn "chambers" label over three of them IS the
     # words; a caption beside it repeated the label.
 
@@ -1072,10 +1125,16 @@ def build():
                        INK, 7, seed=211, wavelength=170.0)
         for i, x in enumerate((250, 640, 1030)):
             _chamber(d, x, 616, 250, 240, 220 + i, door_side=1)
+            # Masonry courses inside each chamber face. A service chamber is a
+            # BUILT room, so it gets the built-subject density the brief asks
+            # for, and it is also what keeps b16 off the flat side once the
+            # overlapping b13/b14 drawings stopped sharing the frame.
+            _courses(d, x - 118, 500, x + 118, 730, (168, 162, 150),
+                     224 + i, rows=5, cols=6, width=3)
         _coil_icon(d, 250, 616, 84, 230)
         _tank_icon(d, 640, 616, 84, 231)
         _bunk_icon(d, 1030, 616, 80, 232)
-        SC.fullbody(d, 90, 714, 320, pose='pointing', expression='awed',
+        SC.fullbody(d, 90, 714, 320, pose='pointUp', expression='awed',
                     seed=233)
     els.append(SC.accrue(clock, 16, 17, d_services, kind='character'))
     # NO caption at b16, and this one is forced, not chosen: b17 is captioned
