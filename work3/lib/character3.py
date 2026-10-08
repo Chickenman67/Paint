@@ -169,9 +169,22 @@ def _mouth(d, cx, cy, w, kind, painterly=False, seed=0):
         # a hand waver. Draw it as a multi-point stroke so it tapers and wavers
         # like every other ink line, at a lighter weight.
         if painterly and PA is not None:
-            pts = [(cx - hw, cy), (cx - hw * 0.35, cy - w * 0.012),
-                   (cx + hw * 0.25, cy + w * 0.010), (cx + hw, cy)]
-            _thick_ink(PA.img_of(d), pts, INK, max(3, int(w * 0.055)),
+            # ROUND 6 -- THE SPLIT DEADPAN MOUTH. This used to be FOUR points
+            # whose inner pair sat at cy -0.012w then cy +0.010w: a shallow
+            # S-wobble. On a nearly-straight path _thick_ink's offset band
+            # degenerates -- it rendered the flat mouth as TWO short thin dashes
+            # with a gap between them, not a closed line. Every other mouth kind
+            # (wavy/frown/smirk/worried/zigzag) was solid, because their paths
+            # CURVE, and a curving path keeps the band well-conditioned. The fix
+            # is not a different width, it is a better-conditioned PATH: sample
+            # a shallow SINGLE-curvature arc (one bow, no S) densely enough that
+            # the offset curves never cross. Same stroke, now it connects.
+            pts = []
+            for i in range(9):
+                u = i / 8.0
+                pts.append((cx - hw + 2.0 * hw * u,
+                            cy + w * 0.018 * math.sin(math.pi * u)))
+            _thick_ink(PA.img_of(d), pts, INK, max(4, int(w * 0.058)),
                        seed=seed ^ 0x5A1, wavelength=max(12.0, w * 0.9),
                        vary=0.16)
         else:
@@ -940,12 +953,17 @@ def draw_head(img, cx, cy, r, expression='neutral', seed=0,
         nlarr = np.asarray(nl).astype(np.float32)
         nlarr *= (0.72 + 0.30 * PA.fbm(nw, nh, seed=seed ^ 0xB7C, cells=3,
                                        octaves=2))
-        img.paste(Image.new('RGBA', (nw, nh), (150, 150, 158, 255)),
+        # ROUND 6 -- THE SMUDGE READS AS DIRT. It was pasted in cool grey
+        # (150,150,158) at alpha 190 over a warm near-white face, so at close-up
+        # scale it was the only cool mark on the head and floated between the
+        # eyes like a smudge. Warm it toward the skin and drop the opacity so it
+        # reads as a soft shadow-nose, not a stain.
+        img.paste(Image.new('RGBA', (nw, nh), (188, 180, 178, 255)),
                   (int(cx - nw / 2), int(ny - nh / 2)),
-                  Image.fromarray(np.clip(nlarr, 0, 255).astype(np.uint8), 'L'))
+                  Image.fromarray(np.clip(nlarr * 0.62, 0, 255).astype(np.uint8), 'L'))
     else:
         d.ellipse([cx - r * 0.10, ny - r * 0.055, cx + r * 0.10, ny + r * 0.055],
-                  fill=(150, 150, 158))
+                  fill=(188, 180, 178))
 
     # --- mouth ---
     _mouth(d, cx, cy + r * 0.52, r * 0.66,
